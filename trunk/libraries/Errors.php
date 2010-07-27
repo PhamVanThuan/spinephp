@@ -45,7 +45,7 @@
 
 			// Append error.
 			self::$run_errors[] = array(
-				'code' => $code,
+				'code' => self::$levels[$code],
 				'message' => $message,
 				'file' => $file,
 				'line' => $line
@@ -71,7 +71,7 @@
 
 				// Running over and over..? Hope not. :/
 				if(self::$recursive > 3){
-					die('Fatal recurrsion error. Generally occurs when an error has been found but the error handler is unable to process the error.<br /><br />' . self::$run_errors[0]['message']);
+					die('Fatal recurrsion error. Generally occurs when an error has been found but the error handler is unable to process the error.<br /><br />' . self::$run_errors[0]['message'] . ' (' . self::$run_errors[0]['file'] . ' on ' . self::$run_errors[0]['line'] . ')');
 				}else{
 					self::$recursive++;
 				}
@@ -86,9 +86,20 @@
 					$registry->Template->set_template('error');
 
 					// Write to the template variables.
-					$registry->Template->write('code', self::$levels[self::$run_errors[0]['code']], true);
+					$registry->Template->write('code', self::$run_errors[0]['code'], true);
 					$registry->Template->write('message', self::$run_errors[0]['message'], true);
+
+					if(!empty(self::$run_errors[0]['line']) && !empty(self::$run_errors[0]['file'])){
+						$registry->Template->write('details', 'Found in ' . self::$run_errors[0]['file'] . ' on line ' . self::$run_errors[0]['line'], true);
+					}else{
+						$registry->Template->write('details', '', true);
+					}
+
 					$registry->Template->write('errnum', count(self::$run_errors), true);
+
+					if(count(self::$run_errors) > 1){
+						$registry->Template->write('remainder', array_slice(self::$run_errors, 1), true);
+					}
 
 					// Reset the errors, so that this isn't run again.
 					self::$run_errors = array();

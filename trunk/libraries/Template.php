@@ -84,6 +84,9 @@
 
 				// Send to the render method, where the actually rendering occurs
 				$this->render($this->output);
+
+				// Run any hooks on Display.after
+				Hooks::run('Display.after');
 			}
 		}
 
@@ -116,12 +119,10 @@
 				$output = trim(str_replace(array("\r\n","\n","\r","\t"), "", $output));
 			}
 			echo $output;
-
+			
 			// Flush the buffer.
 			ob_end_flush();
 
-			// No more! All done. :)
-			exit;
 		}
 
 		/**

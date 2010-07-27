@@ -12,8 +12,7 @@
 	 * Controller.afterConstruct - After your controller has been instantiated but before any methods are called.
 	 * Controller.after - After controller has been instantiated and methods called.
 	 * Display.before - Before the final output is processed.
-	 * Display.after - After the final output is processed.
-	 * System.after - After everything has been run, just after Display.after.
+	 * System.after - After everything has been run.
 	 *
 	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
 	 *
@@ -61,10 +60,7 @@
 				// The hook they wish to call is a file located in application/hooks
 				$value = array(
 					'name' => $name,
-					'file' => $file['name'],
-					'object' => $file['object'],
-					'method' => $file['method'],
-					'params' => $file['params']
+					'file' => $file['file']
 				);
 				array_inject(self::$set, $hook, $value, true);
 				return true;
@@ -112,15 +108,43 @@
 			}
 		}
 
+		/**
+		 * autoload
+		 *
+		 * Autoloads any hooks that were set in the Config.
+		 */
+		public static function autoload(){
+			$hooks = Config::read('Hooks.load');
+			if(!empty($hooks)){
+				// We have some hook files. We don't load them here though.
+				// Let's just register them.
+				foreach($hooks as $hook){
+					if(!empty($hook)){
+						self::register($hook['name'], $hook['hook'], array('file' => $hook['file']));
+					}
+				}
+			}
+		}
+
+		/**
+		 * run
+		 *
+		 * Run any hooks for a specific period during system loading.
+		 *
+		 * @param string $hook
+		 */
 		public static function run($hook){
 			$hooks = array_extract(self::$set, $hook);
-			foreach($hooks as $hook){
-				if(isset($hook['file'])){
-					// The hook is a file hook.
-				}else{
-					// The hook is a plugin.
-					// Should be right to fire it away.
-					$hook['object']->$hook['method']();
+			if(!empty($hooks)){
+				foreach($hooks as $hook){
+					if(isset($hook['file'])){
+						// The hook is a file hook.
+						require(APP_PATH . 'hooks/' . $hook['file'] . '.hook.php');
+					}else{
+						// The hook is a plugin.
+						// Should be right to fire it away.
+						$hook['object']->$hook['method']();
+					}
 				}
 			}
 		}

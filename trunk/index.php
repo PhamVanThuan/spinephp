@@ -116,8 +116,15 @@
 	require_once(LIB_PATH . 'Config.php');
 	Config::get_instance();
 
-	require_once(LIB_PATH . 'Hooks.php');
 	require_once(LIB_PATH . 'Errors.php');
+	require_once(LIB_PATH . 'Hooks.php');
+
+	// Autoload any hooks that are in the config.
+	Hooks::autoload();
+
+	// Run any hooks for System.before
+	Hooks::run('System.before');
+
 	require_once(LIB_PATH . 'Registry.php');
 
 ?>

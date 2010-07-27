@@ -147,6 +147,19 @@
 			$this->registry->Template->set_template($template);
 		}
 
+		/**
+		 * plugin
+		 *
+		 * Alias of Plugin::execute
+		 */
+		public function plugin($plugin){
+			if($this->registry->is_library_loaded('Plugin')){
+				$this->registry->Plugin->execute($plugin);
+			}else{
+				return false;
+			}
+		}
+
 	}
 
 ?>

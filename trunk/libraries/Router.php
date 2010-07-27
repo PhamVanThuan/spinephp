@@ -167,6 +167,9 @@
 							. "Controller</strong>.", E_USER_ERROR);
 					}
 
+					// Run any hooks on Controller.before
+					Hooks::run('Controller.before');
+
 					// Instantiate the default controller
 					$cn_controller = ucfirst(strtolower(Config::read('General.default_controller'))) . 'Controller';
 					$controller = new $cn_controller();
@@ -200,6 +203,9 @@
 				if(!class_exists($cn_controller, false)){
 					trigger_error("Could not find the controller class <strong>" . $cn_controller . "</strong>.", E_USER_ERROR);
 				}
+
+				// Run any hooks on Controller.before
+				Hooks::run('Controller.before');
 
 				// Instantiate the controller
 				$controller = new $cn_controller();
@@ -240,7 +246,7 @@
 				* if the method_overwrite property is set to true, we can hand straight to the index
 				* method.
 				*/
-				if(isset($controller->enable_method_overwrite) && $this->registry->controller->enable_method_overwrite === true){
+				if(isset($controller->enable_method_overwrite) && $controller->enable_method_overwrite === true){
 					$controller->index();
 				}else{
 					// No overwriting, make sure that the method we want exists.

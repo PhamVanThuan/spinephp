@@ -42,25 +42,22 @@
 
 			// Let's gather up the important libraries and start them up.
 			// There libraries need the Registry passed to them.
-			require_once(LIB_PATH . 'Object.php');
-			require_once(LIB_PATH . 'Router.php');
-			require_once(LIB_PATH . 'Template.php');
-			require_once(LIB_PATH . 'Helpers.php');
 			require_once(LIB_PATH . 'Controller.php');
+			require_once(LIB_PATH . 'Object.php');
+
+			$this->load_library('Router');
+			$this->load_library('Template');
+			$this->load_library('Helpers');
+			$this->load_library('Plugin');
 
 			// Set the error handler, before running any classes.
 			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
 
-			$this->Router = new Router;
-			$this->Template = new Template;
-			$this->Helpers = new Helpers;
-
 			// Autoload any plugins.
 			$plugins = Config::read('Plugin.load');
 			if(!empty($plugins)){
-				$this->load_library('Plugin');
 				foreach($plugins as $plugin){
-					$this->Plugin->load_plugin($plugin);
+					$this->Plugin->load($plugin);
 				}
 			}
 
@@ -86,13 +83,14 @@
 			// The router can now do its magic.
 			$this->Router->route();
 
-			trigger_error('Poop', E_USER_ERROR);
-
 			// Check if we have a cached copy before dispatching.
 			if($this->Template->render_cache($this->Router->uri()) === false){
 				// No cached copy.
 				// Dispatch to the controller.
 				$this->Router->dispatch($this->Router->request['controller'], true);
+
+				// Run any hooks on Controller.after
+				Hooks::run('Controller.after');
 
 				// All good to send to the renderer, not called in destruct because if
 				// we encounter errors it'll still be called in the destruct.
@@ -251,6 +249,9 @@
 			if($this->is_database_loaded('DB')){
 				$this->DB->close();
 			}
+
+			// Run any hooks on System.after
+			Hooks::run('System.after');
 		}
 
     }

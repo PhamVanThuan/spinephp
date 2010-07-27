@@ -113,10 +113,6 @@
 			}
 		}
 
-		public function parse_attributes($attr){
-			
-		}
-
 	}
 
 ?>

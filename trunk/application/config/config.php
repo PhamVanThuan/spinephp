@@ -117,9 +117,29 @@
 	 *
 	 * A list of plugins to load when the system starts up.
 	 * Format:
-	 * array('plugin_name', array('plugin_folder','plugin_name'));
+	 * array('plugin_name', 'folder_name/plugin_name');
 	 */
-	Config::write('Plugin.load', array('geshi'));
+	Config::write('Plugin.load', array('geshi/geshi'));
+
+	/**
+	 * Hooks Load
+	 *
+	 * A list of hooks to load.
+	 * Format:
+	 * array(
+	 *		array(
+	 *			'hook' => 'Hook.type',
+	 *			'name' => 'HookName',
+	 *			'file' => 'file_name'
+	 *		),
+	 *		array(
+	 *			'hook' => 'Hook.type',
+	 *			'name' => 'HookName',
+	 *			'file' => 'folder_name/file_name'
+	 *		)
+	 * )
+	 */
+	Config::write('Hooks.load', array());
 
     /**
      * Library Auto Loading

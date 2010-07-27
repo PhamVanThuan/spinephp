@@ -75,6 +75,9 @@
 
 				$this->load_model($this->name);
 			}
+
+			// Run any hooks on Controller.afterConstruct
+			Hooks::run('Controller.afterConstruct');
 		}
 
 		/**
@@ -146,6 +149,15 @@
 			}else{
 				return null;
 			}
+		}
+
+		/**
+		 * load_plugin
+		 *
+		 * Alias of Plugin::load
+		 */
+		public function load_plugin($plugin){
+			$this->registry->Plugin->load($plugin);
 		}
 
 		/**

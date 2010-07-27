@@ -20,32 +20,42 @@
 		public $loaded_plugins = array();
 
 		/**
-		 * load_plugin
+		 * load
 		 *
-		 * Loads a plugin from the /plugins folder, calls the set_hooks method
-		 * to set any hooks which are to run on the system.
+		 * Loads a plugin from the /plugins folder.
+		 * If the plugin has a set_hooks method we can set
+		 * its hooks now. Otherwise it'll be called on later.
 		 *
 		 * @param mixed $plugin
 		 * @return boolean
 		 */
-		public function load_plugin($plugin){
-			if(is_array($plugin)){
-				list($folder, $plugin) = $plugin;
-			}else{
-				$folder = $plugin;
-			}
-			
-			if(file_exists(PLUGIN_PATH . $folder . '/' . $plugin . '.plugin.php')){
-				@require_once(PLUGIN_PATH . $folder . '/' . $plugin . '.plugin.php');
+		public function load($plugin){
+			if(file_exists(PLUGIN_PATH . $plugin . '.plugin.php')){
+				@require_once(PLUGIN_PATH . $plugin . '.plugin.php');
 
-				$cn_plugin = ucfirst(strtolower($plugin)) . 'Plugin';
+				$cn_plugin = array_pop(explode('/', $plugin));
+				$cn_plugin = ucfirst(strtolower($cn_plugin)) . 'Plugin';
 				if(class_exists($cn_plugin, false)){
-					$loaded_plugins[$plugin] = new $cn_plugin;
-					$loaded_plugins[$plugin]->set_hooks();
+					$this->loaded_plugins[array_pop(explode('/', $plugin))] = new $cn_plugin;
+
+					// Does the plugin have any hooks?
+					if(method_exists($this->loaded_plugins[array_pop(explode('/', $plugin))], 'set_hooks')){
+						$this->loaded_plugins[array_pop(explode('/', $plugin))]->set_hooks();
+					}
 				}
 			}
 
 			return false;
+		}
+
+		public function execute($plugin){
+			if(isset($this->loaded_plugins[$plugin])){
+				// The plugin has been loaded.
+				// Execute the plugin.
+				$this->loaded_plugins[$plugin]->execute();
+			}else{
+				trigger_error('Failed to execute a non-loaded plugin (<strong>' . $plugin . '</strong>).', E_USER_ERROR);
+			}
 		}
 
 	}
