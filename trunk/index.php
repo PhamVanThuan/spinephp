@@ -42,7 +42,7 @@
 	 * The name of the tmp folder, by default this is tmp.
 	 * If you have changed the name of the folder, change it here.
 	 */
-	$tmp_directory = 'temp';
+	$tmp_directory = 'tmp';
 
 	/**
 	* DB Directory
