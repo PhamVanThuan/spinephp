@@ -39,7 +39,7 @@
 		public static $run_errors = array();
 		public static $recursive = 0;
 
-		public static function trigger($message, $code, $file = null, $line = null){
+		public static function trigger($message, $code = E_USER_ERROR, $file = null, $line = null){
 			// Write to the log file.
 			write_log(self::$levels[$code], $message);
 

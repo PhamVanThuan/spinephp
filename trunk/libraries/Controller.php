@@ -91,12 +91,12 @@
 		 *
 		 * Alias of Template::write
 		 *
-		 * @param string $section the section to write to
+		 * @param string $variable the tpl variable to write to
 		 * @param string $content the content to write to the section
 		 * @param boolean $overwrite if section value is overwitten
 		 */
-		public function write($section, $content, $overwrite = false){
-			$this->registry->Template->write($section, $content, $overwrite);
+		public function write($variable, $content, $overwrite = false){
+			$this->registry->Template->write($variable, $content, $overwrite);
 		}
 
 		/**
@@ -105,23 +105,21 @@
 		 * Similar to write, except this allows you to write a view file to a section.
 		 * Although possible with write, it requires a few extra lines.
 		 *
-		 * @param string $section name of section
+		 * @param string $variable name of variable
 		 * @param string $view name of view file to load
-		 * @param array $variables array of variables to set in view file
+		 * @param array $params array of params to set in view file
 		 * @param boolean $overwrite if section value is overwritten
 		 */
-		public function write_view($section, $view, $variables = array(), $overwrite = false){
-			$this->registry->Template->write($section, $this->View->load($view, $variables), $overwrite);
+		public function write_view($variable, $view, $params = array(), $overwrite = false){
+			$this->registry->Template->write($variable, $this->View->load($view, $params), $overwrite);
 		}
 
 		/**
 		 * set_header
 		 *
 		 * Alias of Template::set_header
-		 *
-		 * @param array $header the header array to be set
 		 */
-		public function set_header($action, $string = '', $replace = false){
+		public function set_header($action, $string = null, $replace = false){
 			$this->registry->Template->set_header($action, $string, $replace);
 		}
 
@@ -174,58 +172,10 @@
 		 * @return boolean on failure
 		 */
 		public function redirect($url, $exit = true){
-			if(is_array($url)){
-				// The URL is formatted in an array.
-				
-				if(!isset($url['controller'])){
-					return false;
-				}
-				if(!isset($url['action']) && count($url) > 1){
-					// If no action was set, and there is something else in the URL
-					// we need to manually add in an action if using query string, default to index.
-					$url = array_slice($url, 0, 1, true) + array('action' => 'index') + array_slice($url, 1, null, true);
-				}
-
-				$replacers = array(
-					'controller' => 'c',
-					'action' => 'm'
-				);
-				
-				if(Config::read('General.enable_query_string')){
-					// Query String is enabled, let's build it.
-					$tmp = array();
-					foreach($url as $key => $value){
-						$tmp[] = (isset($replacers[$key]) ? $replacers[$key] : $key) . '=' . $value;
-					}
-					$url = 'index.php?' . implode('&', $tmp);
-				}else{
-					// Pretty URLs, a lot nicer.
-					$url = implode('/', $url);
-				}
-
-				if(isset($url)){
-					header('Location: ' . Config::read('General.system_url') . $url);
-					if($exit){
-						exit;
-					}
-				}
-			}else{
-				// The URL is a string, determine if it is a relative or absolute url.
-				$check = parse_url($url);
-				if(isset($check['scheme']) || isset($check['host'])){
-					// It's an absolute URL
-					header('Location: ' . $url);
-					if($exit){
-						exit;
-					}
-				}else{
-					// It's a relative URL
-					$url = (substr($url, 0, 1) === '/' ? substr($url, 1) : $url);
-					header('Location: ' . Config::read('General.system_url') . $url);
-					if($exit){
-						exit;
-					}
-				}
+			$url = $this->registry->Router->build_url($url);
+			header("Location: " . $url);
+			if($exit === true){
+				exit;
 			}
 		}
 
@@ -248,7 +198,7 @@
 			if(file_exists(APP_PATH . 'models/' . $model . '.model.php')){
 				require(APP_PATH . 'models/' . $model . '.model.php');
 			}else{
-			// Couldn't find it there, perhaps they have nested it inside a folder.
+			// Couldn't find it there, perhaps they have nested it inside a folder but forgot to specify.
 				if(file_exists(APP_PATH . 'models/' . $model . '/' . $model . '.model.php')){
 					require(APP_PATH . 'models/' . $model . '/' . $model . 'model.php');
 				}
