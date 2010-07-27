@@ -7,7 +7,17 @@
      * to create a new abstract class for every single thing, and two.. I don't know.
      * This is, as I said, a general abstract class. Basically implements the Registry,
      * and that's about it. Most libraries extend it.
-     */
+     *
+	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	 *
+	 * Licensed under the MIT License.
+	 * Redistribution of files must retain the above copyright notice.
+	 *
+	 * @copyright	Copyright 2010, Jason Lewis
+	 * @link		(http://www.spinephp.org)
+	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 */
+	
     abstract class Object {
 
 		protected $registry;

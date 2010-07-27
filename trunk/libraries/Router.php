@@ -1,12 +1,21 @@
 <?php
 
-    /**
-    * Router.php
-    *
-    * Handles the requested URI. So it takes the input and determines
-    * what the hell is going to happen. Turns all the jargon into
-    * a nicely formatted array and such.
-    */
+	/**
+     * Router.php
+     *
+     * Handles the requested URI. So it takes the input and determines
+     * what the hell is going to happen. Turns all the jargon into
+     * a nicely formatted array and such.
+	 *
+	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	 *
+	 * Licensed under the MIT License.
+	 * Redistribution of files must retain the above copyright notice.
+	 *
+	 * @copyright	Copyright 2010, Jason Lewis
+	 * @link		(http://www.spinephp.org)
+	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 */
 
     class Router extends Object {
 

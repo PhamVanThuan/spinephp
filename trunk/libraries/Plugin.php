@@ -4,6 +4,15 @@
 	 * Plugin.php
 	 *
 	 * Handles plugin requests, loads plugins, executes plugins etc.
+	 *
+	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	 *
+	 * Licensed under the MIT License.
+	 * Redistribution of files must retain the above copyright notice.
+	 *
+	 * @copyright	Copyright 2010, Jason Lewis
+	 * @link		(http://www.spinephp.org)
+	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
 	 */
 
 	class Plugin extends Object {

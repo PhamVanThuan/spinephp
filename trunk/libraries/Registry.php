@@ -1,14 +1,23 @@
 <?php
 
     /**
-    * Registry.php
-    *
-    * This file is the front controller for the system.
-    * Loads up all bare minimum requirements to run the system, if something
-    * else is needed, will be loaded when needed.
-    * Everything is stored in the $registry, so we don't pollute the global
-    * namespace. Makes it all nice and clean.
-    */
+     * Registry.php
+     *
+     * This file is the front controller for the system.
+     * Loads up all bare minimum requirements to run the system, if something
+     * else is needed, will be loaded when needed.
+     * Everything is stored in the $registry, so we don't pollute the global
+     * namespace. Makes it all nice and clean.
+	 *
+	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	 *
+	 * Licensed under the MIT License.
+	 * Redistribution of files must retain the above copyright notice.
+	 *
+	 * @copyright	Copyright 2010, Jason Lewis
+	 * @link		(http://www.spinephp.org)
+	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 */
 
     class Registry {
 

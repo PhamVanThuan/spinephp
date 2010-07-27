@@ -1,17 +1,26 @@
 <?php
 
-  /**
-   * Template.php
-   *
-   * This little puppy is what makes it all pretty!
-   * Takes everything from the view and hay-presto, bam! It shows it all
-   * to the user.
-   *
-   * For help with templating, read up on it in the docs.
-   *
-   * Also handles page caching, to maximise performance, if you're that
-   * way inclined.
-   */
+	/**
+	 * Template.php
+	 *
+	 * This little puppy is what makes it all pretty!
+	 * Takes everything from the view and hay-presto, bam! It shows it all
+	 * to the user.
+	 *
+	 * For help with templating, read up on it in the docs.
+	 *
+	 * Also handles page caching, to maximise performance, if you're that
+	 * way inclined.
+	 *
+	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	 *
+	 * Licensed under the MIT License.
+	 * Redistribution of files must retain the above copyright notice.
+	 *
+	 * @copyright	Copyright 2010, Jason Lewis
+	 * @link		(http://www.spinephp.org)
+	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 */
 
     class Template extends Object {
 
