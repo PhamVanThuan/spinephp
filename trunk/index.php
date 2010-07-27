@@ -1,5 +1,4 @@
 <?php
-	// A change.
 	
 	/**
 	 * SpinePHP: An Open Source Framework, developed in PHP5 and released
