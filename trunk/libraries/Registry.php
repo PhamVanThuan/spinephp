@@ -62,7 +62,7 @@
 			}
 
 			// Autoload any libraries.
-			$libraries = Config::read('Library.autoload');
+			$libraries = Config::read('Library.load');
 			if(!empty($libraries)){
 				foreach($libraries as $library){
 					$this->load_library($library);

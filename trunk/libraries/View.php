@@ -49,10 +49,6 @@
 				if(!empty($helpers)){
 					foreach($helpers as $key => $val){
 						$$key = $val;
-
-						// Make an all lowercase alias as well.
-						$key = strtolower($key);
-						$$key = $val;
 					}
 				}
 

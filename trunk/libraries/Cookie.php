@@ -26,13 +26,9 @@
 		 * @param string $name The dot array of the cookie to write
 		 * @param string $value The value of the cookie
 		 * @param array $expire An array of when the cookie will expire
-		 * @param string $path The cookie path
-		 * @param string $domain The cookie domain
-		 * @param boolean $secure Secure
-		 * @param boolean $httponly HttpOnly
 		 * @return boolean
 		 */
-		public function write($name, $value = '', $expire = array('year' => 0, 'month' => 0, 'day' => 0, 'hour' => 0, 'min' => 0, 'sec' => 0)){
+		public function write($name, $value = null, $expire = array('year' => 0, 'month' => 0, 'day' => 0, 'hour' => 0, 'min' => 0, 'sec' => 0)){
 			if(empty($name)){
 				return false;
 			}

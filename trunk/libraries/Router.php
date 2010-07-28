@@ -131,8 +131,9 @@
 			}
 
 			// Now to find the controller.
-			$fn_controller = strtolower($controller);
-			$cn_controller = ucfirst(strtolower($controller)) . 'Controller';
+			$controller = explode('-', strtolower($controller));
+			$fn_controller = implode('_', $controller);
+			$cn_controller = implode('', array_map('ucfirst', $controller)) . 'Controller';
 
 			// Sometimes the controller may already be loaded.
 			// For instance if using 'request' in a section.
@@ -155,60 +156,44 @@
 
 				// Could not locate a controller, perhaps try a method in the default controller?
 				if(!file_exists(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.controller.php')
-					|| $allow_default === false){
-						trigger_error("Could not find requested controller <strong>" . $cn_controller . "</strong>.\nLocation: '" . BASE_PATH
-							. APP_PATH . "controllers/" . $fn_controller . ".controller.php'", E_USER_ERROR);
+					|| $allow_default === false || Config::read('General.enable_method_fallback') === false){
+						trigger_error("Could not find requested controller <strong>" . $cn_controller . "</strong>.<br />Location: " . BASE_PATH
+							. APP_PATH . "controllers/" . $fn_controller . ".controller.php", E_USER_ERROR);
 				}else{
 					require(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.controller.php');
-
-					if(!class_exists(ucfirst(strtolower(Config::read('General.default_controller'))) . 'Controller', false)){
-						trigger_error("Could not find the controller class <strong>" 
-							. ucfirst(strtolower(Config::read('General.default_controller')))
-							. "Controller</strong>.", E_USER_ERROR);
-					}
 
 					// Run any hooks on Controller.before
 					Hooks::run('Controller.before');
 
 					// Instantiate the default controller
-					$cn_controller = ucfirst(strtolower(Config::read('General.default_controller'))) . 'Controller';
-					$controller = new $cn_controller();
-
-					// Set the fallback to the global fallback variable.
-					$fallback = Config::read('General.enable_method_callback');
-
-					// Check if the global value has been overwritten by the local value
-					if(isset($controller->enable_method_fallback)){
-						if($controller->enable_method_fallback === false){
-							trigger_error("Could not find requested controller <strong>"
-							. $cn_controller . "</strong>.\nLocation: '" . BASE_PATH
-							. APP_PATH . "controllers/" . $fn_controller . ".controller.php'", E_USER_ERROR);
-						}else{
-							$fallback = true;
-						}
-					}
-
-					// Check if there is a method by the name of the controller, falling back.
-					if(method_exists($controller, $this->request['controller']) && $fallback === true){
-						$this->request['method'] = $this->request['controller'];
-						$this->request['controller'] = Config::read('General.default_controller');
+					$cn_controller = explode('_', strtolower(Config::read('General.default_controller')));
+					$cn_controller = implode('', array_map('ucfirst', $cn_controller)) . 'Controller';
+					if(!class_exists($cn_controller, false)){
+						trigger_error("Could not find the controller class <strong>" . $cn_controller . "</strong>.", E_USER_ERROR);
 					}else{
-						trigger_error("Attempted to fall back to a method but failed to locate method in default controller", E_USER_ERROR);
+						$controller = new $cn_controller;
+
+						// Check if there is a method by the name of the controller, falling back.
+						if(method_exists($controller, $fn_controller)){
+							$this->request['method'] = $fn_controller;
+							$this->request['controller'] = Config::read('General.default_controller');
+						}else{
+							trigger_error("Attempted to fallback to a method but failed to locate <strong>" . $fn_controller . "()</strong> in default controller.", E_USER_ERROR);
+						}
 					}
 				}
 			}else{
-
 				require(APP_PATH . 'controllers/' . $folder . $fn_controller . '.controller.php');
 
 				if(!class_exists($cn_controller, false)){
 					trigger_error("Could not find the controller class <strong>" . $cn_controller . "</strong>.", E_USER_ERROR);
+				}else{
+					// Run any hooks on Controller.before
+					Hooks::run('Controller.before');
+
+					// Instantiate the controller
+					$controller = new $cn_controller;
 				}
-
-				// Run any hooks on Controller.before
-				Hooks::run('Controller.before');
-
-				// Instantiate the controller
-				$controller = new $cn_controller();
 			}
 
 			// Set the last caller property here so we can ensure we don't go on a never ending loop.
@@ -254,7 +239,7 @@
 						$controller->{$this->request['method']}();
 					}else{
 						trigger_error('Invalid method supplied. Failed to find method <strong>' . $this->request['method']
-							. '()</strong> in <strong>' . ucfirst(strtolower($this->request['controller'])) . 'Controller</strong>.', E_USER_ERROR);
+							. '()</strong> in <strong>' . $cn_controller . '</strong>.', E_USER_ERROR);
 					}
 				}
 			}

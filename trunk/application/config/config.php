@@ -71,11 +71,10 @@
 	/**
 	 * Session Timeout
 	 *
-	 * Value in seconds, the lower the value the secure the sessions
-	 * will be. Defaults to 604800, medium security.
-	 * A value of 0 will be when the users browser is closed.
+	 * Value in seconds.
+	 * A value of 0 will be when the users browser is reset.
 	 */
-	Config::write('Session.timeout', 604800);
+	Config::write('Session.timeout', 0);
 
 	/**
 	 * Cookie Path
@@ -142,7 +141,7 @@
 	Config::write('Hooks.load', array());
 
     /**
-     * Library Auto Loading
+     * Library Load
      *
      * If you want a library to auto load, for example, the Database library,
      * then specify it in this array. Any libraries in this array will be
@@ -152,7 +151,7 @@
      * want to autoload a class named MyClass, but access it by MC it would be:
      * array('MyClass', 'MC')
      */
-    Config::write('Library.autoload', array('Session','Cookie','Breadcrumbs'));
+    Config::write('Library.load', array('Session',array('Cookie', 'C'),'Breadcrumbs'));
 
 	/**
 	 * Set Controller Libraries
@@ -160,9 +159,6 @@
 	 * This option makes all libraries easily accessible by controllers.
 	 * Instead of accessing via: $this->registry->Router
 	 * It can be accessed via: $this->Router
-	 *
-	 * This should be used on smaller applications only, as it may break in
-	 * larger applications.
 	 */
 	Config::write('Library.set_controller', false);
 

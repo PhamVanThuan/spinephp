@@ -20,12 +20,6 @@
 		public $enable_model_autoload = true;
 
 		/**
-		 * Overwrite the global fallback option. Useful only in the default controller, where
-		 * you want to fallback to a method by the name of the requested controller.
-		 */
-		public $enable_method_fallback = true;
-
-		/**
 		 * Enable the system to use the index method as a means of dispatching. If you
 		 * want to manually handle how a method is run, enabling this means that no matter what
 		 * method is entered, the index method will always be called. This allows for complete

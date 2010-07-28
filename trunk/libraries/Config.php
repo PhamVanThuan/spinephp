@@ -20,7 +20,8 @@
 	class Config {
 
 		public static $config;
-
+		public static $changes = array();
+		
 		/**
 		 * get_instance
 		 *
@@ -28,7 +29,9 @@
 		 * variables from the config file.
 		 */
 		public static function get_instance(){
-			load_config();
+			if(empty(Config::$config)){
+				load_config();
+			}
 		}
 
 		/**
@@ -52,19 +55,26 @@
 		 * write
 		 *
 		 * Write a value to a config option, applies only to the runtime of script.
-		 * Values are reset at the end of the script execution.
+		 * Values are reset at the end of the script execution. If $config_allow_save
+		 * is set to true and Config::save() is called, those settings will be saved
+		 * to the config file.
 		 *
 		 * @param string $path
 		 * @param mixed $value
+		 * @param boolean $config_allow_save
 		 * @return boolean
 		 */
-		public function write($path, $value){
+		public static function write($path, $value, $config_allow_save = false){
 			$path = explode('.', $path);
 			$vars = & Config::$config;
 
 			foreach($path as $i => $key){
 				if($i === count($path) - 1){
 					$vars[$key] = $value;
+					if($config_allow_save === true){
+						Config::$changes[] = implode('.', $path);
+					}
+
 					return true;
 				}else{
 					if(!isset($vars[$key])){
@@ -76,6 +86,60 @@
 			}
 
 			return false;
+		}
+
+		/**
+		 * save
+		 *
+		 * Allows any config variables that were written to with the save
+		 * parameter to be saved to the config file.
+		 *
+		 * @return boolean
+		 */
+		public static function save(){
+			if(!empty(Config::$changes)){
+				// We have some changes to save.
+				$config_file_contents = file_get_contents(APP_PATH . 'config/config.php');
+				foreach(Config::$changes as $variable){
+					if(preg_match("#Config\:\:write\(['\"]?" . $variable . "['\"]?,\s?['\"]?(.*?)['\"]?\)#msi", $config_file_contents, $match)){
+
+						// Determine the value.
+						$value = Config::read($variable);
+						if(is_bool($value)){
+							$value = $value === true ? 'true' : 'false';
+						}elseif(is_array($value)){
+							$value = Config::array_clean(var_export($value, true));
+						}
+
+						$config_file_contents = preg_replace("#(Config\:\:write\(['\"]?" . $variable . "['\"]?),\s?['\"]?(.*?)['\"]?\){1};#msi", "\\1, " . $value . ");", $config_file_contents);
+					}
+				}
+
+				$handle = fopen(APP_PATH . 'config/config.php', 'w');
+				if(!fwrite($handle, $config_file_contents)){
+					return false;
+				}
+				fclose($handle);
+
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		/**
+		 * array_clean
+		 *
+		 * Cleans an array converted to string via var_export.
+		 *
+		 * @param string $array
+		 * @return string
+		 */
+		public static function array_clean($array){
+			$array = str_replace(array("\r\n","\n","\t"), '', $array);
+			$array = preg_replace("#\s\s+#", " ", $array);
+			$array = str_replace(array("array ( ", ",)", ", )"), array("array(", ")", ")"), $array);
+			return $array;
 		}
 
 	}
