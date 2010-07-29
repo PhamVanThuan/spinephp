@@ -16,17 +16,17 @@
 	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
 	 */
 
-	 class Helpers extends Object {
+	 class Helpers {
 
 		/**
-		 * load_helpers
+		 * load
 		 *
 		 * Load any helpers
 		 *
 		 * @param array $helpers array of helpers to load
 		 * @return array
 		 */
-		public function load_helpers($helpers){
+		public function load($helpers){
 			$rt_helpers = array();
 			foreach($helpers as $helper){
 
@@ -44,7 +44,7 @@
 
 					if(!class_exists($cn_helper, false)){
 						require(APP_PATH . 'helpers/' . $fn_helper . '.helper.php');
-						$rt_helpers[$helper] = new $cn_helper($this->registry);
+						$rt_helpers[$helper] = new $cn_helper($this->spine);
 
 						// Some Helpers may want to load there own Helpers, lets do that. Recursion!
 						if(isset($rt_helpers[$helper]->helpers)){
@@ -111,6 +111,19 @@
 					return SYS_URL . implode('/', array_clean(explode('/', $url)));
 				}
 			}
+		}
+
+		public function parse_attributes($attr){
+			if(!is_array($attr) || empty($attr)){
+				return null;
+			}
+
+			$tmp = array();
+			foreach($attr as $attribute => $value){
+				$tmp[] = $attribute . '="' . $value . '"';
+			}
+			$string = implode(' ', $tmp);
+			return $string;
 		}
 
 	}

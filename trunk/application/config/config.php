@@ -137,7 +137,13 @@
 	 *		)
 	 * )
 	 */
-	Config::write('Hooks.load', array());
+	Config::write('Hooks.load', array(
+		array(
+			'hook' => 'Controller.afterConstruct',
+			'name' => 'smarty',
+			'file' => 'smarty'
+		)
+	));
 
     /**
      * Library Load
@@ -150,7 +156,7 @@
      * want to autoload a class named MyClass, but access it by MC it would be:
      * array('MyClass', 'MC')
      */
-    Config::write('Library.load', array('Session',array('Cookie', 'C'),'Breadcrumbs'));
+    Config::write('Library.load', array('Session','Cookie','Breadcrumbs'));
 
 	/**
 	 * Set Controller Libraries
@@ -171,6 +177,18 @@
 	 * file to load.
      */
 	Config::write('Template.default_template', array('default','html'));
+
+	/**
+	 * Template Parser
+	 *
+	 * If you wish to use a template parser, such as Smarty, you can specify it in here.
+	 * All parsers should be placed in the /application/templates/parser directory.
+	 * If your parser is in a subfolder of /parser, be sure to specify it. The second
+	 * element in the array is the name of the class that will be run.
+	 *
+	 * See the docs for more information on parsers.
+	 */
+	Config::write('Template.parser', array());
 
 	/**
 	 * Template Helpers

@@ -1,12 +1,12 @@
 <?php
 
     /**
-     * Registry.php
+     * Spine.php
      *
      * This file is the front controller for the system.
      * Loads up all bare minimum requirements to run the system, if something
      * else is needed, will be loaded when needed.
-     * Everything is stored in the $registry, so we don't pollute the global
+     * Everything is stored in the $spine, so we don't pollute the global
      * namespace. Makes it all nice and clean.
 	 *
 	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
@@ -19,19 +19,10 @@
 	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
 	 */
 
-    class Registry {
+    class Spine {
 
 		public $controller;
-		public $Errors;
-		public $Router;
-		public $Template;
-		public $Helpers;
-		public $libraries = array(
-			'Errors',
-			'Router',
-			'Template',
-			'Helpers'
-		);
+		public $libs;
 		public static $_this;
 
 		public function __construct(){
@@ -71,11 +62,10 @@
 
 			// Automatically connect to MySQL?
 			if(Config::read('Database.enable_auto_connect')){
-				if($this->is_database_loaded('DB', true)){
-
+				if($this->is_database_loaded('Database', true)){
 					// Connect if it's not MySQLi, MySQLi connects by default.
 					if(Config::read('Database.driver') != 'mysqli'){
-						$this->DB->connect();
+						$this->Database->connect();
 					}
 				}
 			}
@@ -87,14 +77,10 @@
 			if($this->Template->render_cache($this->Router->uri()) === false){
 				// No cached copy.
 				// Dispatch to the controller.
-				$this->Router->dispatch($this->Router->request['controller'], true);
+				$this->Router->dispatch($this->Router->request['controller'], true, null, true);
 
 				// Run any hooks on Controller.after
 				Hooks::run('Controller.after');
-
-				// All good to send to the renderer, not called in destruct because if
-				// we encounter errors it'll still be called in the destruct.
-				$this->Template->prepare_render();
 			}
 
 		}
@@ -123,8 +109,8 @@
 			$driver = Config::read('Database.driver');
 			if(file_exists(DB_PATH . $driver . '/Database.php')){
 				require(DB_PATH . $driver . '/Database.php');
-				
-				if(class_exists($class, false)){
+
+				if(isset($this->{$class})){
 					return true;
 				}else{
 					if($load){
@@ -161,19 +147,11 @@
 		 * @return mixed
 		 */
 		public function is_library_loaded($library, $load_library = false, $return_new_object = false, $instantiate_library = true){
-			if(is_array($library)){
-				$cn_library = $library[1];
-				$fn_library = $library[0];
-			}else{
-				$cn_library = $library;
-				$fn_library = $library;
-			}
-
-			if(in_array($fn_library, get_declared_classes())){
+			if(in_array($library, get_declared_classes())){
 				// Library has been loaded before, so no need to include the file again.
 				if($return_new_object === true){
 					// Return a new object of the library.
-					return $this->load_library($library, true, true);
+					return $this->libs[$library];
 				}else{
 					return true;
 				}
@@ -181,10 +159,10 @@
 				if($load_library === true){
 					if($return_new_object === true){
 						// They want to load the library and return the object
-						return $this->load_library($library, true, false);
+						return $this->load_library($library, true, $instantiate_library);
 					}else{
 						// They want to just load the library.
-						$this->load_library($library, false, false, $instantiate_library);
+						$this->load_library($library, false, $instantiate_library);
 					}
 				}else{
 					return false;
@@ -203,37 +181,28 @@
 		 * @param boolean $instantiate_library if the library is to be instantiated
 		 * @return mixed
 		 */
-		public function load_library($library, $return_new_object = false, $library_file_loaded = false, $instantiate_library = true){
-			if(is_array($library)){
-				$cn_library = $library[1];
-				$fn_library = $library[0];
-			}else{
-				$cn_library = $library;
-				$fn_library = $library;
-			}
-
-			if(!file_exists(LIB_PATH . $fn_library . '.php')){
-				trigger_error('Could not find the requested library file ' . BASE_PATH . LIB_PATH . $fn_library . '.php', E_USER_ERROR);
+		public function load_library($library, $return_new_object = false, $instantiate_library = true){
+			if(!file_exists(LIB_PATH . $library . '.php')){
+				trigger_error('Could not find the requested library file ' . BASE_PATH . LIB_PATH . $library . '.php', E_USER_ERROR);
 			}else{
 				// Only load the library file if it hasn't been loaded before.
-				if($library_file_loaded === false){
-					require(LIB_PATH . $fn_library . '.php');
+				if(!in_array($library, array_map('basename', get_included_files()))){
+					require(LIB_PATH . $library . '.php');
 				}
 
-				if(!class_exists($fn_library, false)){
-					trigger_error('Could not find the requested library class <strong>' . $fn_library . '</strong>.', E_USER_ERROR);
+				if(!class_exists($library, false)){
+					trigger_error('Could not find the requested library class <strong>' . $library . '</strong>.', E_USER_ERROR);
 				}
-
-				// Add it to the loaded libraries array.
-				$this->libraries[] = $cn_library;
 
 				if($return_new_object === false && $instantiate_library === true){
 					// Create the new object then return true.
-					$this->{$cn_library} = new $fn_library;
+					$this->libs[$library] = new $library;
+					$this->{$library} = $this->libs[$library];
 					return true;
 				}elseif($instantiate_library === true){
 					// Return a new object.
-					return new $fn_library;
+					$this->libs[$library] = new $library;
+					return $this->libs[$library];
 				}
 			}
 		}
@@ -255,7 +224,4 @@
 		}
 
     }
-
-    // Fire it up baby! Ooww!
-    $registry = new Registry;
 ?>

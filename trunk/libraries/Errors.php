@@ -77,35 +77,35 @@
 				}
 
 				// Great, found some errors along the way.
-				$registry = Registry::get_instance();
-				$tpl = $registry->Template->get_template();
+				$spine = Spine::get_instance();
+				$tpl = $spine->Template->get_template();
 				
 				// Is there an errors template?
 				if(file_exists(APP_PATH . 'templates/' . $tpl['folder'] . '/error.php')){
 					// Set the new template.
-					$registry->Template->set_template('error');
+					$spine->Template->set_template('error');
 
 					// Write to the template variables.
-					$registry->Template->write('code', self::$run_errors[0]['code'], true);
-					$registry->Template->write('message', self::$run_errors[0]['message'], true);
+					$spine->Template->write('code', self::$run_errors[0]['code'], true);
+					$spine->Template->write('message', self::$run_errors[0]['message'], true);
 
 					if(!empty(self::$run_errors[0]['line']) && !empty(self::$run_errors[0]['file'])){
-						$registry->Template->write('details', 'Found in ' . self::$run_errors[0]['file'] . ' on line ' . self::$run_errors[0]['line'], true);
+						$spine->Template->write('details', 'Found in ' . self::$run_errors[0]['file'] . ' on line ' . self::$run_errors[0]['line'], true);
 					}else{
-						$registry->Template->write('details', '', true);
+						$spine->Template->write('details', '', true);
 					}
 
-					$registry->Template->write('errnum', count(self::$run_errors), true);
+					$spine->Template->write('errnum', count(self::$run_errors), true);
 
 					if(count(self::$run_errors) > 1){
-						$registry->Template->write('remainder', array_slice(self::$run_errors, 1), true);
+						$spine->Template->write('remainder', array_slice(self::$run_errors, 1), true);
 					}
 
 					// Reset the errors, so that this isn't run again.
 					self::$run_errors = array();
 
 					// Reset the render.
-					$registry->Template->prepare_render();
+					$spine->Template->prepare();
 				}else{
 					// No template file, just die with the error message.
 					// Not the prettiest, but...
@@ -113,64 +113,5 @@
 				}
 			}
 		}
-
-		/**
-		* display_error
-		*
-		* Displays a nice error page, also sends the information to the
-		* write_log function in Common.php. This method uses the :: operator,
-		* mainly because it is set as the error handler, and you can't pass
-		* a method to it because it takes a function string.
-		*
-		* @param $code int the error code
-		* @param $message string the error message to display
-		* @param $file string the file the error occurred in
-		* @param $line int the line the error occurred on
-		* @param $context string
-		*/
-		public function display_error($code, $message, $file = '', $line = '', $context = ''){
-			write_log(self::$levels[$code], $message);
-
-			if($file != ''
-				&& $line != ''){
-				$message = $message . (substr($message, -1) == '.' ? '' : '.') . '<br />Error found in <strong>' . $file . '</strong> on line <strong>' . $line . '</strong>.';
-			}
-
-			$output = "<style type=\"text/css\">
-	  body {
-		font-family: Tahoma;
-		font-size: 10pt;
-		color: #010101;
-	  }
-
-	  h1 {
-		font-size: 1.4em;
-		font-weight: bold;
-		display: block;
-		margin: 0 0 4px 0;
-	  }
-
-	  div.message {
-		border: 1px solid #CCCC66;
-		background-color: #FFFFBB;
-		padding: 4px;
-		width: 600px;
-		margin: 0 auto;
-	  }
-
-	  ol {
-		margin: 2px;
-	  }
-	</style>
-
-	<div class=\"message\">
-	  <h1>PHP:  " . self::$levels[$code] . "</h1>
-	  <p>
-		  " . nl2br($message, true) . "
-	  </p>
-	</div>";
-			die($output);
-		}
-
     }
 ?>

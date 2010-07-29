@@ -137,9 +137,9 @@
 
 			// Sometimes the controller may already be loaded.
 			// For instance if using 'request' in a section.
-			if(isset($this->registry->controller) && get_class($this->registry->controller) == $cn_controller){
+			if(isset($this->spine->controller) && get_class($this->spine->controller) == $cn_controller){
 				if($return_object === true){
-					return $this->registry->controller;
+					return $this->spine->controller;
 				}else{
 					// Abort if the controller is already loaded and not returning.
 					return false;
@@ -153,15 +153,16 @@
 			}
 
 			if(!file_exists(APP_PATH . 'controllers/' . $folder . $fn_controller . '.controller.php')){
-
 				// Could not locate a controller, perhaps try a method in the default controller?
 				if(!file_exists(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.controller.php')
 					|| $allow_default === false || Config::read('General.enable_method_fallback') === false){
 						trigger_error("Could not find requested controller <strong>" . $cn_controller . "</strong>.<br />Location: " . BASE_PATH
 							. APP_PATH . "controllers/" . $fn_controller . ".controller.php", E_USER_ERROR);
 				}else{
-					require(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.controller.php');
-
+					if(!in_array($cn_controller, get_declared_classes())){
+						require(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.controller.php');
+					}
+					
 					// Run any hooks on Controller.before
 					Hooks::run('Controller.before');
 
@@ -183,8 +184,10 @@
 					}
 				}
 			}else{
-				require(APP_PATH . 'controllers/' . $folder . $fn_controller . '.controller.php');
-
+				if(!in_array($cn_controller, get_declared_classes())){
+					require(APP_PATH . 'controllers/' . $folder . $fn_controller . '.controller.php');
+				}
+				
 				if(!class_exists($cn_controller, false)){
 					trigger_error("Could not find the controller class <strong>" . $cn_controller . "</strong>.", E_USER_ERROR);
 				}else{
@@ -203,11 +206,14 @@
 
 			// If this is coming from the registry, set the controller.
 			if($registry){
-				$this->registry->controller =& $controller;
+				$this->spine->controller =& $controller;
 			}
 
 			// Returning the new object?
 			if($return_object === true){
+				// Run any hooks on Controller.afterConstruct
+				Hooks::run('Controller.afterConstruct');
+				
 				return $controller;
 			}else{
 				/**
@@ -221,6 +227,9 @@
 				if(method_exists($controller, '__constructor')){
 					$controller->__constructor();
 				}
+
+				// Run any hooks on Controller.afterConstruct (also does after constructor)
+				Hooks::run('Controller.afterConstruct');
 
 				/**
 				* Overwriting
@@ -279,9 +288,9 @@
 						 */
 						if(in_array('all', $options)){
 							// Delete all cached files.
-							$this->registry->Template->delete_cache();
+							$this->spine->Template->delete_cache();
 						}else{
-							$this->registry->Template->delete_cache($url);
+							$this->spine->Template->delete_cache($url);
 						}
 					break;
 					// config
@@ -352,14 +361,14 @@
 						 * Format:
 						 * clear-sessions
 						 */
-						if($this->registry->is_library_loaded('Session')){
-							$this->registry->Session->destroy();
+						if($this->spine->is_library_loaded('Session')){
+							$this->spine->Session->destroy();
 						}
 					break;
 					// clear-cookies
 					case 'clear-cookies':
-						if($this->registry->is_library_loaded('Cookie')){
-							$this->registry->Cookie->clear();
+						if($this->spine->is_library_loaded('Cookie')){
+							$this->spine->Cookie->clear();
 						}
 					break;
 				}

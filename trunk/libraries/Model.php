@@ -18,14 +18,21 @@
 
     abstract class Model {
 
-		protected $registry;
+		// the spine registry
+		protected $spine;
+
+		// access to database is shortened
 		protected $DB;
 
-		public function __construct(){
-			$this->registry =& Registry::get_instance();
-			if($this->registry->is_library_loaded(array('Database', 'DB'))){
-				$this->DB = $this->registry->DB;
+		public function setup(){
+			$this->spine =& Spine::get_instance();
+			if($this->spine->is_library_loaded('Database')){
+				$this->DB = $this->spine->Database;
 			}
+		}
+
+		public function set_param($param, $value){
+			$this->params[$param] = $value;
 		}
 
     }

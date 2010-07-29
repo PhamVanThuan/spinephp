@@ -34,31 +34,32 @@
 		public $output;
 
 		/**
-		 * prepare_render
+		 * prepare
 		 *
 		 * Contains all the logic for preparing the template for rendering.
 		 * Handles any Hooks.
 		 */
-		public function prepare_render(){
+		public function prepare(){
 			if(empty($this->user_set_template)){
 				list($folder, $template) = Config::read('Template.default_template');
 			}else{
 				list($folder, $template) = $this->user_set_template;
 			}
-
-			Config::write('Template.public_url', SYS_URL . APP_PATH . 'templates/' . $folder . '/public/');
-
+			
 			if(!file_exists(APP_PATH . 'templates/' . $folder . '/' . $template . '.php')){
 				trigger_error('Could not find <strong>template.php</strong> in ' . BASE_PATH . APP_PATH . 'templates/' . $folder . '/', E_USER_ERROR);
 			}else{
 				// Load any helpers that were specified in the config
-				$helpers = $this->registry->Helpers->load_helpers(Config::read('Template.helpers'));
+				$helpers = $this->spine->Helpers->load(Config::read('Template.helpers'));
 				if(!empty($helpers)){
 					foreach($helpers as $key => $val){
 						$key = strtolower($key);
 						$$key = $val;
 					}
 				}
+
+				// Template variables also need to be set.
+				$tpl = $this->tpl;
 
 				// Firstly, let's start output buffering, so we can capture the output and perform
 				// any parsing on it.
@@ -75,9 +76,6 @@
 
 				// Run any hooks for Display.before
 				Hooks::run('Display.before');
-
-				// Peform any parsing on template contents, can use a custom parser here.
-				// Smarty or something can be implemented and set in the config or dynamically.
 
 				// Send to the render method, where the actually rendering occurs
 				$this->render($this->output);
@@ -250,12 +248,12 @@
 			if(file_exists($directory) && is_writable($directory) && Config::read('Template.enable_caching') === true){
 				$timeout = time() + ($this->cache['timeout'] * 60);
 
-				$cache_name = md5($this->registry->Router->uri());
+				$cache_name = md5($this->spine->Router->uri());
 
 				// Only write to the cache file if it doesn't exist.
 				if(!file_exists($directory . $cache_name)){
 					if($handle = @fopen($directory . $cache_name, 'w')){
-						fwrite($handle, '@CACHE_TIMEOUT:' . $timeout . ':CACHE_URI:' . $this->registry->Router->uri() . '>>>' . $contents);
+						fwrite($handle, '@CACHE_TIMEOUT:' . $timeout . ':CACHE_URI:' . $this->spine->Router->uri() . '>>>' . $contents);
 						fclose($handle);
 						@chmod($directory . $cache_name, 0755);
 					}

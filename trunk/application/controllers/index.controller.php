@@ -10,7 +10,7 @@
 	class IndexController extends Controller {
 
 		/**
-		 * Name of the controller, this is to allow autoloading of models.
+		 * Name of the controller, this is to allow autoloading of models as well as databases.
 		 */
 		public $name = 'Index';
 
@@ -35,11 +35,23 @@
 		public function index(){
 			$this->write('title', 'Welcome to Spine');
 			$this->write_view('content', 'index');
+			$this->prepare();
 		}
 
 		public function docs(){
-			$this->write('title', 'Spine Documentation');
-			$this->write_view('content', 'docs');
+			$this->redirect('http://www.spinephp.org/wiki/SpinePHP:Guide', true);
+		}
+
+		public function about(){
+			$this->write('title', 'About Spine');
+			$this->write_view('content', 'about');
+			$this->prepare();
+		}
+
+		public function test(){
+			if($this->params['request']){
+				return $this->Index->get_users();
+			}
 		}
 
 	}

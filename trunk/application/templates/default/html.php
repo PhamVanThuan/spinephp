@@ -5,7 +5,7 @@
 
 		<title>
 			<?php
-				echo $this->tpl['title'] . ' | Spine, a simple PHP framework!';
+				echo $tpl['title'] . ' | Spine PHP, a simple PHP framework!';
 			?>
 		</title>
 		
@@ -36,7 +36,7 @@
 
 				<div id="body">
 					<?php
-						echo $this->tpl['content'];
+						echo $tpl['content'];
 					?>
 				</div>
 

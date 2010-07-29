@@ -75,7 +75,7 @@
 		public function crumb($name, $url = null){
 			$this->crumbs[] = array(
 				'name' => $name,
-				'link' => empty($url) ? null : $this->registry->Router->build_url($url)
+				'link' => empty($url) ? null : $this->spine->Router->build_url($url)
 			);
 		}
 

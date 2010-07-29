@@ -19,6 +19,10 @@ p:first-child {
 	margin: 0;
 }
 
+img {
+	border: 0;
+}
+
 a {
 	color: #e27933;
 	text-decoration: none;
@@ -31,6 +35,23 @@ a:hover {
 h1#page-title {
 	font-size: 1.2em;
 	font-weight: normal;
+}
+
+.page-title {
+	display: block;
+	margin: 0 0 12px 0;
+}
+
+div#features {
+	margin: 10px 0;
+	font-size: 0.9em;
+}
+
+div#features div {
+	height: 28px;
+	line-height: 28px;
+	background: url('../img/list.png') no-repeat 0 50%;
+	padding: 0 0 0 25px;
 }
 
 div#container {
@@ -51,7 +72,7 @@ div#container div#top-bar {
 div#container div#header-container {
 	position: relative;
 	height: 110px;
-	width: 70%;
+	width: 900px;
 	margin: 0 auto;
 }
 
@@ -110,7 +131,7 @@ ul#navigation li a:hover {
 
 div#container div#body-container {
 	position: relative;
-	width: 70%;
+	width: 900px;
 	margin: 14px auto;
 	background-color: #eeeeee;
 }
@@ -171,6 +192,47 @@ div#footer div#copyright {
 	bottom: 5px;
 	width: 100%;
 	font-size: 0.8em;
+}
+
+/*
+	Index Banner Style
+*/
+
+div#index-banner {
+	width: 876px;
+	height: 250px;
+	background: url('../img/index-banner.png') no-repeat 0 0;
+	margin: 0 0 12px 0;
+	position: relative;
+}
+
+div#index-banner div#links {
+	position: absolute;
+	top: 50px;
+	right: 15px;
+	width: 240px;
+}
+
+div#index-banner div#links div {
+	margin: 0 0 8px 0;
+	color: #fff;
+}
+
+div#index-banner div#links div a {
+	color: #fff;
+	display: block;
+}
+
+div#index-banner div#links div a:hover {
+	text-decoration: underline;
+}
+
+div#index-banner div#links div#docs a, div#index-banner div#links div#forums a {
+	padding: 8px;
+}
+
+div#index-banner div#links div#docs:hover, div#index-banner div#links div#forums:hover {
+	background-color: #ca8234;
 }
 
 /*

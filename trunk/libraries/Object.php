@@ -20,10 +20,10 @@
 	
     abstract class Object {
 
-		protected $registry;
+		protected $spine;
 
 		public function __construct(){
-			$this->registry =& Registry::get_instance();
+			$this->spine =& Spine::get_instance();
 		}
 
 		/**
@@ -61,7 +61,7 @@
 			}
 
 			// Call up the dispatcher
-			$object = $this->registry->Router->dispatch($uri[0], false, null, false, true);
+			$object = $this->spine->Router->dispatch($uri[0], false, null, false, true);
 
 			// Do a check on the method
 			if(method_exists($object, $uri[1])){

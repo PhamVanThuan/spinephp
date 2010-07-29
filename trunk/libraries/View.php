@@ -17,8 +17,8 @@
 	 */
 
 	class View extends Object {
-
-		protected $loaded;
+		
+		protected $views;
 		protected $loaded_helpers = array();
 		protected $variables;
 		public $helpers;
@@ -30,22 +30,18 @@
 		 *
 		 * @param string $view name of view file
 		 */
-		public function load($view, $variables = array(), $render = false){
+		public function load($view, $render = false){
 			if(file_exists(APP_PATH . 'views/' . $view . '.view.php')){
 				
 				// If variables is passed, they want to set a few variables in the same line.
-				if(!empty($variables)){
-					foreach($variables as $var => $val){
-						$$var = $val;
-					}
-				}elseif(!empty($this->variables)){
+				if(!empty($this->variables)){
 					foreach($this->variables as $var => $val){
 						$$var = $val;
 					}
 				}
 
 				// Load any helpers.
-				$helpers = $this->registry->Helpers->load_helpers($this->helpers);
+				$helpers = $this->spine->Helpers->load($this->helpers);
 				if(!empty($helpers)){
 					foreach($helpers as $key => $val){
 						$key = strtolower($key);
@@ -53,7 +49,7 @@
 					}
 				}
 
-				if(!isset($this->loaded[$view])){
+				if(!isset($this->views[$view])){
 					// Start output buffering.
 					ob_start();
 
@@ -61,20 +57,20 @@
 					include(APP_PATH . 'views/' . $view . '.view.php');
 
 					// Sets the contents in the loaded property.
-					$this->loaded[$view] = ob_get_clean();
+					$this->views[$view] = ob_get_clean();
 
 					if($render){
 						// Render the view, send to Template render.
-						$this->registry->Template->render($this->loaded[$view]);
+						$this->spine->Template->render($this->views[$view]);
 					}else{
-						return $this->loaded[$view];
+						return $this->views[$view];
 					}
 				}else{
 					if($render){
 						// Render the view, send to Template render.
-						$this->registry->Template->render($this->loaded[$view]);
+						$this->spine->Template->render($this->views[$view]);
 					}else{
-						return $this->loaded[$view];
+						return $this->views[$view];
 					}
 				}
 
@@ -106,7 +102,7 @@
 		 * @return string
 		 */
 		public function section($name, $params = array()){
-
+			$name = str_replace('-', '_', $name);
 			if(file_exists(APP_PATH . 'views/sections/' . $name . '.section.php')){
 				// Found the section file, extract the paramaters.
 				extract($params);
@@ -130,8 +126,8 @@
 		 */
 		public function cache($timeout){
 			if($timeout > 0){
-				$this->registry->Template->cache['enabled'] = true;
-				$this->registry->Template->cache['timeout'] = $timeout;
+				$this->spine->Template->cache['enabled'] = true;
+				$this->spine->Template->cache['timeout'] = $timeout;
 			}
 		}
 
@@ -141,7 +137,7 @@
 		 * Alias of Template::set_template
 		 */
 		public function set_template($template){
-			$this->registry->Template->set_template($template);
+			$this->spine->Template->set_template($template);
 		}
 
 		/**
@@ -150,8 +146,8 @@
 		 * Alias of Plugin::execute
 		 */
 		public function plugin($plugin){
-			if($this->registry->is_library_loaded('Plugin')){
-				$this->registry->Plugin->execute($plugin);
+			if($this->spine->is_library_loaded('Plugin')){
+				$this->spine->Plugin->execute($plugin);
 			}else{
 				return false;
 			}

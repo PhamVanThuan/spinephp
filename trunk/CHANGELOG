@@ -1,0 +1,27 @@
+Spine PHP Change Log (http://www.spinephp.org/)
+---------------------------------------------------------------------------------------
+
+THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE
+
+(29th July 2010)
+-----------------------------------------------
+[new]: changelog
+[new]: Spine::Hooks. Hooks can now be added, either via plugins or as files located
+in /application/hooks.
+[new]: Spine::Plugin. Plugins can be implemented into the system, using hooks, being
+called in a controller or by using helpers.
+[new]: Template Engine support added for engines such as Smarty. Currently only been
+tested to work with the Smarty engine.
+[changed]: Registery has been changed to Spine.
+[fixed]: Spine::load_library, useless parameters removed, replaced by functions that
+can do the same thing.
+[changed]: Hook Controller.afterConstruct is now located in Spine::Router, after the
+controller has been instantiated.
+[changed]: View::load_plugin renamed to View::plugin.
+[changed]: View::$loaded renamed to View::$views.
+[changed]: Helpers::load_helpers renamed to Helpers::load.
+[changed]: Controller::load_model renamed to Controller::load.
+[new]: Added Controller::prepare.
+[changed]: Render is no longer done automatically, user must call Controller::prepare
+to initiate the rendering process.
+[fixed]: Bug when requesting a controller twice would attempt to reload the file.

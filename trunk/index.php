@@ -125,6 +125,6 @@
 	// Run any hooks for System.before
 	Hooks::run('System.before');
 
-	require_once(LIB_PATH . 'Registry.php');
-
+	require_once(LIB_PATH . 'Spine.php');
+	$spine = new Spine;
 ?>

@@ -18,7 +18,6 @@
 
 	class Session extends Object {
 
-		protected $registry;
 		protected $id;
 
 		public function __construct(){
