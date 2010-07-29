@@ -5,7 +5,7 @@
 
 		<title>
 			<?php
-				echo 'SpinePHP: ' . $breadcrumbs->_text(false);
+				echo $this->tpl['title'] . ' | Spine, a simple PHP framework!';
 			?>
 		</title>
 		
@@ -24,8 +24,10 @@
 				<div id="header-image"></div>
 				<div id="header-navigation">
 					<ul id="navigation">
-						<li><a href="">Home</a></li>
-						<li><a href="">Example</a></li>
+						<li><a href="./">Home</a></li>
+						<li><a href="./about">About Spine</a></li>
+						<li><a href="./downloads">Downloads</a></li>
+						<li><a href="./docs">Documentation</a></li>
 					</ul>
 				</div>
 			</div>

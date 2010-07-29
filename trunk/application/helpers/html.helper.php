@@ -10,7 +10,8 @@
 
 		public $html = array(
 			'link' => '<a href="%s">%s</a>',
-			'mailto' => '<a href="mailto:%s">%s</a>'
+			'mailto' => '<a href="mailto:%s">%s</a>',
+			'img' => '<img src="%s" alt="%s" title="%s" />'
 		);
 
 		/**
@@ -46,6 +47,17 @@
 			}
 
 			return sprintf($this->html['mailto'], $email, $title);
+		}
+
+		public function img($img, $alt = null, $title = null){
+			if(empty($this->registry->Template->user_set_template)){
+				list($folder, $template) = Config::read('Template.default_template');
+			}else{
+				list($folder, $template) = $this->registry->Template->user_set_template;
+			}
+
+			return sprintf($this->html['img'], SYS_URL . 'application/templates/' . $folder . '/public/img/' . $img, $alt, $title);
+			
 		}
 
 	}

@@ -46,7 +46,7 @@
      * The default controller is called when no controller is specified
      * in the URI. For instance, the user access just index.php.
      */
-    Config::write('General.default_controller', 'home');
+    Config::write('General.default_controller', 'index');
 
 	/**
 	 * Enable Method Fallback
@@ -56,10 +56,9 @@
 	 * If method fallbacking is enabled, and the controller could not be found the
 	 * system will load the default controller specified above and search for a method
 	 * called updates.
-	 * This can produce unexpected results if used incorrectly, only enable this if
-	 * you understand how it works.
+	 * This can produce unexpected results if used incorrectly.
 	 */
-	Config::write('General.enable_method_fallback', false);
+	Config::write('General.enable_method_fallback', true);
 
 	/**
 	 * Session Cookie Name
@@ -178,7 +177,7 @@
 	 *
 	 * An array of helpers to be loaded for the template to display correctly.
 	 */
-	Config::write('Template.helpers', array('Breadcrumbs'));
+	Config::write('Template.helpers', array());
 
 	/**
 	 * GZip Output Compression

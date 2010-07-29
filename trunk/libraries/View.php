@@ -48,6 +48,7 @@
 				$helpers = $this->registry->Helpers->load_helpers($this->helpers);
 				if(!empty($helpers)){
 					foreach($helpers as $key => $val){
+						$key = strtolower($key);
 						$$key = $val;
 					}
 				}
@@ -78,7 +79,7 @@
 				}
 
 			}else{
-				return false;
+				trigger_error('Could not locate requests view file in ' . APP_PATH . 'views/' . $view . '.view.php', E_USER_ERROR);
 			}
 		}
 
