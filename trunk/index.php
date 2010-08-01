@@ -88,7 +88,7 @@
 
 	if(file_exists('./install.php')){
 		// The install file exists, let's require it then die.
-		require_once('./install.php');
+		include_once('./install.php');
 		exit;
 
 		// This performs the environment tests.

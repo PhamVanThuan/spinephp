@@ -1,5 +1,5 @@
 <?php
-	if(!defined(BASE_PATH)){
+	if(!defined('BASE_PATH')){
 		die('Please do not access install.php directly, run index.php to check environment configuration.');
 	}
 	/**
