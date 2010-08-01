@@ -23,13 +23,10 @@
     /**
      * Query String
      *
-     * By default the query string is disabled, and search engine friendly
-     * URLs are used. Set this variable to true if you want your URLs like:
-     * http://www.mywebsite.com/index.php?c=controller&m=function
-     *
-     * To maintain nice looking URLs, leave this as false.
+     * By default the query string is enabled because mod_rewrite is
+	 * not available. See the Wiki for more information.
      */
-    Config::write('General.enable_query_string', false);
+    Config::write('General.enable_query_string', true);
 
     /**
      * Logging
