@@ -21,34 +21,28 @@
 
     class Spine {
 
-		public $controller;
-		public $libs;
-		public static $_this;
+		// Array consisting of libraries that have been loaded.
+		public static $libs = array();
 
-		public function __construct(){
-			self::$_this =& $this;
-
-			// Define SYS_URL
-			define('SYS_URL', Config::read('General.system_url'));
-
+		public static function run(){
 			// Let's gather up the important libraries and start them up.
 			// There libraries need the Registry passed to them.
-			require_once(LIB_PATH . 'Controller.php');
-			require_once(LIB_PATH . 'Object.php');
-
-			$this->load_library('Router');
-			$this->load_library('Template');
-			$this->load_library('Helpers');
-			$this->load_library('Plugin');
+			Spine::load('Controller');
+			Spine::load('Object');
+			Spine::load('Router');
+			Spine::load('Template');
+			Spine::load('Helpers');
+			Spine::load('Plugin');
 
 			// Set the error handler, before running any classes.
+			// Looking at changing to exceptions.
 			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
 
 			// Autoload any plugins.
 			$plugins = Config::read('Plugin.load');
 			if(!empty($plugins)){
 				foreach($plugins as $plugin){
-					$this->Plugin->load($plugin);
+					Plugin::load($plugin);
 				}
 			}
 
@@ -56,28 +50,31 @@
 			$libraries = Config::read('Library.autoload');
 			if(!empty($libraries)){
 				foreach($libraries as $library){
-					$this->load_library($library);
+					Spine::load($library);
 				}
 			}
 
 			// Automatically connect to MySQL?
 			if(Config::read('Database.enable_auto_connect')){
-				if($this->is_database_loaded('Database', true)){
+				if(Spine::database('Database', true)){
 					// Connect if it's not MySQLi, MySQLi connects by default.
-					if(Config::read('Database.driver') != 'mysqli'){
-						$this->Database->connect();
-					}
+					Database::connect();
 				}
 			}
 
+			if(Spine::loaded('Session')){
+				// Start the session.
+				(new Session);
+			}
+
 			// The router can now do its magic.
-			$this->Router->route();
+			Router::route();
 
 			// Check if we have a cached copy before dispatching.
-			if($this->Template->render_cache($this->Router->uri()) === false){
+			if(Template::render_cache(Router::get_uri()) === false){
 				// No cached copy.
 				// Dispatch to the controller.
-				$this->Router->dispatch($this->Router->request['controller'], true, null, true);
+				Router::dispatch(Router::$request['controller'], true, null, true);
 
 				// Run any hooks on Controller.after
 				Hooks::run('Controller.after');
@@ -85,49 +82,17 @@
 
 		}
 
-		/**
-		 * get_instance
-		 *
-		 * Static method to return insance of the registry object.
-		 *
-		 * @return object
-		 */
-		public static function get_instance(){
-			return self::$_this;
-		}
-
-		/**
-		 * is_database_loaded
-		 *
-		 * Detects if the database class has been loaded, if the first parameter is set to true
-		 * the database class will be loaded if not found.
-		 *
-		 * @param string $class name of the class
-		 * @param boolean $load if the database should be loaded
-		 */
-		public function is_database_loaded($class = 'Database', $load = false){
+		public static function database($class, $autoload = false){
 			$driver = Config::read('Database.driver');
 			if(file_exists(DB_PATH . $driver . '/Database.php')){
-				require(DB_PATH . $driver . '/Database.php');
 
-				if(isset($this->{$class})){
+				if(in_array('Database', array_map('basename', get_included_files()))){
+					return true;
+				}elseif($autoload === true){
+					require_once(DB_PATH . $driver . '/Database.php');
 					return true;
 				}else{
-					if($load){
-						if(Config::read('Database.driver') == 'mysqli'){
-							$this->{$class} = new Database(
-								Config::read('Database.host'),
-								Config::read('Database.username'),
-								Config::read('Database.password'),
-								Config::read('Database.dbname')
-								);
-						}else{
-							$this->{$class} = new Database;
-						}
-						return true;
-					}else{
-						return false;
-					}
+					return false;
 				}
 			}else{
 				return false;
@@ -135,35 +100,22 @@
 		}
 
 		/**
-		 * is_library_loaded
+		 * loaded
 		 *
-		 * Checks to see if a library has been loaded, can also specify to load the library automatically
-		 * if it has not been loaded or if it has you can return a new instance of the object.
+		 * Checks to see if a library has been loaded, can autoload.
 		 *
-		 * @param mixed $library the library to check
-		 * @param boolean $load_library if the library should be loaded if it isn't already
-		 * @param boolean $return_new_object return the library object
-		 * @param boolean $instantiate_library if the library is to be instantiated, only runs if library isn't loaded
-		 * @return mixed
+		 * @param string $lib
+		 * @param boolean $autoload
+		 * @return boolean
 		 */
-		public function is_library_loaded($library, $load_library = false, $return_new_object = false, $instantiate_library = true){
-			if(in_array($library, get_declared_classes())){
-				// Library has been loaded before, so no need to include the file again.
-				if($return_new_object === true){
-					// Return a new object of the library.
-					return $this->libs[$library];
-				}else{
-					return true;
-				}
+		public static function loaded($lib, $autoload = false){
+			if(in_array($lib, Spine::$libs)){
+				return true;
 			}else{
-				if($load_library === true){
-					if($return_new_object === true){
-						// They want to load the library and return the object
-						return $this->load_library($library, true, $instantiate_library);
-					}else{
-						// They want to just load the library.
-						$this->load_library($library, false, $instantiate_library);
-					}
+				// Library has not been loaded.
+				if($autoload === true){
+					// Load the library now.
+					Spine::load($lib);
 				}else{
 					return false;
 				}
@@ -171,39 +123,32 @@
 		}
 
 		/**
-		 * load_library
+		 * load
 		 *
-		 * Loads a given library and returns the object if set.
+		 * Load a library file into Spine.
 		 *
-		 * @param mixed $library the library to load
-		 * @param boolean $return_new_object return the new library object
-		 * @param boolean $library_file_loaded if the file is already loaded
-		 * @param boolean $instantiate_library if the library is to be instantiated
-		 * @return mixed
+		 * @param string $lib
+		 * @return boolean
 		 */
-		public function load_library($library, $return_new_object = false, $instantiate_library = true){
-			if(!file_exists(LIB_PATH . $library . '.php')){
-				trigger_error('Could not find the requested library file ' . BASE_PATH . LIB_PATH . $library . '.php', E_USER_ERROR);
+		public static function load($lib){
+			// Does the library file exist?
+			if(!file_exists(LIB_PATH . $lib . '.php')){
+				trigger_error('Could not find the requested library file ' . BASE_PATH . LIB_PATH . $lib . '.php', E_USER_ERROR);
 			}else{
-				// Only load the library file if it hasn't been loaded before.
-				if(!in_array($library, array_map('basename', get_included_files()))){
-					require(LIB_PATH . $library . '.php');
-				}
+				if(!in_array($lib, Spine::$libs)){
+					require_once(LIB_PATH . $lib . '.php');
 
-				if(!class_exists($library, false)){
-					trigger_error('Could not find the requested library class <strong>' . $library . '</strong>.', E_USER_ERROR);
-				}
-
-				if($return_new_object === false && $instantiate_library === true){
-					// Create the new object then return true.
-					$this->libs[$library] = new $library;
-					$this->{$library} = $this->libs[$library];
+					// Also add it to the libs array, then return true.
+					Spine::$libs[] = $lib;
+					
 					return true;
-				}elseif($instantiate_library === true){
-					// Return a new object.
-					$this->libs[$library] = new $library;
-					return $this->libs[$library];
+				}else{
+					// Library has already been loaded.
+					return true;
 				}
+
+				// Something failed, return false.
+				return false;
 			}
 		}
 

@@ -17,7 +17,8 @@
 
 	class Plugin extends Object {
 
-		public $loaded_plugins = array();
+		// Array consisting of plugins that have been loaded.
+		public static $plugins = array();
 
 		/**
 		 * load
@@ -29,18 +30,23 @@
 		 * @param mixed $plugin
 		 * @return boolean
 		 */
-		public function load($plugin){
-			if(file_exists(PLUGIN_PATH . $plugin . '.plugin.php')){
-				@require_once(PLUGIN_PATH . $plugin . '.plugin.php');
+		public static function load($plugin){
+			if(file_exists(APP_PATH . 'plugins/' . $plugin . '.plugin.php')){
+				require_once(APP_PATH . 'plugins/' . $plugin . '.plugin.php');
 
-				$cn_plugin = array_pop(explode('/', $plugin));
-				$cn_plugin = ucfirst(strtolower($cn_plugin)) . 'Plugin';
+				// The plugin class name.
+				$plugin = array_pop(explode('/', $plugin));
+				$cn_plugin = ucfirst(strtolower($plugin)) . 'Plugin';
+
+				// Does the class name exist.
 				if(class_exists($cn_plugin, false)){
-					$this->loaded_plugins[array_pop(explode('/', $plugin))] = new $cn_plugin;
+					// Place the new plugin instance into the loaded array.
+					Plugin::$plugins[$plugin] = new $cn_plugin;
 
 					// Does the plugin have any hooks?
-					if(method_exists($this->loaded_plugins[array_pop(explode('/', $plugin))], 'set_hooks')){
-						$this->loaded_plugins[array_pop(explode('/', $plugin))]->set_hooks();
+					if(method_exists(Plugin::$plugins[$plugin], 'set_hooks')){
+						// Set the relevavant hooks.
+						Plugin::$plugins[$plugin]->set_hooks();
 					}
 				}
 			}
@@ -48,11 +54,17 @@
 			return false;
 		}
 
-		public function execute($plugin){
-			if(isset($this->loaded_plugins[$plugin])){
-				// The plugin has been loaded.
-				// Execute the plugin.
-				$this->loaded_plugins[$plugin]->execute();
+		/**
+		 * execute
+		 *
+		 * Execute a plugin.
+		 *
+		 * @param string $plugin
+		 */
+		public static function execute($plugin){
+			if(isset(Plugin::$plugins[$plugin])){
+				// The plugin has been loaded. Safe to execute.
+				Plugin::$plugins[$plugin]->execute();
 			}else{
 				trigger_error('Failed to execute a non-loaded plugin (<strong>' . $plugin . '</strong>).', E_USER_ERROR);
 			}

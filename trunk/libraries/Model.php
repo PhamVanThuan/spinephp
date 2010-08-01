@@ -18,19 +18,31 @@
 
     abstract class Model {
 
-		// the spine registry
-		protected $spine;
-
-		// access to database is shortened
+		// A property to allow quicker access to DB.
 		protected $DB;
 
-		public function setup(){
-			$this->spine =& Spine::get_instance();
-			if($this->spine->is_library_loaded('Database')){
-				$this->DB = $this->spine->Database;
+		// Parameters
+		public $params = array();
+
+		/**
+		 * run
+		 *
+		 * Runs a model, setting the database and any other properties.
+		 */
+		public function run(){
+			if(Spine::loaded('Database')){
+				$this->DB = Database::get_instance();
 			}
 		}
 
+		/**
+		 * set_param
+		 *
+		 * Allows paramaters to be set.
+		 *
+		 * @param string $param
+		 * @param string $value
+		 */
 		public function set_param($param, $value){
 			$this->params[$param] = $value;
 		}

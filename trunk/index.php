@@ -45,48 +45,22 @@
 	$tmp_directory = 'tmp';
 
 	/**
-	* DB Directory
-	*
-	* The name of the database directory, by default this is database.
-	*/
-	$db_directory = 'database';
-
-	/**
 	 * Plugin Directory
 	 */
 	$plugin_directory = 'plugins';
-
-	/**
-	 * Base Path
-	 *
-	 * Leave this as blank, unless you know you need to change it.
-	 */
-	$base_path = '';
 
 	// Let's set a few constants.
 	define('APP_PATH', $application_directory . (substr($application_directory, -1) === '/' ? '' : '/'));
 	define('LIB_PATH', $library_directory . (substr($library_directory, -1) === '/' ? '' : '/'));
 	define('TMP_PATH', $tmp_directory . (substr($tmp_directory, -1) === '/' ? '' : '/'));
-	define('DB_PATH', $db_directory . (substr($db_directory, -1) === '/' ? '' : '/'));
-	define('PLUGIN_PATH', $plugin_directory . (substr($plugin_directory, -1) === '/' ? '' : '/'));
+	define('DB_PATH', APP_PATH . 'database/');
 	define('BASE_PATH', str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']));
 
 	// The base path may need to be set to something else.
 	// If this one fails, then who knows...
 	if(!is_dir(BASE_PATH)){
-		define('BASE_PATH', substr($_SERVER['DOCUMENT_ROOT'], 0, -1) .
-		str_replace('index.php', '', ($_SERVER['SCRIPT_NAME'] !== '' ? $_SERVER['SCRIPT_NAME'] : $_SERVER['PHP_SELF']))
-		);
-
 		if(!is_dir(BASE_PATH)){
-			// Last option is to see if the variable has been set
-			if(!empty($base_path)){
-				define('BASE_PATH', $base_path);
-			}
-
-			if(!is_dir(BASE_PATH)){
-				die("Dang, couldn't set a base path. Please consult the manual for futher instructions.");
-			}
+			die("Dang, couldn't set a base path. Please consult the manual for futher instructions.");
 		}
 	}
 
@@ -99,12 +73,12 @@
 		die("We found the application directory, but now we can't find the library directory! Damn!");
 	}
 
-	if(!is_dir(DB_PATH)){
-		die("Can't find the Database directory, very unfortunate.");
+	if(!is_dir(TMP_PATH)){
+		die("Couldn't locate the temporary files path. Bugger.");
 	}
 
-	if(!is_dir(PLUGIN_PATH)){
-		die("No plugin directory, or you entered it wrong. Why!?");
+	if(!is_dir(DB_PATH)){
+		die("Can't find the Database directory, very unfortunate.");
 	}
 
 	// Disable Magic Quotes, if running less then PHP 5.3.0
@@ -112,9 +86,20 @@
 		set_magic_quotes_runtime(false);
 	}
 
+	if(file_exists('./install.php')){
+		// The install file exists, let's require it then die.
+		require_once('./install.php');
+		exit;
+
+		// This performs the environment tests.
+	}
+
 	require_once(LIB_PATH . 'Common.php');
 	require_once(LIB_PATH . 'Config.php');
 	Config::get_instance();
+	
+	// Define SYS_URL now that the config is available.
+	define('SYS_URL', Config::read('General.system_url'));
 
 	require_once(LIB_PATH . 'Errors.php');
 	require_once(LIB_PATH . 'Hooks.php');
@@ -126,5 +111,5 @@
 	Hooks::run('System.before');
 
 	require_once(LIB_PATH . 'Spine.php');
-	$spine = new Spine;
+	Spine::run();
 ?>

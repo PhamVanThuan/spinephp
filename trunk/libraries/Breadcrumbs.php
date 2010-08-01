@@ -19,7 +19,8 @@
 
 	class Breadcrumbs extends Object {
 
-		public $crumbs = array();
+		// Array containing all the crumbs left behind.
+		public static $crumbs = array();
 
 		/**
 		 * build_breadcrumb_array
@@ -30,14 +31,14 @@
 		 * @param string $default_home_text
 		 * @return array
 		 */
-		public function build_breadcrumb_array($hyperlinked = true, $default_home_text = 'Home'){
-			array_unshift($this->crumbs, array(
+		public static function build_breadcrumb_array($hyperlinked = true, $default_home_text = 'Home'){
+			array_unshift(Breadcrumbs::$crumbs, array(
 				'name' => $default_home_text,
 				'link' => SYS_URL
 				));
 
 			$tmp = array();
-			foreach($this->crumbs as $key => $array){
+			foreach(Breadcrumbs::$crumbs as $key => $array){
 				$string = '%s';
 				if($hyperlinked === true && !empty($array['link'])){
 					$string = '<a href="' . $array['link'] . '">%s</a>';
@@ -58,8 +59,8 @@
 		 * @param string $separator
 		 * @return string
 		 */
-		public function build_breadcrumb_text($hyperlinked = true, $default_home_text = 'Home', $separator = ' &raquo; '){
-			$tmp = $this->build_breadcrumb_array($default_home_text, $hyperlinked);
+		public static function build_breadcrumb_text($hyperlinked = true, $default_home_text = 'Home', $separator = ' &raquo; '){
+			$tmp = Breadcrumbs::build_breadcrumb_array($default_home_text, $hyperlinked);
 			$text = implode($separator, $tmp);
 			return $text;
 		}
@@ -72,10 +73,10 @@
 		 * @param string $name
 		 * @param mixed $url
 		 */
-		public function crumb($name, $url = null){
-			$this->crumbs[] = array(
+		public static function crumb($name, $url = null){
+			Breadcrumbs::$crumbs[] = array(
 				'name' => $name,
-				'link' => empty($url) ? null : $this->spine->Router->build_url($url)
+				'link' => empty($url) ? null : Router::build_url($url)
 			);
 		}
 

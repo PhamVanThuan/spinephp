@@ -3,6 +3,14 @@ Spine PHP Change Log (http://www.spinephp.org/)
 
 THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE
 
+(1st August 2010)
+-----------------------------------------------
+[changed]: The entire system has been re-done as a static system to allow easier
+access to the different libraries.
+[changed]: File names no longer have .view, .model, .section and .controller
+file extensions, it's just .php.
+[new]: install.php checks environment for correct configuration.
+
 (29th July 2010)
 -----------------------------------------------
 [new]: changelog

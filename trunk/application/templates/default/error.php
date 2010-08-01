@@ -109,18 +109,18 @@
 			</div>
 		</div>
 		<div id="container">
-			SpinePHP encountered <?php echo $this->tpl['errnum']; ?> errors during processing the page. However only the first encountered error
+			SpinePHP encountered <?php echo $tpl['errnum']; ?> errors during processing the page. However only the first encountered error
 			will be shown for reasons being that any following errors may be the result of the first error. Attempt to fix the error shown first.
 
 			<div class="error-box">
 				<?php
-					echo '<h1>' . $this->tpl['code'] . '</h1><p>' . $this->tpl['message'] . '</p>';
+					echo '<h1>' . $tpl['code'] . '</h1><p>' . $tpl['message'] . '</p>';
 				?>
-				<span class="details""><?php echo $this->tpl['details']; ?></span>
+				<span class="details""><?php echo $tpl['details']; ?></span>
 			</div>
 			<?php
-				if(isset($this->tpl['remainder'])){
-					$remainder = $this->tpl['remainder'];
+				if(isset($tpl['remainder'])){
+					$remainder = $tpl['remainder'];
 			?>
 
 			<div id="show-remainder" onclick="javascript: showHide(this)">Show Remaining Errors</div>

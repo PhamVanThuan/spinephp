@@ -101,7 +101,7 @@
 	 *
 	 * Refer to php.net/setcookie
 	 */
-	Config::write('Cookiess.secure', false);
+	Config::write('Cookie.secure', false);
 
 	/**
 	 * Cookie HTTP Only
@@ -137,13 +137,7 @@
 	 *		)
 	 * )
 	 */
-	Config::write('Hooks.load', array(
-		array(
-			'hook' => 'Controller.afterConstruct',
-			'name' => 'smarty',
-			'file' => 'smarty'
-		)
-	));
+	Config::write('Hooks.load', array());
 
     /**
      * Library Load
@@ -195,7 +189,7 @@
 	 *
 	 * An array of helpers to be loaded for the template to display correctly.
 	 */
-	Config::write('Template.helpers', array());
+	Config::write('Template.helpers', array('Html'));
 
 	/**
 	 * GZip Output Compression
@@ -264,7 +258,7 @@
      * have specified the Database library to be auto loaded above, it
      * will not auto connect unless this is set to true.
      */
-    Config::write('Database.enable_auto_connect', true);
+    Config::write('Database.enable_auto_connect', false);
 
     /**
      * MySQL Connection Settings

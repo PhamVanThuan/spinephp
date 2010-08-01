@@ -19,7 +19,10 @@
 
 	class Config {
 
+		// Array holding all the config variables.
 		public static $config;
+
+		// Any stored changes will be placed in this array.
 		public static $changes = array();
 		
 		/**

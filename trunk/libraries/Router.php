@@ -19,10 +19,17 @@
 
     class Router extends Object {
 
-		public $get;
-		public $request = array();
-		public $last_caller;
-		public $special = array(
+		// Current controller being used by system.
+		public static $controller;
+
+		// Stores the current URI request.
+		public static $request;
+
+		// Stores the name of the calling controller, prevents continuous loops.
+		public static $controller_loop;
+
+		// The available special requests.
+		public static $special = array(
 			'clear-cache',
 			'clear-sessions',
 			'clear-cookies',
@@ -38,75 +45,135 @@
 		 * remaining information for the queryString property.
 		 */
 		public function route(){
-			if(!isset($_GET['c'])){
-			// No URI information set by user.
-				if(Config::read('General.default_controller') == ''){
-					trigger_error('There was no default controller specified in the configuration.', E_USER_ERROR);
+			// Blank array for request.
+			Router::$request = array();
+
+			// How is the page being requested.
+			if(isset($_SERVER['QUERY_STRING']) && Config::read('General.enable_query_string') === false){
+				// Using mod_rewrite for pretty urls.
+				if(!isset($_GET['request'])){
+					// Load default controller.
+					$default = Config::read('General.default_controller');
+					if(empty($default)){
+						trigger_error('There was no default controller specified in the configuration file.', E_USER_ERROR);
+					}else{
+						Router::$request['controller'] = $default;
+						Router::$request['method'] = 'index';
+					}
 				}else{
-					$this->request['controller'] = Config::read('General.default_controller');
-					$this->request['method'] = 'index';
+					// A request was sent to the browser.
+					$uri = $this->check_special_requests($_GET['request']);
+					$uri = array_clean(explode('/', $uri));
+
+					if(count($uri) > 1){
+						// We have a controller/method and possibly more.
+						Router::$request['controller'] = array_shift($uri);
+						Router::$request['method'] = array_shift($uri);
+						Router::$request['uri'] = $uri;
+					}else{
+						// Only a controller was specified.
+						Router::$request['controller'] = array_shift($uri);
+						Router::$request['method'] = 'index';
+					}
+				}
+			}elseif(Config::read('General.enable_query_string') === true){
+				// Using index.php/controller/model
+				if(isset($_SERVER['PATH_INFO'])){
+					$uri = substr($_SERVER['PATH_INFO'], 0, 1) === '/' ? substr($_SERVER['PATH_INFO'], 1) : $_SERVER['PATH_INFO'];
+
+					// Check for special requests.
+					$uri = Router::check_special_requests($uri);
+
+					// Explode the different parts of the URI and clean it.
+					$uri = array_clean(explode('/', $uri));
+					if(count($uri) > 1){
+						// We have a controller/method and possibly more.
+						Router::$request['controller'] = array_shift($uri);
+						Router::$request['method'] = array_shift($uri);
+						Router::$request['uri'] = $uri;
+					}else{
+						// Only a controller was specified.
+						Router::$request['controller'] = array_shift($uri);
+						Router::$request['method'] = 'index';
+					}
+				}elseif(isset($_SERVER['PHP_SELF'])){
+					$uri = $_SERVER['PHP_SELF'];
+
+					// Check for special requests.
+					$uri = Router::check_special_requests($uri);
+
+					// Grab folder that script is in.
+					$folder = array_pop(array_clean(explode('/', BASE_PATH)));
+
+					// Replace spine/index.php, explode and clean.
+					$uri = str_replace($folder . '/index.php', '', $uri);
+					$uri = array_clean(explode('/', $uri));
+
+					if(count($uri) > 1){
+						// We have a controller/method and possibly more.
+						Router::$request['controller'] = array_shift($uri);
+						Router::$request['method'] = array_shift($uri);
+						Router::$request['uri'] = $uri;
+					}else{
+						// Only a controller was specified.
+						Router::$request['controller'] = array_shift($uri);
+						Router::$request['method'] = 'index';
+					}
+				}elseif(isset($_SERVER['REQUEST_URI'])){
+					$uri = $_SERVER['REQUEST_URI'];
+
+					// Check for special requests.
+					$uri = Router::check_special_requests($uri);
+
+					// Grab folder that script is in.
+					$folder = array_pop(array_clean(explode('/', BASE_PATH)));
+
+					// Replace spine/index.php, explode and clean.
+					$uri = str_replace($folder . '/index.php', '', $uri);
+					$uri = array_clean(explode('/', $uri));
+
+					if(count($uri) > 1){
+						// We have a controller/method and possibly more.
+						Router::$request['controller'] = array_shift($uri);
+						Router::$request['method'] = array_shift($uri);
+						Router::$request['uri'] = $uri;
+					}else{
+						// Only a controller was specified.
+						Router::$request['controller'] = array_shift($uri);
+						Router::$request['method'] = 'index';
+					}
+				}else{
+					// This should not be reached, if it is please file a bug with any relevant info.
+					trigger_error('Could not load a route using PATH_INFO, PHP_SELF or REQUEST_URI.', E_USER_ERROR);
+				}
+
+				// Make sure the controller isn't blank.
+				if(empty(Router::$request['controller'])){
+					// Set to default controller.
+					Router::$request['controller'] = Config::read('General.default_controller');
+				}
+
+				if(!isset(Router::$request['controller']) || empty(Router::$request['controller'])){
+					trigger_error('Router failed to load a controller.', E_USER_ERROR);
 				}
 			}else{
-				if(Config::read('General.enable_query_string') === true){
-					// Using query string in the URL
-					// Check for Special Requests first.
-					$url = $this->check_special_requests($_SERVER['QUERY_STRING']);
-					$qs = explode('&', $url);
-
-					if(isset($qs[0]) && strstr($qs[0], '/') === false){
-						foreach($qs as $string){
-							// Loop through each result, c and m become controller and model.
-							$tmp = explode('=', $string);
-							if(in_array($tmp[0], array('c','m'))){
-								$this->request[($tmp[0] == 'c' ? 'controller' : 'method')] = str_replace('-', '_', $tmp[1]);
-							}else{
-								$this->request['uri'][] = $tmp[1];
-							}
-						}
-
-						// Make sure a method was set.
-						if(!isset($this->request['method'])){
-							$this->request['method'] = 'index';
-						}
-					}
-				}
-
-				if(empty($this->request)){
-					// Using pretty URLs, determine route to take.
-					// Check for Special Requests first.
-					$url = $this->check_special_requests($_GET['c']);
-					$this->get = array_clean(explode('/', $url), true, true);
-
-					// The first element in the array is, of course, the controller.
-					$this->request['controller'] = array_shift($this->get);
-
-					// Now, is there a method supplied?
-					if(empty($this->get)){
-						// Nope, index is the default.
-						$this->request['method'] = 'index';
-					}else{
-						// Yep!
-						$this->request['method'] = str_replace('-', '_', array_shift($this->get));
-					}
-
-					// Finally, even if the array is empty, set the URI element to the remaining.
-					$this->request['uri'] = $this->get;
-				}
+				// If this error is reached, the system was unable to find any method of building a route.
+				trigger_error('Could not load a route using mod_rewrite or paths.', E_USER_ERROR);
 			}
 
 			// Check for a reserved word in the method.
-			$this->request['method'] = check_reserved_word($this->request['method']);
+			Router::$request['method'] = check_reserved_word(Router::$request['method']);
 		}
 
 		/**
-		 * uri
+		 * get_uri
 		 *
 		 * Return the URI of the original request.
 		 *
 		 * @return string
 		 */
-		public function uri(){
-			return $this->request['controller'] . '/' . $this->request['method'] . (!empty($this->request['uri']) ? '/' . implode('/', $this->request['uri']) : '');
+		public static function get_uri(){
+			return Router::$request['controller'] . '/' . Router::$request['method'] . (!empty(Router::$request['uri']) ? '/' . implode('/', Router::$request['uri']) : '');
 		}
 
 		/**
@@ -115,12 +182,11 @@
 		 * Dispatch the current controller to a new controller, 
 		 *
 		 * @param string $controller the name of the controller
-		 * @param boolean $allow_default if system can revert to default controller
-		 * @param string $caller the name of the controller that called dispatch
-		 * @param boolean $registry if this is to set the registry controller property
+		 * @param boolean $uri_controller if this is the URI controller being called from Spine.
 		 * @param boolean $return_object return the new controller instead of running any methods
+		 * @param string $caller the name of the controller that called dispatch
 		 */
-		public function dispatch($controller, $allow_default = false, $caller = null, $registry = true, $return_object = false){
+		public static function dispatch($controller, $uri_controller = true, $return_object = false, $caller = null){
 			// Sometimes a controller may be in the form of folder/subfolder/Controller
 			if(strstr($controller, '/') !== false){
 				$tmp = explode('/', $controller);
@@ -135,32 +201,34 @@
 			$fn_controller = implode('_', $controller);
 			$cn_controller = implode('', array_map('ucfirst', $controller)) . 'Controller';
 
-			// Sometimes the controller may already be loaded.
-			// For instance if using 'request' in a section.
-			if(isset($this->spine->controller) && get_class($this->spine->controller) == $cn_controller){
+			// Check to see if the current loaded controller is the same as the requesting controller.
+			if(isset(Router::$controller) && get_class(Router::$controller) == $cn_controller){
+				// It is the same, should we return it or perhaps they did something wrong.
 				if($return_object === true){
-					return $this->spine->controller;
+					// Returning current controller.
+					return Router::$controller;
 				}else{
 					// Abort if the controller is already loaded and not returning.
 					return false;
 				}
 			}
 
-			// Make sure that the controller isn't the last caller, this is bad!
-			if($cn_controller == $this->last_caller){
+			// If the controller is the last called controller the system is on a continuous loop.
+			if($cn_controller == Router::$controller_loop){
 				trigger_error('System prevented a continuous loop from occuring. You attempted to dispatch to a '
 					. 'controller which was used to dispatch to the current controller.', E_USER_ERROR);
 			}
 
-			if(!file_exists(APP_PATH . 'controllers/' . $folder . $fn_controller . '.controller.php')){
+			// Attempt to load the controller file.
+			if(!file_exists(APP_PATH . 'controllers/' . $folder . $fn_controller . '.php')){
 				// Could not locate a controller, perhaps try a method in the default controller?
-				if(!file_exists(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.controller.php')
-					|| $allow_default === false || Config::read('General.enable_method_fallback') === false){
+				if(!file_exists(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.php') || Config::read('General.enable_method_fallback') === false){
 						trigger_error("Could not find requested controller <strong>" . $cn_controller . "</strong>.<br />Location: " . BASE_PATH
-							. APP_PATH . "controllers/" . $fn_controller . ".controller.php", E_USER_ERROR);
+							. APP_PATH . "controllers/" . $fn_controller . ".php", E_USER_ERROR);
 				}else{
+					// We found the default controller and we were allowed to fallback to it.
 					if(!in_array($cn_controller, get_declared_classes())){
-						require(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.controller.php');
+						require_once(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.php');
 					}
 					
 					// Run any hooks on Controller.before
@@ -176,20 +244,24 @@
 
 						// Check if there is a method by the name of the controller, falling back.
 						if(method_exists($controller, $fn_controller)){
-							$this->request['method'] = $fn_controller;
-							$this->request['controller'] = Config::read('General.default_controller');
+							// The method is now the controller.
+							Router::$request['method'] = $fn_controller;
+							// And the controller is the default controller.
+							Router::$request['controller'] = Config::read('General.default_controller');
 						}else{
+							// Failed to fallback to the default controller.
 							trigger_error("Attempted to fallback to a method but failed to locate <strong>" . $fn_controller . "()</strong> in default controller.", E_USER_ERROR);
 						}
 					}
 				}
 			}else{
+				// The requested controller exists.
 				if(!in_array($cn_controller, get_declared_classes())){
-					require(APP_PATH . 'controllers/' . $folder . $fn_controller . '.controller.php');
+					require_once(APP_PATH . 'controllers/' . $folder . $fn_controller . '.php');
 				}
 				
 				if(!class_exists($cn_controller, false)){
-					trigger_error("Could not find the controller class <strong>" . $cn_controller . "</strong>.", E_USER_ERROR);
+					trigger_error("Could not find the controller class <strong>" . $cn_controller . "</strong> in " . APP_PATH . "controllers/" . $folder . $fn_controller . ".php.", E_USER_ERROR);
 				}else{
 					// Run any hooks on Controller.before
 					Hooks::run('Controller.before');
@@ -199,55 +271,41 @@
 				}
 			}
 
-			// Set the last caller property here so we can ensure we don't go on a never ending loop.
+			/**
+			 * If we have made it this far, the controller has been loaded successfully and stored in
+			 * $controller. We can process the rest of the dispatch.
+			 */
+
+			// Set the $controller_loop property here so we can ensure we don't go on a never ending loop.
 			if(!empty($caller)){
-				$this->last_caller = (strstr($caller, 'Controller') ? $caller : $caller . 'Controller');
+				Router::$controller_loop = (strstr($caller, 'Controller') ? $caller : $caller . 'Controller');
 			}
 
-			// If this is coming from the registry, set the controller.
-			if($registry){
-				$this->spine->controller =& $controller;
+			// Are we to set the controller property in Router?
+			if($uri_controller){
+				// Set the controller property to the controller instance.
+				Router::$controller = $controller;
 			}
 
-			// Returning the new object?
-			if($return_object === true){
-				// Run any hooks on Controller.afterConstruct
-				Hooks::run('Controller.afterConstruct');
-				
+			// Run any hooks on Controller.afterConstruct
+			Hooks::run('Controller.afterConstruct');
+
+			// Return this new object so that it can be used elswhere.
+			if($return_object){
 				return $controller;
 			}else{
-				/**
-				* Constructor
-				*
-				* Some controllers may want a custom constructor, and since we have used the
-				* __construct() in the abstract class, we cannot redeclare it without the
-				* system falling apart. So, to compensate, we incorporate the __constructor() method.
-				* If a controller contains this method, let's run it.
-				*/
-				if(method_exists($controller, '__constructor')){
-					$controller->__constructor();
-				}
-
-				// Run any hooks on Controller.afterConstruct (also does after constructor)
-				Hooks::run('Controller.afterConstruct');
-
-				/**
-				* Overwriting
-				*
-				* Some controllers allow the overwriting of the index method.
-				* For example, if the user accesses http://www.website.com/news/this-is-an-article the
-				* system would look for 'this-is-an-article' as the method. However, in the controller
-				* if the method_overwrite property is set to true, we can hand straight to the index
-				* method.
-				*/
+				// Have they enabled method overwriting in the controller.
 				if(isset($controller->enable_method_overwrite) && $controller->enable_method_overwrite === true){
+					// Method Overwriting is enabled, fire the index method.
 					$controller->index();
 				}else{
 					// No overwriting, make sure that the method we want exists.
-					if(method_exists($controller, $this->request['method'])){
-						$controller->{$this->request['method']}();
+					if(method_exists($controller, Router::$request['method'])){
+						// Found the method, fire it.
+						$controller->{Router::$request['method']}();
 					}else{
-						trigger_error('Invalid method supplied. Failed to find method <strong>' . $this->request['method']
+						// No method, all that for nothing.
+						trigger_error('Invalid method supplied. Failed to find method <strong>' . Router::$request['method']
 							. '()</strong> in <strong>' . $cn_controller . '</strong>.', E_USER_ERROR);
 					}
 				}
@@ -261,9 +319,9 @@
 		 *
 		 * @param string $url
 		 */
-		public function check_special_requests($url){
+		public static function check_special_requests($url){
 			$patterns = array();
-			foreach($this->special as $request){
+			foreach(Router::$special as $request){
 				$patterns[] = preg_quote(':' . $request);
 			}
 			$patterns = '#(' . implode('|', $patterns) . ')(.*)#';
@@ -288,9 +346,9 @@
 						 */
 						if(in_array('all', $options)){
 							// Delete all cached files.
-							$this->spine->Template->delete_cache();
+							Template::delete_cache();
 						}else{
-							$this->spine->Template->delete_cache($url);
+							Template::delete_cache($url);
 						}
 					break;
 					// config
@@ -361,14 +419,14 @@
 						 * Format:
 						 * clear-sessions
 						 */
-						if($this->spine->is_library_loaded('Session')){
-							$this->spine->Session->destroy();
+						if(Spine::loaded('Session')){
+							Session::destroy();
 						}
 					break;
 					// clear-cookies
 					case 'clear-cookies':
-						if($this->spine->is_library_loaded('Cookie')){
-							$this->spine->Cookie->clear();
+						if(Spine::loaded('Cookie')){
+							Cookie::clear();
 						}
 					break;
 				}
@@ -387,7 +445,7 @@
 		 * @param mixed $url
 		 * @return string
 		 */
-		public function build_url($url){
+		public static function build_url($url){
 			if(is_array($url)){
 				// It's an array of URL elements.
 				if(!isset($url['controller'])){
@@ -404,16 +462,9 @@
 					'action' => 'm'
 				);
 
+				$url = implode('/', $url);
 				if(Config::read('General.enable_query_string')){
-					// Query String is enabled, let's build it.
-					$tmp = array();
-					foreach($url as $key => $value){
-						$tmp[] = (isset($replacers[$key]) ? $replacers[$key] : $key) . '=' . $value;
-					}
-					$url = 'index.php?' . implode('&', $tmp);
-				}else{
-					// Pretty URLs, a lot nicer.
-					$url = implode('/', $url);
+					$url = 'index.php/' . $url;
 				}
 
 				if(isset($url)){
@@ -425,9 +476,20 @@
 				if(preg_match('#^(http|https|ftp|file)\:\/\/#i', $url)){
 					return $url;
 				}else{
-					return SYS_URL . implode('/', array_clean(explode('/', $url)));
+					// Return in either query string format or pretty url.
+					if(Config::read('General.enable_query_string')){
+						if($url === '/'){
+							return SYS_URL . 'index.php';
+						}else{
+							return SYS_URL . 'index.php/' . implode('/', array_clean(explode('/', $url)));
+						}
+					}else{
+						return SYS_URL . implode('/', array_clean(explode('/', $url)));
+					}
 				}
 			}
+
+			return false;
 		}
 	
     }

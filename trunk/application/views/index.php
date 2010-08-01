@@ -1,19 +1,16 @@
 <div id="index-banner">
 	<div id="links">
 		<div id="download">
-			<a href="./downloads"><?php echo $html->img('download.png', array('title' => 'Download Now')); ?></a>
+			<?php echo $html->link('/downloads', $html->img('download.png', array('title' => 'Download Now'))); ?>
 		</div>
 		<div id="docs">
-			<a href="./docs">Documentation</a>
+			<?php echo $html->link('/docs', 'Documentation'); ?>
 		</div>
 		<div id="forums">
-			<a href="./forums">Forums</a>
+			<?php echo $html->link('/community', 'Community'); ?>
 		</div>
 	</div>
 </div>
-
-<?php echo $this->section('latest-posts', array('page' => 'index')); ?>
-
 <?php echo $html->img('welcome.png', array('title' => 'Welcome to Spine', 'class' => 'page-title')); ?>
 Spine PHP is an Open Source simple yet powerful PHP framework designed with speed, flexibility and quality in mind. Spine is easy to use and it has a small
 footprint. If your a PHP Developer who is tired of large, clunky frameworks and being hassled by clients, then Spine is for you.

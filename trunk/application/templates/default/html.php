@@ -10,8 +10,8 @@
 		</title>
 		
 		<?php
-			$this->js();
-			$this->css();
+			echo $js;
+			echo $css;
 		?>
     </head>
 
@@ -24,10 +24,11 @@
 				<div id="header-image"></div>
 				<div id="header-navigation">
 					<ul id="navigation">
-						<li><a href="./">Home</a></li>
-						<li><a href="./about">About Spine</a></li>
-						<li><a href="./downloads">Downloads</a></li>
-						<li><a href="./docs">Documentation</a></li>
+						<li><?php echo $html->link('/', 'Home'); ?></li>
+						<li><?php echo $html->link('/about', 'About Spine'); ?></li>
+						<li><?php echo $html->link('/downloads', 'Downloads'); ?></li>
+						<li><?php echo $html->link('/community', 'Community'); ?></li>
+						<li><?php echo $html->link('/docs', 'Documentation'); ?></li>
 					</ul>
 				</div>
 			</div>

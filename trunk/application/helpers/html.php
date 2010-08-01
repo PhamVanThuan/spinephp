@@ -6,7 +6,7 @@
 	 * HTML Helper Class
 	 */
 
-	class HtmlHelper extends Helpers {
+	class HtmlHelper {
 
 		public $html = array(
 			'link' => '<a href="%s"%s>%s</a>',
@@ -25,8 +25,11 @@
 		 * @return string
 		 */
 		public function link($url, $text = null, $attr = array()){
-			$url = $this->build_url($url);
-			$attr = $this->parse_attributes($attr);
+			// Build the URL using the Routers method.
+			$url = Router::build_url($url);
+
+			// Parse any attributes.
+			$attr = Helpers::parse_attributes($attr);
 
 			if(empty($text)){
 				$text = $url;
@@ -50,7 +53,8 @@
 				$text = $email;
 			}
 
-			$attr = $this->parse_attributes($attr);
+			// Parse any attributes.
+			$attr = Helpers::parse_attributes($attr);
 
 			return sprintf($this->html['mailto'], $email, $text, $attr);
 		}
@@ -72,7 +76,7 @@
 			}
 
 			// Parse the attributes into a string.
-			$attr = $this->parse_attributes($attr);
+			$attr = Helpers::parse_attributes($attr);
 
 			return sprintf($this->html['img'], SYS_URL . 'application/templates/' . $folder . '/public/img/' . $img, $attr);
 			

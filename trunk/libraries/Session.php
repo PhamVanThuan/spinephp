@@ -18,14 +18,13 @@
 
 	class Session extends Object {
 
-		protected $id;
+		// The current session id.
+		protected static $id;
 
 		public function __construct(){
-			if(!$this->session_started()){
-				$this->session_start();
+			if(!Session::session_started()){
+				Session::session_start();
 			}
-
-			parent::__construct();
 		}
 
 		/**
@@ -35,7 +34,7 @@
 		 *
 		 * @return boolean
 		 */
-		public function session_start(){
+		public static function session_start(){
 			if(getenv('HTTPS')){
 				// Use secure cookies if available.
 				ini_set('session.cookie_secure', 1);
@@ -44,7 +43,12 @@
 			// Since we don't allow Sessions to be stored in the Database...
 			ini_set('session.serialize_handler', 'php');
 			ini_set('session.cookie_path', '/');
-			ini_set('session.save_path', TMP_PATH . 'sessions');
+
+			// Attempt to save sessions in /tmp/sessions
+			if(is_dir(TMP_PATH . 'sessions')){
+				ini_set('session.save_path', TMP_PATH . 'sessions');
+			}
+			
 			ini_set('session.use_cookies', 1);
 			ini_set('session.cookie_lifetime', Config::read('Session.timeout'));
 			ini_set('session.use_trans_sid', 0);
@@ -65,7 +69,7 @@
 		 *
 		 * @return boolean
 		 */
-		public function session_started(){
+		public static function session_started(){
 			if(isset($_SESSION) && session_id()){
 				return true;
 			}
@@ -81,7 +85,7 @@
 		 * @param string $name name of the session
 		 * @param string $value value of the session
 		 */
-		public function write($name, $value = ''){
+		public static function write($name, $value = ''){
 			if(empty($name)){
 				trigger_error('Failed to set a session because no session name was provided.', E_USER_ERROR);
 			}
@@ -113,7 +117,7 @@
 		 * @param string $name name of session to get
 		 * @return mixed
 		 */
-		public function read($name = null){
+		public static function read($name = null){
 			if(empty($name)){
 				return $_SESSION;
 			}else{
@@ -129,15 +133,15 @@
 		 * @param string $id session id
 		 * @return string
 		 */
-		public function id($id = null){
+		public static function id($id = null){
 			if(!empty($id)){
-				$this->id = $id;
+				Session::$id = $id;
 				session_id($id);
 			}
 			if($this->session_started()){
 				return session_id();
 			}else{
-				return $this->id;
+				return Session::$id;
 			}
 		}
 
@@ -149,8 +153,8 @@
 		 * @param string $name name of session to delete
 		 * @return boolean
 		 */
-		public function delete($name){
-			if($this->check($name)){
+		public static function delete($name){
+			if(Session::check($name)){
 				$var = & $_SESSION;
 				$path = explode('.', $name);
 				foreach($path as $i => $key){
@@ -158,13 +162,13 @@
 						unset($var[$key]);
 					}else{
 						if(!isset($var[$key])){
-							return $this->check($name);
+							return Session::check($name);
 						}
 						$var = & $var[$key];
 					}
 				}
 
-				return !$this->check($name);
+				return !Session::check($name);
 			}
 			return false;
 		}
@@ -177,11 +181,11 @@
 		 * @param string $name
 		 * @return boolean
 		 */
-		public function check($name){
+		public static function check($name){
 			if(empty($name)){
 				return false;
 			}
-			$check = $this->read($name);
+			$check = Session::read($name);
 			return isset($check);
 		}
 
@@ -190,7 +194,7 @@
 		 *
 		 * Reset the current session, get a new ID
 		 */
-		public function reset(){
+		public static function reset(){
 			$old = session_id();
 			if($old){
 				if(isset($_COOKIE[session_name()])){
@@ -198,6 +202,7 @@
 				}
 
 				session_regenerate_id(true);
+				Session::$id = session_id();
 			}
 		}
 
@@ -208,8 +213,8 @@
 		 *
 		 * @return boolean
 		 */
-		public function destroy(){
-			if($this->session_started()){
+		public static function destroy(){
+			if(Session::session_started()){
 				if(ini_get('session.use_cookies')){
 					$params = session_get_cookie_params();
 					setcookie(session_name(), '', time() - 86400, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
@@ -217,8 +222,8 @@
 				
 				session_destroy();
 				
-				$this->session_start();
-				$this->reset();
+				Session::session_start();
+				Session::reset();
 				return true;
 			}else{
 				return false;

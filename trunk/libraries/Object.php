@@ -20,12 +20,6 @@
 	
     abstract class Object {
 
-		protected $spine;
-
-		public function __construct(){
-			$this->spine =& Spine::get_instance();
-		}
-
 		/**
 		 * request
 		 *
@@ -61,7 +55,7 @@
 			}
 
 			// Call up the dispatcher
-			$object = $this->spine->Router->dispatch($uri[0], false, null, false, true);
+			$object = Router::dispatch($uri[0], false, null, false, true);
 
 			// Do a check on the method
 			if(method_exists($object, $uri[1])){

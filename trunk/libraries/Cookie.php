@@ -28,7 +28,7 @@
 		 * @param array $expire An array of when the cookie will expire
 		 * @return boolean
 		 */
-		public function write($name, $value = null, $expire = array('year' => 0, 'month' => 0, 'day' => 0, 'hour' => 0, 'min' => 0, 'sec' => 0)){
+		public static function write($name, $value = null, $expire = array('year' => 0, 'month' => 0, 'day' => 0, 'hour' => 0, 'min' => 0, 'sec' => 0)){
 			if(empty($name)){
 				return false;
 			}
@@ -109,7 +109,7 @@
 		 * @param string $name
 		 * @return mixed
 		 */
-		public function read($name = null){
+		public static function read($name = null){
 			if(empty($name)){
 				return $_COOKIE;
 			}else{
@@ -125,7 +125,7 @@
 		 * @param string $name
 		 * @return boolean
 		 */
-		public function delete($name){
+		public static function delete($name){
 			$path = Config::read('Cookie.path');
 			$domain = Config::read('Cookie.domain');
 			$secure = Config::read('Cookie.secure');
@@ -137,7 +137,7 @@
 				}
 			}
 			
-			if($this->check($name)){
+			if(Cookie::check($name)){
 				// Cookie exists, let's delete it.
 				$path = explode('.', $name);
 				$tmp = '';
@@ -193,7 +193,7 @@
 		 *
 		 * Clear all cookies, can only be called via the Special Request if set.
 		 */
-		public function clear(){
+		public static function clear(){
 			// Deleting all cookies.
 			$path = Config::read('Cookie.path');
 			$domain = Config::read('Cookie.domain');
@@ -219,11 +219,11 @@
 		 * @param string $name
 		 * @return boolean
 		 */
-		public function check($name){
+		public static function check($name){
 			if(empty($name)){
 				return false;
 			}
-			$check = $this->read($name);
+			$check = Cookie::read($name);
 			return isset($check);
 		}
 

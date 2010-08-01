@@ -24,14 +24,20 @@
 
     class Template extends Object {
 
-		public $cache = array(
+		// Cache settings.
+		public static $cache = array(
 			'enabled' => false,
 			'timeout' => 0
 		);
-		public $tpl = array();
-		public $config = array();
-		public $user_set_template;
-		public $output;
+
+		// Array of tpl variables.
+		public static $tpl = array();
+
+		// Property is populated as an array when template is changed.
+		public static $user_set_template = array();
+
+		// Property holding all the output.
+		public static $output;
 
 		/**
 		 * prepare
@@ -39,18 +45,14 @@
 		 * Contains all the logic for preparing the template for rendering.
 		 * Handles any Hooks.
 		 */
-		public function prepare(){
-			if(empty($this->user_set_template)){
-				list($folder, $template) = Config::read('Template.default_template');
-			}else{
-				list($folder, $template) = $this->user_set_template;
-			}
+		public static function prepare(){
+			list($folder, $template) = Template::get_template();
 			
 			if(!file_exists(APP_PATH . 'templates/' . $folder . '/' . $template . '.php')){
 				trigger_error('Could not find <strong>template.php</strong> in ' . BASE_PATH . APP_PATH . 'templates/' . $folder . '/', E_USER_ERROR);
 			}else{
 				// Load any helpers that were specified in the config
-				$helpers = $this->spine->Helpers->load(Config::read('Template.helpers'));
+				$helpers = Helpers::load(Config::read('Template.helpers'));
 				if(!empty($helpers)){
 					foreach($helpers as $key => $val){
 						$key = strtolower($key);
@@ -58,27 +60,28 @@
 					}
 				}
 
-				// Template variables also need to be set.
-				$tpl = $this->tpl;
+				// Template variables need to be set.
+				$tpl = Template::$tpl;
+
+				// Get the CSS and JS
+				$css = Template::css();
+				$js = Template::js();
 
 				// Firstly, let's start output buffering, so we can capture the output and perform
 				// any parsing on it.
 				ob_start();
 
-				// Now include the template file.
+				// Now include the template file into the buffer.
 				include(APP_PATH . 'templates/' . $folder . '/' . $template . '.php');
 
-				// Using output buffering, we can get the contents of the buffer.
-				$this->output = ob_get_contents();
-
-				// Now clean up the output buffer, so it's empty.
-				@ob_end_clean();
+				// Using output buffering, we can get the contents of the buffer and clean it.
+				Template::$output = ob_get_clean();
 
 				// Run any hooks for Display.before
 				Hooks::run('Display.before');
 
 				// Send to the render method, where the actually rendering occurs
-				$this->render($this->output);
+				Template::render(Template::$output);
 
 				// Run any hooks on Display.after
 				Hooks::run('Display.after');
@@ -92,11 +95,11 @@
 		 *
 		 * @param string $output
 		 */
-		public function render($output){
+		public static function render($output){
 			// Cache the file if caching is enabled.
-			if($this->cache['enabled']){
-				if($this->cache['timeout'] > 0){
-					$this->write_cache($output);
+			if(Template::$cache['enabled']){
+				if(Template::$cache['timeout'] > 0){
+					Template::write_cache($output);
 				}
 			}
 
@@ -104,7 +107,7 @@
 			Errors::checkup();
 
 			// Get the compression type, like gzip.
-			$compression = $this->get_compression_type();
+			$compression = Template::get_compression_type();
 
 			// Start output buffering with any compression if available.
 			ob_start($compression);
@@ -113,6 +116,8 @@
 			if(Config::read('Template.strip_new_lines')){
 				$output = trim(str_replace(array("\r\n","\n","\r","\t"), "", $output));
 			}
+
+			// Display the final output.
 			echo $output;
 			
 			// Flush the buffer.
@@ -126,7 +131,7 @@
 		 * Load up the CSS files, check the configuration to exclude any
 		 * files or order the loading.
 		 */
-		public function css(){
+		public static function css(){
 			if(Config::read('Template.ignore.css') === null){
 				Config::write('Template.ignore.css', array());
 			}else{
@@ -136,11 +141,8 @@
 				}
 			}
 
-			if(empty($this->user_set_template)){
-				list($folder, $template) = Config::read('Template.default_template');
-			}else{
-				$folder = $this->user_set_template[0];
-			}
+			// Get the template folder and template file.
+			list($folder, $template) = Template::get_template();
 
 			$css = array();
 			foreach(glob(APP_PATH . 'templates/' . $folder . '/public/css/*.css') as $file){
@@ -151,7 +153,7 @@
 			}
 
 			if(count(array_clean(Config::read('Template.order.css'))) === 0){
-				echo implode("\n", $css);
+				return implode("\n", $css);
 			}else{
 				$tmp = array();
 				foreach(Config::read('Template.order.css') as $order){
@@ -165,7 +167,7 @@
 						$tmp[] = $val;
 					}
 				}
-				echo implode("\n", $tmp);
+				return implode("\n", $tmp);
 			}
 		}
 
@@ -185,11 +187,8 @@
 				}
 			}
 
-			if(empty($this->user_set_template)){
-				list($folder, $template) = Config::read('Template.default_template');
-			}else{
-				$folder = $this->user_set_template[0];
-			}
+			// Get the template folder and template file.
+			list($folder, $template) = Template::get_template();
 
 			$js = array();
 			foreach(glob(APP_PATH . 'templates/' . $folder . '/public/js/*.js') as $file){
@@ -200,7 +199,7 @@
 			}
 
 			if(count(array_clean(Config::read('Template.order.js'))) === 0){
-				echo implode("\n", $js);
+				return implode("\n", $js);
 			}else{
 				$tmp = array();
 				foreach(Config::read('Template.order.js') as $order){
@@ -214,7 +213,7 @@
 						$tmp[] = $val;
 					}
 				}
-				echo implode("\n", $tmp);
+				return implode("\n", $tmp);
 			}
 		}
 
@@ -227,9 +226,9 @@
 		 * @param string $code
 		 * @param string $output
 		 */
-		public function append_head_code($code, $output = null){
+		public static function append_head_code($code, $output = null){
 			if(empty($output)){
-				$output = & $this->output;
+				$output = & Template::$output;
 			}
 
 			$output = preg_replace('/<\/head>/im', "{$code}\\0", $output);
@@ -242,18 +241,18 @@
 		 *
 		 * @param string $contents the contents that should be cached
 		 */
-		public function write_cache($contents){
+		public static function write_cache($contents){
 			$directory = TMP_PATH . 'cache/';
 
 			if(file_exists($directory) && is_writable($directory) && Config::read('Template.enable_caching') === true){
-				$timeout = time() + ($this->cache['timeout'] * 60);
+				$timeout = time() + (Template::$cache['timeout'] * 60);
 
-				$cache_name = md5($this->spine->Router->uri());
+				$cache_name = md5(Router::get_uri());
 
 				// Only write to the cache file if it doesn't exist.
 				if(!file_exists($directory . $cache_name)){
 					if($handle = @fopen($directory . $cache_name, 'w')){
-						fwrite($handle, '@CACHE_TIMEOUT:' . $timeout . ':CACHE_URI:' . $this->spine->Router->uri() . '>>>' . $contents);
+						fwrite($handle, '@CACHE_TIMEOUT:' . $timeout . ':CACHE_URI:' . Router::get_uri() . '>>>' . $contents);
 						fclose($handle);
 						@chmod($directory . $cache_name, 0755);
 					}
@@ -270,7 +269,7 @@
 		 * @param string $uri the uri to check for cache file
 		 * @return boolean
 		 */
-		public function render_cache($uri){
+		public static function render_cache($uri){
 			$uri = md5($uri);
 			$directory = TMP_PATH . 'cache/';
 
@@ -293,12 +292,12 @@
 					$uri = $matches[2];
 
 					// Send the cached copy to the render method.
-					$this->render(str_replace($matches[0], '', $contents));
+					Template::render(str_replace($matches[0], '', $contents));
 					
 				}
 			}
 
-			// Hmm, something happened. No cache then.
+			// Something happened. No cache then.
 			return false;
 		}
 
@@ -310,7 +309,7 @@
 		 * @param string $uri
 		 * @return boolean
 		 */
-		public function delete_cache($uri = null){
+		public static function delete_cache($uri = null){
 			$directory = TMP_PATH . 'cache/';
 			
 			if(empty($uri)){
@@ -341,7 +340,7 @@
 		 *
 		 * @return string
 		 */
-		public function get_compression_type(){
+		public static function get_compression_type(){
 			$compression = '';
 			if(Config::read('Template.enable_gzip_compression')){
 				if(extension_loaded('zlib')){
@@ -362,15 +361,15 @@
 		 * @param string $content the content to write to the section
 		 * @param boolean $overwrite overwrite the current section contents or append the content
 		 */
-		public function write($section, $content, $overwrite = false){
+		public static function write($section, $content, $overwrite = false){
 			if(!$overwrite){
-				if(isset($this->tpl[$section])){
-					$this->tpl[$section] .= $content;
+				if(isset(Template::$tpl[$section])){
+					Template::$tpl[$section] .= $content;
 				}else{
-					$this->tpl[$section] = $content;
+					Template::$tpl[$section] = $content;
 				}
 			}else{
-				$this->tpl[$section] = $content;
+				Template::$tpl[$section] = $content;
 			}
 		}
 
@@ -383,7 +382,7 @@
 		 * @param string $string the value of the action, not always required
 		 * @param boolean $replace
 		 */
-		public function set_header($action, $string = '', $replace = false){
+		public static function set_header($action, $string = '', $replace = false){
 			if(empty($string)){
 				header($action);
 			}else{
@@ -398,14 +397,14 @@
 		 *
 		 * @return array
 		 */
-		public function get_template(){
-			if(!empty($this->user_set_template)){
-				list($folder, $template) = $this->user_set_template;
+		public static function get_template(){
+			if(!empty(Template::$user_set_template)){
+				list($folder, $template) = Template::$user_set_template;
 			}else{
 				list($folder, $template) = Config::read('Template.default_template');
 			}
 
-			return array('folder' => $folder, 'template' => $template);
+			return array($folder, $template);
 		}
 
 		/**
@@ -417,7 +416,7 @@
 		 * @param string $template name of the template file to load
 		 * @param bool $revert
 		 */
-		public function set_template($template, $revert = false){
+		public static function set_template($template, $revert = false){
 			if(strstr($template, '/') !== false){
 				// The user passed in a different template to load, other then default.
 				// Make sure that the template is defined.
@@ -429,13 +428,13 @@
 				if(!file_exists(APP_PATH . 'templates/' . $folder . '/' . $template . '.php') && $revert === false){
 					trigger_error('Failed to load the <strong>' . $template . '</strong> template in <strong>' . $folder . '</strong>', E_USER_ERROR);
 				}else{
-					$this->user_set_template = array($folder, $template);
+					Template::$user_set_template = array($folder, $template);
 				}
 			}else{
 				list($default_folder, $default_template) = Config::read('Template.default_template');
 				
 				if(file_exists(APP_PATH . 'templates/' . $default_folder . '/' . $template . '.php')){
-					$this->user_set_template = array($default_folder, $template);
+					Template::$user_set_template = array($default_folder, $template);
 				}else{
 					trigger_error('Failed to locate template file at ' . BASE_PATH . APP_PATH . 'templates/' . $default_folder . '/' . $template . '.php', E_USER_ERROR);
 				}

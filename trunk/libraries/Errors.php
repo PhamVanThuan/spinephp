@@ -76,40 +76,38 @@
 					self::$recursive++;
 				}
 
-				// Great, found some errors along the way.
-				$spine = Spine::get_instance();
-				$tpl = $spine->Template->get_template();
+				list($folder, $template) = Template::get_template();
 				
 				// Is there an errors template?
-				if(file_exists(APP_PATH . 'templates/' . $tpl['folder'] . '/error.php')){
+				if(file_exists(APP_PATH . 'templates/' . $folder . '/error.php')){
 					// Set the new template.
-					$spine->Template->set_template('error');
+					Template::set_template('error');
 
 					// Write to the template variables.
-					$spine->Template->write('code', self::$run_errors[0]['code'], true);
-					$spine->Template->write('message', self::$run_errors[0]['message'], true);
+					Template::write('code', Errors::$run_errors[0]['code'], true);
+					Template::write('message', Errors::$run_errors[0]['message'], true);
 
-					if(!empty(self::$run_errors[0]['line']) && !empty(self::$run_errors[0]['file'])){
-						$spine->Template->write('details', 'Found in ' . self::$run_errors[0]['file'] . ' on line ' . self::$run_errors[0]['line'], true);
+					if(!empty(Errors::$run_errors[0]['line']) && !empty(Errors::$run_errors[0]['file'])){
+						Template::write('details', 'Found in ' . Errors::$run_errors[0]['file'] . ' on line ' . Errors::$run_errors[0]['line'], true);
 					}else{
-						$spine->Template->write('details', '', true);
+						Template::write('details', '', true);
 					}
 
-					$spine->Template->write('errnum', count(self::$run_errors), true);
+					Template::write('errnum', count(Errors::$run_errors), true);
 
-					if(count(self::$run_errors) > 1){
-						$spine->Template->write('remainder', array_slice(self::$run_errors, 1), true);
+					if(count(Errors::$run_errors) > 1){
+						Template::write('remainder', array_slice(Errors::$run_errors, 1), true);
 					}
 
 					// Reset the errors, so that this isn't run again.
-					self::$run_errors = array();
+					Errors::$run_errors = array();
 
 					// Reset the render.
-					$spine->Template->prepare();
+					Template::prepare();
 				}else{
 					// No template file, just die with the error message.
 					// Not the prettiest, but...
-					die(self::$run_errors[0]['message']);
+					die(Errors::$run_errors[0]['message'] . '<br />' . 'Found in ' . Errors::$run_errors[0]['file'] . ' on line ' . Errors::$run_errors[0]['line']);
 				}
 			}
 		}

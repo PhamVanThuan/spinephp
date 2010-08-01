@@ -19,9 +19,10 @@
 
     abstract class Controller {
 
-		protected $spine;
+		// Array of helpers that are referenced by the View
 		protected $helpers;
 
+		// Default params used by models.
 		public $params = array(
 			'request' => false,
 			'limit' => 10,
@@ -29,17 +30,11 @@
 			'sort' => 'id'
 		);
 
+		// Is set to an object if a template parser is being used instead of the default.
 		public $parser;
-		public $order;
-		public $limit;
-		public $sort;
 		
 		public function __construct(){
-			$this->spine =& Spine::get_instance();
-			
-			/**
-			 * Load the view library and pass the helpers in by reference, but what if we are using a parser?
-			 */
+			// Load the view library and pass the helpers in by reference, but what if we are using a parser?
 			$parser = Config::read('Template.parser');
 			if(!empty($parser)){
 				if(file_exists(APP_PATH . 'templates/parser/' . $parser[0])){
@@ -49,52 +44,25 @@
 					trigger_error('Could not locate requested parser <strong>' . $parser[0] . '</strong>.', E_USER_ERROR);
 				}
 			}
-			
-			$this->View = $this->spine->is_library_loaded('View', true, true);
-			$this->View->helpers = & $this->helpers;
 
-			/**
-			 * Session & Cookies
-			 * Make them easier to access if they have been loaded.
-			 */
-			$this->Session = $this->spine->is_library_loaded('Session', false, true);
-			$this->Cookie = $this->spine->is_library_loaded('Cookie', false, true);
+			// Make sure that the view library is loaded and that we reference the helpers.
+			Spine::load('View');
+			View::$helpers =& $this->helpers;
 
-			/**
-			 * Load in any other libraries that may have been set, only if the config options
-			 * has been enabled though.
-			 */
-			if(Config::read('Library.set_controller')){
-				foreach($this->spine->libraries as $lib){
-					if(!isset($this->{$lib}) && isset($this->spine->{$lib})){
-						$this->{$lib} =& $this->spine->{$lib};
-					}
-				}
-			}
-
-			/**
-			* Model Autoloading
-			*
-			* In some cases, a controller may want it's associated model loaded. This is usually
-			* the case when the naming is the same, so if they loaded the HomeController, they would
-			* want to load the HomeModel.
-			* To enable autoloading of models, in the controller the $autoload_model property can be
-			* set to true.
-			*/
-			
+			// Is model autoloading enabled for the controller.
 			if(isset($this->enable_model_autoload) && $this->enable_model_autoload === true){
-				// Load in the Model Abstract Library
-				$this->spine->is_library_loaded('Model', true, false, false);
+				// Load the model class if available.
+				Spine::load('Model');
 				if(isset($this->name)){
-					$this->load($this->name);
+					// Load the model.
+					$this->model($this->name);
 				}
 			}
 		}
 
 		/**
-		* The index method is abstract, meaning classes that extends this
-		* class must have this method, or errors will start popping up.
-		*/
+		 * abstract index
+		 */
 		abstract public function index();
 
 		/**
@@ -107,7 +75,7 @@
 		 * @param boolean $overwrite if section value is overwitten
 		 */
 		public function write($variable, $content, $overwrite = false){
-			$this->spine->Template->write($variable, $content, $overwrite);
+			Template::write($variable, $content, $overwrite);
 		}
 
 		/**
@@ -127,7 +95,7 @@
 					$this->View->set($key, $val);
 				}
 			}
-			$this->spine->Template->write($variable, $this->View->load($view), $overwrite);
+			Template::write($variable, View::load($view), $overwrite);
 		}
 
 		/**
@@ -136,7 +104,16 @@
 		 * Alias of Template::set_header
 		 */
 		public function set_header($action, $string = null, $replace = false){
-			$this->spine->Template->set_header($action, $string, $replace);
+			Template::set_header($action, $string, $replace);
+		}
+
+		/**
+		 * set
+		 *
+		 * Alias of View::set
+		 */
+		public function set($variable, $value){
+			View::set($variable, $value);
 		}
 
 		/**
@@ -149,7 +126,7 @@
 		 * @param string $controller name of controller to dispatch too
 		 */
 		public function dispatch($controller){
-			$this->spine->Router->dispatch($controller, false, isset($this->name) ? $this->name : '');
+			Router::dispatch($controller, true, false, isset($this->name) ? $this->name : null);
 		}
 
 		/**
@@ -158,8 +135,8 @@
 		 * Alias of Breadcrumbs::crumb
 		 */
 		public function crumb($name, $url = null){
-			if($this->spine->is_library_loaded('Breadcrumbs')){
-				$this->spine->Breadcrumbs->crumb($name, $url);
+			if(Spine::loaded('Breadcrumbs')){
+				Breadcrumbs::crumb($name, $url);
 			}else{
 				return null;
 			}
@@ -171,7 +148,7 @@
 		 * Alias of Plugin::load
 		 */
 		public function plugin($plugin){
-			$this->spine->Plugin->load($plugin);
+			Plugin::load($plugin);
 		}
 
 		/**
@@ -180,7 +157,7 @@
 		 * Alias of Template::prepare
 		 */
 		public function prepare(){
-			$this->spine->Template->prepare();
+			Template::prepare();
 		}
 
 		/**
@@ -197,10 +174,12 @@
 		 * @return boolean on failure
 		 */
 		public function redirect($url, $exit = true){
-			$url = $this->spine->Router->build_url($url);
-			header("Location: " . $url);
-			if($exit === true){
-				exit;
+			$url = Router::build_url($url);
+			if($url){
+				header("Location: " . $url);
+				if($exit === true){
+					exit;
+				}
 			}
 		}
 
@@ -212,20 +191,21 @@
 		*
 		* @param string $model name of model to load
 		*/
-		public function load($model){
+		public function model($model){
 			// Load in the Model class if needed
-			$this->spine->is_library_loaded('Model', true, false, false);
+			Spine::loaded('Model', true);
 			
 			// Replace any hyphons with underscores
 			$model = strtolower(str_replace('-', '_', $model));
+			
 			// Attempt to locate the appropriate model, first look in the application/models
-			if(!in_array($model . '.model.php', array_map('basename', get_included_files()))){
-				if(file_exists(APP_PATH . 'models/' . $model . '.model.php')){
-					require(APP_PATH . 'models/' . $model . '.model.php');
+			if(!in_array($model . '.php', array_map('basename', get_included_files()))){
+				if(file_exists(APP_PATH . 'models/' . $model . '.php')){
+					require(APP_PATH . 'models/' . $model . '.php');
 				}else{
 				// Couldn't find it there, perhaps they have nested it inside a folder but forgot to specify.
-					if(file_exists(APP_PATH . 'models/' . $model . '/' . $model . '.model.php')){
-						require(APP_PATH . 'models/' . $model . '/' . $model . 'model.php');
+					if(file_exists(APP_PATH . 'models/' . $model . '/' . $model . '.php')){
+						require(APP_PATH . 'models/' . $model . '/' . $model . '.php');
 					}
 				}
 			}
@@ -235,12 +215,13 @@
 			$model = ucfirst($model);
 
 			if(class_exists($class, false)){
+				// Excellent, pass in a few properties and set params to reference our params.
 				$this->{$model} = new $class;
 				$this->{$model}->name = $model;
 				$this->{$model}->params =& $this->params;
 
-				// Setup the model.
-				$this->{$model}->setup();
+				// Run the model.
+				$this->{$model}->run();
 			}else{
 				return false;
 			}
