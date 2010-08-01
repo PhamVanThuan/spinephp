@@ -1,7 +1,7 @@
 <?php
 
 	/**
-	* Home Controller
+	* Index Controller
 	*
 	* This is the default controller, when nothing is specified.
 	* Shows a pretty welcome message, and that's about it.
@@ -30,30 +30,12 @@
 		/**
 		 * Global helpers to load for every method of the controller, available to all methods.
 		 */
-		public $helpers = array('Html');
+		public $helpers = array();
 		
 		public function index(){
-			$this->write('title', 'Welcome to Spine');
 			$this->write_view('content', 'index');
 			$this->prepare();
 		}
-
-		public function docs(){
-			$this->redirect('http://www.spinephp.org/wiki/SpinePHP:Guide', true);
-		}
-
-		public function about(){
-			$this->write('title', 'About Spine');
-			$this->write_view('content', 'about');
-			$this->prepare();
-		}
-
-		public function test(){
-			if($this->params['request']){
-				return $this->Index->get_users();
-			}
-		}
-
 	}
 
 ?>
