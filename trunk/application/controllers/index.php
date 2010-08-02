@@ -31,9 +31,18 @@
 		 * Global helpers to load for every method of the controller, available to all methods.
 		 */
 		public $helpers = array();
+
+		/**
+		 * Array of libraries you want to make available for this controller. Individual libraries
+		 * can be loaded via Spine::load() inside of a method. Application wide libraries can be
+		 * loaded in Config.Library.load.
+		 */
+		public $libs = array();
 		
 		public function index(){
-			$this->write_view('content', 'index');
+			Plugin::load(array('smarty/smarty.plugin', 'Smarty'), true);
+			$this->Smarty->assign('i', 0);
+			$this->write('content', $this->Smarty->fetch('index.php'));
 			$this->prepare();
 		}
 	}

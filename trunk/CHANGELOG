@@ -3,6 +3,16 @@ Spine PHP Change Log (http://www.spinephp.org/)
 
 THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE
 
+(3rd August 2010)
+-----------------------------------------------
+[changed]: Folder structure has been updated to allow better understanding of where
+things should belong.
+[changed]: A template parser is no longer supported, however support for Smarty will
+be added.
+[new]: Libraries can be autoloaded by a controller via the $libs property.
+[new]: Basic Smarty implementation. Smarty cannot use Helpers, both in views and in 
+templates. Smarty can be unhooked, which stops the hook and calls the unhook param.
+
 (1st August 2010)
 -----------------------------------------------
 [changed]: The entire system has been re-done as a static system to allow easier

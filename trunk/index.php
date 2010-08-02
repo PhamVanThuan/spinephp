@@ -34,7 +34,7 @@
 	 * The name of the library directory. Shouldn't need
 	 * to be changed. If you did, change it here.
 	 */
-	$library_directory = 'libraries';
+	$library_directory = 'libs';
 
 	/**
 	 * Temp Directory
@@ -42,7 +42,7 @@
 	 * The name of the tmp folder, by default this is tmp.
 	 * If you have changed the name of the folder, change it here.
 	 */
-	$tmp_directory = 'tmp';
+	$tmp_directory = 'temp';
 
 	/**
 	 * Plugin Directory
@@ -50,18 +50,17 @@
 	$plugin_directory = 'plugins';
 
 	// Let's set a few constants.
-	define('APP_PATH', $application_directory . (substr($application_directory, -1) === '/' ? '' : '/'));
-	define('LIB_PATH', $library_directory . (substr($library_directory, -1) === '/' ? '' : '/'));
-	define('TMP_PATH', $tmp_directory . (substr($tmp_directory, -1) === '/' ? '' : '/'));
-	define('DB_PATH', APP_PATH . 'database/');
+	define('APP_PATH', $application_directory . '/');
+	define('LIB_PATH', 'core/' . $library_directory . '/');
+	define('DB_PATH', 'core/' . 'database/');
+	define('CORE_PATH', 'core/');
+	define('TMP_PATH', $tmp_directory . '/');
 	define('BASE_PATH', str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']));
 
 	// The base path may need to be set to something else.
 	// If this one fails, then who knows...
 	if(!is_dir(BASE_PATH)){
-		if(!is_dir(BASE_PATH)){
-			die("Dang, couldn't set a base path. Please consult the manual for futher instructions.");
-		}
+		die("Dang, couldn't set a base path. Please consult the manual for futher instructions.");
 	}
 
 	// Do a quick check on them.

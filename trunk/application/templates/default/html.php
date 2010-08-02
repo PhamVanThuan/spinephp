@@ -10,6 +10,5 @@
 
 		<?php echo $tpl['content']; ?>
 
-
     </body>
 </html>
