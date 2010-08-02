@@ -1,0 +1,45 @@
+Spine PHP Change Log (http://www.spinephp.org/)
+---------------------------------------------------------------------------------------
+
+THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE
+
+(3rd August 2010)
+-----------------------------------------------
+[changed]: Folder structure has been updated to allow better understanding of where
+things should belong.
+[changed]: A template parser is no longer supported, however support for Smarty will
+be added.
+[new]: Libraries can be autoloaded by a controller via the $libs property.
+[new]: Basic Smarty implementation. Smarty cannot use Helpers, both in views and in 
+templates. Smarty can be unhooked, which stops the hook and calls the unhook param.
+
+(1st August 2010)
+-----------------------------------------------
+[changed]: The entire system has been re-done as a static system to allow easier
+access to the different libraries.
+[changed]: File names no longer have .view, .model, .section and .controller
+file extensions, it's just .php.
+[new]: install.php checks environment for correct configuration.
+
+(29th July 2010)
+-----------------------------------------------
+[new]: changelog
+[new]: Spine::Hooks. Hooks can now be added, either via plugins or as files located
+in /application/hooks.
+[new]: Spine::Plugin. Plugins can be implemented into the system, using hooks, being
+called in a controller or by using helpers.
+[new]: Template Engine support added for engines such as Smarty. Currently only been
+tested to work with the Smarty engine.
+[changed]: Registery has been changed to Spine.
+[fixed]: Spine::load_library, useless parameters removed, replaced by functions that
+can do the same thing.
+[changed]: Hook Controller.afterConstruct is now located in Spine::Router, after the
+controller has been instantiated.
+[changed]: View::load_plugin renamed to View::plugin.
+[changed]: View::$loaded renamed to View::$views.
+[changed]: Helpers::load_helpers renamed to Helpers::load.
+[changed]: Controller::load_model renamed to Controller::load.
+[new]: Added Controller::prepare.
+[changed]: Render is no longer done automatically, user must call Controller::prepare
+to initiate the rendering process.
+[fixed]: Bug when requesting a controller twice would attempt to reload the file.
