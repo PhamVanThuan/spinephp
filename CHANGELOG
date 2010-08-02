@@ -11,7 +11,7 @@ things should belong.
 be added.
 [new]: Libraries can be autoloaded by a controller via the $libs property.
 [new]: Basic Smarty implementation. Smarty cannot use Helpers, both in views and in 
-templates. Smarty can be unhooked, which stops the hook and calls the unhook param.
+templates. Smarty can be unhooked, which will call a method supplied in params unhook.
 
 (1st August 2010)
 -----------------------------------------------
