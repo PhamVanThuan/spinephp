@@ -55,7 +55,7 @@
 	 * called updates.
 	 * This can produce unexpected results if used incorrectly.
 	 */
-	Config::write('General.enable_method_fallback', true);
+	Config::write('General.enable_method_fallback', false);
 
 	/**
 	 * Session Cookie Name
@@ -108,18 +108,19 @@
 	Config::write('Cookie.httponly', false);
 
 	/**
-	 * Plugin Load
+	 * Extenders Load
 	 *
-	 * A list of plugins to load when the system starts up.
+	 * An array of extenders you wish to load. Do not include the
+	 * .plugin.php in the filename.
 	 * Format:
 	 * array(
-	 *    array('plugin_file', 'PluginClass'),
-	 *    array('folder_name/plugin_file', 'PluginClass')
+	 *    array('extender_file', 'ExtenderClass'),
+	 *    array('folder_name/extender_file', 'ExtenderClass')
 	 * );
 	 */
-	Config::write('Plugin.load', array(
+	Config::write('Extenders.load', array(
 			array(
-				'geshi/geshi.plugin',
+				'geshi/geshi',
 				'Geshi'
 			)
 		)

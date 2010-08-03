@@ -1,16 +1,16 @@
 <?php
 	
 	/**
-	 * SpinePHP: An Open Source Framework developed in PHP5.
+	 * Spine PHP: An Open Source MVC Framework written in PHP5.
 	 *
-	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
-	 * 
-	 * Licensed under the MIT License.
+	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
+	 *
+	 * Licensed under the BSD License.
 	 * Redistribution of files must retain the above copyright notice.
 	 *
 	 * @copyright	Copyright 2010, Jason Lewis
 	 * @link		(http://www.spinephp.org)
-	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 * @license		BSD License (http://www.opensource.org/licenses/bsd-license.php)
 	 */
 
 	/**
@@ -108,5 +108,5 @@
 	Hooks::run('System.before');
 
 	require_once(LIB_PATH . 'Spine.php');
-	Spine::run();
+	Spine::init();
 ?>

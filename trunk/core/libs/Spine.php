@@ -9,14 +9,14 @@
      * Everything is stored in the $spine, so we don't pollute the global
      * namespace. Makes it all nice and clean.
 	 *
-	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
 	 *
-	 * Licensed under the MIT License.
+	 * Licensed under the BSD License.
 	 * Redistribution of files must retain the above copyright notice.
 	 *
-	 * @copyright	Copyright 2010, Jason Lewis
-	 * @link		(http://www.spinephp.org)
-	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 * @copyright	Copyright 2010, Jason Lewis, Spine PHP Team
+	 * @link		<http://www.spinephp.org>
+	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 
     class Spine {
@@ -24,7 +24,7 @@
 		// Array consisting of libraries that have been loaded.
 		public static $libs = array();
 
-		public static function run(){
+		public static function init(){
 			// Load important libraries.
 			Spine::load('Controller');
 			Spine::load('Object');
@@ -32,21 +32,24 @@
 			Spine::load('Template');
 			Spine::load('Helpers');
 			Spine::load('Extender');
+			Spine::load('Plugin');
+			Spine::load('Inflector');
 
 			// Set the error handler, before running any classes.
 			// Looking at changing to exceptions in the future.
 			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
 
-			// Autoload any plugins.
-			$plugins = Config::read('Plugin.load');
-			if(!empty($plugins)){
-				foreach($plugins as $plugin){
-					Plugin::load($plugin);
+
+			//Autoload any extenders.
+			$extenders = Config::read('Extenders.load');
+			if(!empty($extenders)){
+				foreach($extenders as $extender){
+					Extender::load($extender);
 				}
 			}
 
 			// Autoload any libraries.
-			$libraries = Config::read('Library.autoload');
+			$libraries = Config::read('Library.load');
 			if(!empty($libraries)){
 				foreach($libraries as $library){
 					Spine::load($library);
@@ -63,7 +66,7 @@
 
 			if(Spine::loaded('Session')){
 				// Start the session.
-				(new Session);
+				Session::init();
 			}
 
 			// The router can now do its magic.
@@ -78,6 +81,9 @@
 				// Run any hooks on Controller.after
 				Hooks::run('Controller.after');
 			}
+
+			// Everything has run.
+			Spine::destruct();
 
 		}
 
@@ -157,11 +163,9 @@
 		* Pretty much, when all is done. This will fire. Closes any
 		* database connections.
 		*/
-		public function __destruct(){
-			// Close any database connections, if any.
-			if($this->is_database_loaded('DB')){
-				$this->DB->close();
-			}
+		public function destruct(){
+			// Find any errors
+			Errors::checkup();
 
 			// Run any hooks on System.after
 			Hooks::run('System.after');
