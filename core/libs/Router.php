@@ -7,14 +7,14 @@
      * what the hell is going to happen. Turns all the jargon into
      * a nicely formatted array and such.
 	 *
-	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	* Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
 	 *
-	 * Licensed under the MIT License.
+	 * Licensed under the BSD License.
 	 * Redistribution of files must retain the above copyright notice.
 	 *
-	 * @copyright	Copyright 2010, Jason Lewis
-	 * @link		(http://www.spinephp.org)
-	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 * @copyright	Copyright 2010, Jason Lewis, Spine PHP Team
+	 * @link		<http://www.spinephp.org>
+	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 
     class Router extends Object {
@@ -163,6 +163,10 @@
 
 			// Check for a reserved word in the method.
 			Router::$request['method'] = check_reserved_word(Router::$request['method']);
+
+			// Replace any hyphons with underscores.
+			Router::$request['method'] = str_replace('-', '_', Router::$request['method']);
+			Router::$request['controller'] = str_replace('-', '_', Router::$request['controller']);
 		}
 
 		/**
@@ -186,20 +190,11 @@
 		 * @param boolean $return_object return the new controller instead of running any methods
 		 * @param string $caller the name of the controller that called dispatch
 		 */
-		public static function dispatch($controller, $uri_controller = true, $return_object = false, $caller = null){
-			// Sometimes a controller may be in the form of folder/subfolder/Controller
-			if(strstr($controller, '/') !== false){
-				$tmp = explode('/', $controller);
-				$controller = array_pop($tmp);
-				$folder = implode('/', $tmp) . '/';
-			}else{
-				$folder = '';
-			}
-
-			// Now to find the controller.
-			$controller = explode('-', strtolower($controller));
-			$fn_controller = implode('_', $controller);
-			$cn_controller = implode('', array_map('ucfirst', $controller)) . 'Controller';
+		public static function dispatch($controller, $uri_controller = false, $return_object = false, $caller = null){
+			// Controller class name and file name.
+			$cn_controller = Inflector::classname($controller . 'Controller');
+			$mn_controller = Inflector::methodname($controller);
+			$fn_controller = $controller;
 
 			// Check to see if the current loaded controller is the same as the requesting controller.
 			if(isset(Router::$controller) && get_class(Router::$controller) == $cn_controller){
@@ -215,18 +210,20 @@
 
 			// If the controller is the last called controller the system is on a continuous loop.
 			if($cn_controller == Router::$controller_loop){
-				trigger_error('System prevented a continuous loop from occuring. You attempted to dispatch to a '
-					. 'controller which was used to dispatch to the current controller.', E_USER_ERROR);
+				trigger_error('System prevented a continuous loop from occuring. You attempted to dispatch to a controller which was used to dispatch to the current controller.', E_USER_ERROR);
 			}
 
 			// Attempt to load the controller file.
-			if(!file_exists(APP_PATH . 'controllers/' . $folder . $fn_controller . '.php')){
-				// Could not locate a controller, perhaps try a method in the default controller?
-				if(!file_exists(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.php') || Config::read('General.enable_method_fallback') === false){
-						trigger_error("Could not find requested controller <strong>" . $cn_controller . "</strong>.<br />Location: " . BASE_PATH
-							. APP_PATH . "controllers/" . $fn_controller . ".php", E_USER_ERROR);
+			if(!file_exists(APP_PATH . 'controllers/' . $fn_controller . '.php')){
+				
+				// Could not locate a controller, perhaps try a method in the default controller if allowed.
+				if(!file_exists(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.php') || Config::read('General.enable_method_fallback') === false || $uri_controller === false){
+						trigger_error("Could not find requested controller <strong>" . $cn_controller . "</strong>.<br />Location: " . BASE_PATH . APP_PATH . "controllers/" . $fn_controller . ".php", E_USER_ERROR);
 				}else{
-					// We found the default controller and we were allowed to fallback to it.
+					// Set the controller class name to the default controller.
+					$cn_controller = Inflector::camelize(Config::read('General.default_controller')) . 'Controller';
+					
+					// Has the default controller already been loaded.
 					if(!in_array($cn_controller, get_declared_classes())){
 						require_once(APP_PATH . 'controllers/' . Config::read('General.default_controller') . '.php');
 					}
@@ -235,17 +232,17 @@
 					Hooks::run('Controller.before');
 
 					// Instantiate the default controller
-					$cn_controller = explode('_', strtolower(Config::read('General.default_controller')));
-					$cn_controller = implode('', array_map('ucfirst', $cn_controller)) . 'Controller';
 					if(!class_exists($cn_controller, false)){
 						trigger_error("Could not find the controller class <strong>" . $cn_controller . "</strong>.", E_USER_ERROR);
 					}else{
+						
 						$controller = new $cn_controller;
-
+						
 						// Check if there is a method by the name of the controller, falling back.
-						if(method_exists($controller, $fn_controller)){
+						if(method_exists($controller, $mn_controller)){
 							// The method is now the controller.
-							Router::$request['method'] = $fn_controller;
+							Router::$request['method'] = $mn_controller;
+							
 							// And the controller is the default controller.
 							Router::$request['controller'] = Config::read('General.default_controller');
 						}else{
@@ -257,7 +254,7 @@
 			}else{
 				// The requested controller exists.
 				if(!in_array($cn_controller, get_declared_classes())){
-					require_once(APP_PATH . 'controllers/' . $folder . $fn_controller . '.php');
+					require_once(APP_PATH . 'controllers/' . $fn_controller . '.php');
 				}
 				
 				if(!class_exists($cn_controller, false)){
@@ -270,6 +267,8 @@
 					$controller = new $cn_controller;
 				}
 			}
+
+			
 
 			/**
 			 * If we have made it this far, the controller has been loaded successfully and stored in
@@ -289,24 +288,24 @@
 
 			// Run any hooks on Controller.afterConstruct
 			Hooks::run('Controller.afterConstruct');
-
+			
 			// Return this new object so that it can be used elswhere.
 			if($return_object){
 				return $controller;
-			}else{
+			}else{				
 				// Have they enabled method overwriting in the controller.
 				if(isset($controller->enable_method_overwrite) && $controller->enable_method_overwrite === true){
 					// Method Overwriting is enabled, fire the index method.
 					$controller->index();
 				}else{
+					
 					// No overwriting, make sure that the method we want exists.
 					if(method_exists($controller, Router::$request['method'])){
 						// Found the method, fire it.
 						$controller->{Router::$request['method']}();
 					}else{
 						// No method, all that for nothing.
-						trigger_error('Invalid method supplied. Failed to find method <strong>' . Router::$request['method']
-							. '()</strong> in <strong>' . $cn_controller . '</strong>.', E_USER_ERROR);
+						trigger_error('Invalid method supplied. Failed to find method <strong>' . Router::$request['method'] . '()</strong> in <strong>' . $cn_controller . '</strong>.', E_USER_ERROR);
 					}
 				}
 			}

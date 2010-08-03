@@ -11,20 +11,20 @@
 	 * Extenders are similar to hook files, except extenders are required to
 	 * contain certain methods. Hook files can be simple procedural code.
 	 *
-	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
 	 *
-	 * Licensed under the MIT License.
+	 * Licensed under the BSD License.
 	 * Redistribution of files must retain the above copyright notice.
 	 *
-	 * @copyright	Copyright 2010, Jason Lewis
-	 * @link		(http://www.spinephp.org)
-	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 * @copyright	Copyright 2010, Jason Lewis, Spine PHP Team
+	 * @link		<http://www.spinephp.org>
+	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 
-	class Extender extends Object {
+	class Extender {
 
 		// Array consisting of extenders that have been loaded.
-		public static $extenders = array();
+		public static $loaded = array();
 
 		/**
 		 * load
@@ -33,7 +33,7 @@
 		 * Extenders that are loaded after their hook can be executed
 		 * by setting $execute to true.
 		 *
-		 * @param mixed $extend
+		 * @param array $extend
 		 * @param boolean $execute
 		 * @return boolean
 		 */
@@ -43,22 +43,22 @@
 			}
 			
 			list($file, $class) = $extend;
-			
-			if(file_exists(BASE_PATH . 'extenders/' . $file . '.php')){
-				require_once(BASE_PATH . 'extenders/' . $file . '.php');
+
+			if(file_exists(BASE_PATH . 'extenders/' . $file . '.extend.php') && !array_key_exists($class, Extender::$loaded)){
+				require_once(BASE_PATH . 'extenders/' . $file . '.extend.php');
 
 				// Extender class name
-				$cn_extender = $class . 'Extender';
+				$cn_extender = Inflector::camelize($class . 'Extender');
 
 				// Does the class name exist.
 				if(class_exists($cn_extender, false)){
 					// Place the new extender instance in the loaded array.
-					Extender::$extender[$class] = new $cn_extender;
+					Extender::$loaded[$class] = new $cn_extender;
 
 					// Set the extenders hooks.
-					if(method_exists(Extender::$extenders[$class], 'set_hooks')){
+					if(method_exists(Extender::$loaded[$class], 'set_hooks')){
 						// Set the relevavant hooks.
-						Extender::$extenders[$class]->set_hooks();
+						Extender::$loaded[$class]->set_hooks();
 					}else{
 						// No hooks, bad extender.
 						trigger_error('Failed to set hooks for extender ' . $cn_extender . '. This extender is deemed invalid and should not be used.', E_USER_ERROR);
@@ -68,14 +68,34 @@
 					if($execute === true){
 						Extender::execute($class);
 					}
+
+					return true;
+				}
+			}elseif(array_key_exists($class, Extender::$loaded)){
+				if($execute === true){
+					Extender::execute($class);
+					return true;
 				}
 			}
 
 			return false;
 		}
 
-		public static function unload($extend){
-			
+		/**
+		 * unload
+		 *
+		 * Unload an extender from the loaded extenders.
+		 *
+		 * @param string $name
+		 */
+		public static function unload($name){
+			if(isset(Extender::$loaded[$name])){
+				// The extender has been loaded, unregister the hooks. This will call the unhook method supplied.
+				Hooks::unregister(null, $name);
+
+				// Remove from loaded extenders.
+				unset(Extender::$loaded[$name]);
+			}
 		}
 
 		/**
@@ -88,16 +108,16 @@
 		 *
 		 * @param string $extend
 		 */
-		public static function execute($extend){
-			if(isset(Extender::$extenders[$extend])){
+		public static function execute($name){
+			if(isset(Extender::$loaded[$name])){
 				// The extender has been loaded. Safe to execute.
-				if(method_exists(Extender::$extenders[$extend], 'execute')){
-					Extender::$extenders[$extend]->execute();
+				if(method_exists(Extender::$loaded[$name], 'execute')){
+					Extender::$loaded[$name]->execute();
 				}else{
-					trigger_error('Failed to execute extender ' . $extend . 'Extender. Execute method was not found.', E_USER_ERROR);
+					trigger_error('Failed to execute extender ' . $name . 'Extender. Execute method was not found.', E_USER_ERROR);
 				}
 			}else{
-				trigger_error('Failed to execute a non-loaded extender (<strong>' . $extend . '</strong>).', E_USER_ERROR);
+				trigger_error('Failed to execute a non-loaded extender (<strong>' . $name . '</strong>).', E_USER_ERROR);
 			}
 		}
 

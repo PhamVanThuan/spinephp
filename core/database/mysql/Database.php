@@ -1,11 +1,19 @@
 <?php
 
     /**
-    * Database.php
-    *
-    * The MySQL Database Library. Allows connection to MySQL, as well as all other
-    * MySQL functions. Simplifies a lot of the methods to allow for easier calling.
-    */
+     * Database.php
+     *
+     * The MySQL Database Library. Allows connection to MySQL, as well as all other
+     * MySQL functions. Simplifies a lot of the methods to allow for easier calling.
+	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
+	 *
+	 * Licensed under the BSD License.
+	 * Redistribution of files must retain the above copyright notice.
+	 *
+	 * @copyright	Copyright 2010, Jason Lewis, Spine PHP Team
+	 * @link		<http://www.spinephp.org>
+	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
+     */
     class Database extends Object {
 
 		public $connection;

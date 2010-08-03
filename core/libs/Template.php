@@ -12,14 +12,14 @@
 	 * Also handles page caching, to maximise performance, if you're that
 	 * way inclined.
 	 *
-	 * Copyright (c) 2010, Jason Lewis (http://www.spinephp.org)
+	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
 	 *
-	 * Licensed under the MIT License.
+	 * Licensed under the BSD License.
 	 * Redistribution of files must retain the above copyright notice.
 	 *
-	 * @copyright	Copyright 2010, Jason Lewis
-	 * @link		(http://www.spinephp.org)
-	 * @license		MIT License (http://www.opensource.org/licenses/mit-license.html)
+	 * @copyright	Copyright 2010, Jason Lewis, Spine PHP Team
+	 * @link		<http://www.spinephp.org>
+	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 
     class Template extends Object {
@@ -119,9 +119,6 @@
 					Template::write_cache($output);
 				}
 			}
-
-			// Did we find any errors along the way?
-			Errors::checkup();
 
 			// Get the compression type, like gzip.
 			$compression = Template::get_compression_type();

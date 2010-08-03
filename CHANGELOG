@@ -3,6 +3,13 @@ Spine PHP Change Log (http://www.spinephp.org/)
 
 THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE
 
+(4th August 2010)
+-----------------------------------------------
+[new]: Inflector class added.
+[changed]: What were plugins are now called extenders. Plugins have been redone.
+[new]: Extender class added.
+[new]: Thumbnail plugin created, this is more of an example plugin.
+
 (3rd August 2010)
 -----------------------------------------------
 [changed]: Folder structure has been updated to allow better understanding of where
