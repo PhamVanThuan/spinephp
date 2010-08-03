@@ -40,7 +40,7 @@
 		public $libs = array();
 		
 		public function index(){
-			Plugin::load(array('smarty/smarty.plugin', 'Smarty'), true);
+			//Plugin::load(array('smarty/smarty.plugin', 'Smarty'), true);
 			$this->Smarty->assign('i', 0);
 			$this->write('content', $this->Smarty->fetch('index.php'));
 			$this->prepare();

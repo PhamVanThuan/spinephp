@@ -25,17 +25,16 @@
 		public static $libs = array();
 
 		public static function run(){
-			// Let's gather up the important libraries and start them up.
-			// There libraries need the Registry passed to them.
+			// Load important libraries.
 			Spine::load('Controller');
 			Spine::load('Object');
 			Spine::load('Router');
 			Spine::load('Template');
 			Spine::load('Helpers');
-			Spine::load('Plugin');
+			Spine::load('Extender');
 
 			// Set the error handler, before running any classes.
-			// Looking at changing to exceptions.
+			// Looking at changing to exceptions in the future.
 			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
 
 			// Autoload any plugins.

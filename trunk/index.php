@@ -45,11 +45,9 @@
 	$tmp_directory = 'temp';
 
 	/**
-	 * Plugin Directory
+	 * Nothing below here should be changed unless your a wacko!
+	 * Hah! Nah, go nuts. If you bugger it, your fault not mine.
 	 */
-	$plugin_directory = 'plugins';
-
-	// Let's set a few constants.
 	define('APP_PATH', $application_directory . '/');
 	define('LIB_PATH', 'core/' . $library_directory . '/');
 	define('DB_PATH', 'core/' . 'database/');
