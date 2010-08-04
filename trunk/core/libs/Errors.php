@@ -81,7 +81,7 @@
 				// Is there an errors template?
 				if(file_exists(APP_PATH . 'templates/errors/html.php')){
 					// Set the new template.
-					Template::set_template('error');
+					Template::set_template('errors/html');
 
 					// Write to the template variables.
 					Template::write('code', Errors::$run_errors[0]['code'], true);
