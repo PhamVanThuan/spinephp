@@ -79,7 +79,7 @@
 				list($folder, $template) = Template::get_template();
 				
 				// Is there an errors template?
-				if(file_exists(APP_PATH . 'templates/' . $folder . '/error.php')){
+				if(file_exists(APP_PATH . 'templates/errors/html.php')){
 					// Set the new template.
 					Template::set_template('error');
 
