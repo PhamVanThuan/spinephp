@@ -246,8 +246,10 @@
 							// And the controller is the default controller.
 							Router::$request['controller'] = Config::read('General.default_controller');
 						}else{
-							// Failed to fallback to the default controller.
+							// Failed to fallback to the default controller, return to abort from dispatching.
 							trigger_error("Attempted to fallback to a method but failed to locate <strong>" . $fn_controller . "()</strong> in default controller.", E_USER_ERROR);
+
+							return false;
 						}
 					}
 				}
