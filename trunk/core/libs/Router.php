@@ -62,7 +62,7 @@
 					}
 				}else{
 					// A request was sent to the browser.
-					$uri = $this->check_special_requests($_GET['request']);
+					$uri = Router::check_special_requests($_GET['request']);
 					$uri = array_clean(explode('/', $uri));
 
 					if(count($uri) > 1){
