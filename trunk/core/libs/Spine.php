@@ -24,11 +24,12 @@
 		// Array consisting of libraries that have been loaded.
 		public static $libs = array();
 
-		public static function init(){
+		public static function instance(){
 			// Load important libraries.
 			Spine::load('Controller');
 			Spine::load('Object');
-			Spine::load('Router');
+			Spine::load('Request');
+			Spine::load('Router_new');
 			Spine::load('Template');
 			Spine::load('Helpers');
 			Spine::load('Extender');
@@ -39,6 +40,15 @@
 			// Looking at changing to exceptions in the future.
 			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
 
+			// Load the router config file to set user-defined routes.
+			Router::load();
+
+			// Set the default route.
+			Router::register(
+				'default',
+				'(:controller(/:action(/:id(/:any))))(:special)',
+				array('controller' => 'welcome', 'action' => 'index')
+			);
 
 			//Autoload any extenders.
 			$extenders = Config::read('Extenders.load');
@@ -64,24 +74,24 @@
 				}
 			}
 
+			// Start sessions?
 			if(Spine::loaded('Session')){
 				// Start the session.
-				Session::init();
+				Session::instance();
 			}
 
-			// The router can now do its magic.
-			Router::route();
+			// Use Request to get a new request instance from the current URI.
+			if(Request::instance()){
+				// Check if we have a cached copy before dispatching.
+				if(Template::render_cache(Request::$instance->get_uri()) === false){
+					// Dispatch to the request instance.
+					Request::$instance->dispatch();
 
-			// Check if we have a cached copy before dispatching.
-			if(Template::render_cache(Router::get_uri()) === false){
-				// No cached copy.
-				// Dispatch to the controller.
-				Router::dispatch(Router::$request['controller'], true, null, true);
-
-				// Run any hooks on Controller.after
-				Hooks::run('Controller.after');
+					// Run any hooks on Controller.after
+					Hooks::run('Controller.after');
+				}
 			}
-
+			
 			// Everything has run.
 			Spine::destruct();
 
@@ -166,6 +176,12 @@
 		public function destruct(){
 			// Find any errors
 			Errors::checkup();
+
+			// Send to the render method, where the actually rendering occurs
+			Template::render(Template::$output);
+
+			// Run any hooks on Display.after
+			Hooks::run('Display.after');
 
 			// Run any hooks on System.after
 			Hooks::run('System.after');

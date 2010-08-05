@@ -108,5 +108,5 @@
 	Hooks::run('System.before');
 
 	require_once(LIB_PATH . 'Spine.php');
-	Spine::init();
+	Spine::instance();
 ?>

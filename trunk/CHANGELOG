@@ -1,7 +1,15 @@
 Spine PHP Change Log (http://www.spinephp.org/)
 ---------------------------------------------------------------------------------------
 
-THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE
+THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE AT THIS TIME
+
+(5th August 2010)
+-----------------------------------------------
+[changed]: Router class changed to support user-defined routes to prevent bad URLs.
+[new]: Request class handles input request, special requests and URL building.
+[changed]: Error template is now it's own template, not part of a template.
+[fixed]: User defined routes can now specify controllers in subdirectories.
+[new]: URI can be constructed from a route.
 
 (4th August 2010)
 -----------------------------------------------
