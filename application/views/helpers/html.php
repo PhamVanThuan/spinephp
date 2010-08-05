@@ -17,16 +17,17 @@
 		/**
 		 * link
 		 *
-		 * Return a correctly formatted HTML link tag.
+		 * Return a correctly formatted HTML link tag, either from
+		 * a route or not.
 		 *
 		 * @param mixed $url
 		 * @param string $text
 		 * @param array $attr
 		 * @return string
 		 */
-		public function link($url, $text = null, $attr = array()){
+		public function link($url, $text = null, $route = null, $attr = array()){
 			// Build the URL using the Routers method.
-			$url = Router::build_url($url);
+			$url = Request::build_uri($url, $route);
 
 			// Parse any attributes.
 			$attr = Helpers::parse_attributes($attr);
