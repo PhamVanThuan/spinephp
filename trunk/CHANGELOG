@@ -10,6 +10,8 @@ THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE AT THIS TIME
 [changed]: Error template is now it's own template, not part of a template.
 [fixed]: User defined routes can now specify controllers in subdirectories.
 [new]: URI can be constructed from a route.
+[fixed]: General.default_controller was not being used in the default route.
+[fixed]: All bugs inside HTML Helper.
 
 (4th August 2010)
 -----------------------------------------------

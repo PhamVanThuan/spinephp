@@ -286,12 +286,12 @@
 		}
 
 		/**
-		 * build_url
+		 * build_uri
 		 *
-		 * Build a URL from either an array or from a string. If the name
-		 * of a route is passed in, the URL will be constructed from the
-		 * route. If no URL can be built from a route it will default to the
-		 * standard URL.
+		 * Build a URI from either an array or from a string. If the name
+		 * of a route is passed in, the URI will be constructed from the
+		 * route. If no URI can be built from a route it will default to the
+		 * standard URI.
 		 *
 		 * @param mixed $url
 		 * @param string $route

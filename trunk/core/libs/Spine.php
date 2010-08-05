@@ -3,11 +3,9 @@
     /**
      * Spine.php
      *
-     * This file is the front controller for the system.
-     * Loads up all bare minimum requirements to run the system, if something
-     * else is needed, will be loaded when needed.
-     * Everything is stored in the $spine, so we don't pollute the global
-     * namespace. Makes it all nice and clean.
+     * The system front controller. Important libs are loaded, holds important
+	 * methods regarding libs. Creates our request instance and determines the
+	 * route. Hands off to Template for caching, then parsing.
 	 *
 	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
 	 *
@@ -47,7 +45,7 @@
 			Router::register(
 				'default',
 				'(:controller(/:action(/:id(/:any))))(:special)',
-				array('controller' => 'welcome', 'action' => 'index')
+				array('controller' => Config::read('General.default_controller'), 'action' => 'index')
 			);
 
 			//Autoload any extenders.
