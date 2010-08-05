@@ -29,7 +29,7 @@
 			Spine::load('Controller');
 			Spine::load('Object');
 			Spine::load('Request');
-			Spine::load('Router_new');
+			Spine::load('Router');
 			Spine::load('Template');
 			Spine::load('Helpers');
 			Spine::load('Extender');
