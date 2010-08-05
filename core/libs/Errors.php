@@ -68,7 +68,6 @@
 		 */
 		public static function checkup(){
 			if(!empty(self::$run_errors)){
-
 				// Running over and over..? Hope not. :/
 				if(self::$recursive > 3){
 					die('Fatal recurrsion error. Generally occurs when an error has been found but the error handler is unable to process the error.<br /><br />' . self::$run_errors[0]['message'] . ' (' . self::$run_errors[0]['file'] . ' on ' . self::$run_errors[0]['line'] . ')');

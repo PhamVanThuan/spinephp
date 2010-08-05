@@ -126,12 +126,15 @@
 		 *
 		 * Allows a controller to dispatch to a new controller, overwriting the current controller
 		 * and firing the method if supplied.
-		 * Acts as an alias to Router::dispatch
+		 * Acts as an alias to Request::instance($uri)->dispatch();
 		 *
 		 * @param string $controller name of controller to dispatch too
 		 */
-		public function dispatch($controller){
-			Router::dispatch($controller, true, false, isset($this->name) ? $this->name : null);
+		public function dispatch($uri){
+			$request = Request::instance($uri);
+			if($request){
+				$request->dispatch();
+			}
 		}
 
 		/**
@@ -179,7 +182,7 @@
 		 * @return boolean on failure
 		 */
 		public function redirect($url, $exit = true){
-			$url = Router::build_url($url);
+			$url = Request::build_uri($url);
 			if($url){
 				header("Location: " . $url);
 				if($exit === true){

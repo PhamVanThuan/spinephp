@@ -281,6 +281,23 @@
 			return $transformed;
 		}
 
+		/**
+		 * filename
+		 *
+		 * Transforms /path/to/my-controller to /path/to/my_controller
+		 *
+		 * @param string $string
+		 * @return string
+		 */
+		public static function filename($string){
+			if(!$transformed = Inflector::is_cached(__FUNCTION__, $string)){
+				$transformed = str_replace('-', '_', $string);
+				Inflector::cache(__FUNCTION__, $string, $transformed);
+			}
+
+			return $transformed;
+		}
+
 	}
 
 ?>

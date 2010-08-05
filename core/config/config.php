@@ -21,12 +21,14 @@
     Config::write('General.system_url', 'http://localhost/spine/');
 
     /**
-     * Query String
+     * Friendly URLs
      *
-     * By default the query string is enabled because mod_rewrite is
-	 * not available. See the Wiki for more information.
+     * If you are using mod_rewrite to get friendly URLs, set this
+	 * to true so that any URLs that are built will not contain
+	 * index.php/
+	 * See the wiki for more.
      */
-    Config::write('General.enable_query_string', true);
+    Config::write('General.enable_friendly_urls', true);
 
     /**
      * Logging

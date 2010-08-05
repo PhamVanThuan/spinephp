@@ -189,6 +189,21 @@
 				?>
 			</tr>
 			<tr>
+				<th>Reflection</th>
+				<?php
+					if(class_exists('ReflectionClass')){
+				?>
+				<td class="pass">Pass</td>
+				<?php
+					}else{
+						$failed = true;
+				?>
+				<td class="fail"><a href="http://php.net/reflection">Reflection</a> has not been loaded in PHP.</td>
+				<?php
+					}
+				?>
+			</tr>
+			<tr>
 				<?php
 					if(!$failed){
 				?>

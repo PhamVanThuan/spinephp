@@ -70,7 +70,7 @@
 		// Also load in any other configuration files inside the /core/config/ directory
 		foreach(glob(CORE_PATH . 'config/*.php') as $file){
 			$file = basename($file);
-			if($file !== 'config.php'){
+			if($file !== 'config.php' && $file !== 'router.php'){
 				require(CORE_PATH . 'config/' . $file);
 			}
 		}

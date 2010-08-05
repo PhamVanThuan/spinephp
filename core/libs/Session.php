@@ -21,7 +21,7 @@
 		// The current session id.
 		protected static $id;
 
-		public static function init(){
+		public static function instance(){
 			if(!Session::session_started()){
 				Session::session_start();
 			}

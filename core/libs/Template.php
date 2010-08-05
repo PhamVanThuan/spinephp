@@ -96,12 +96,6 @@
 
 				// Run any hooks for Display.before
 				Hooks::run('Display.before');
-
-				// Send to the render method, where the actually rendering occurs
-				Template::render(Template::$output);
-
-				// Run any hooks on Display.after
-				Hooks::run('Display.after');
 			}
 		}
 
@@ -136,7 +130,6 @@
 			
 			// Flush the buffer.
 			ob_end_flush();
-
 		}
 
 		/**
