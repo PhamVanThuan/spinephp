@@ -70,17 +70,35 @@
 		 * @return string
 		 */
 		public function img($img, $attr = array()){
-			if(empty($this->registry->Template->user_set_template)){
+			if(empty(Template::$user_set_template)){
 				list($folder, $template) = Config::read('Template.default_template');
 			}else{
-				list($folder, $template) = $this->registry->Template->user_set_template;
+				list($folder, $template) = Template::$user_set_template;
 			}
 
 			// Parse the attributes into a string.
 			$attr = Helpers::parse_attributes($attr);
 
 			return sprintf($this->html['img'], SYS_URL . 'application/templates/' . $folder . '/public/img/' . $img, $attr);
+		}
+
+		/**
+		 * media
+		 *
+		 * Return a string linking to the templates public folder with the
+		 * user URL placed onto the end.
+		 *
+		 * @param string $url
+		 * @return string
+		 */
+		public function media($url){
+			if(empty(Template::$user_set_template)){
+				list($folder, $template) = Config::read('Template.default_template');
+			}else{
+				list($folder, $template) = Template::$user_set_template;
+			}
 			
+			return sprintf(SYS_URL . 'application/templates/' . $folder . '/public/%s', $url);
 		}
 
 	}

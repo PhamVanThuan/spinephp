@@ -45,19 +45,7 @@
      * The default controller is called when no controller is specified
      * in the URI. For instance, the user access just index.php.
      */
-    Config::write('General.default_controller', 'index');
-
-	/**
-	 * Enable Method Fallback
-	 *
-	 * If a user attempts to access a URI such as http://www.mywebsite.com/updates
-	 * the system will initially look for a controller called updates.controller.php
-	 * If method fallbacking is enabled, and the controller could not be found the
-	 * system will load the default controller specified above and search for a method
-	 * called updates.
-	 * This can produce unexpected results if used incorrectly.
-	 */
-	Config::write('General.enable_method_fallback', false);
+    Config::write('General.default_controller', 'welcome');
 
 	/**
 	 * Session Cookie Name
@@ -161,15 +149,6 @@
      */
     Config::write('Library.load', array('Session','Cookie','Breadcrumbs'));
 
-	/**
-	 * Set Controller Libraries
-	 *
-	 * This option makes all libraries easily accessible by controllers.
-	 * Instead of accessing via: $this->registry->Router
-	 * It can be accessed via: $this->Router
-	 */
-	Config::write('Library.set_controller', false);
-
     /**
      * Templating Configuration
      *
@@ -230,7 +209,7 @@
 	 * However, if you create the order as: array('main')
 	 * Then the main.css file will be loaded first, then the remaining files will be loaded alphabetically.
 	 */
-	Config::write('Template.order.css', array('style','links'));
+	Config::write('Template.order.css', array());
 
 	/**
 	 * Ignore JS

@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
     /**
      * Object.php
      *
@@ -55,23 +56,20 @@
 			}
 
 			// Call up the dispatcher
-			$object = Router::dispatch($uri[0], false, null, false, true);
+			$object = Request::instance('request', implode('/', $uri));
+			$object = $object->dispatch(true);
 
-			// Do a check on the method
-			if(method_exists($object, $uri[1])){
-				$object->params['request'] = true;
+			// Because the request handler makes sure the method exists, no need to check.
+			$object->__params['request'] = true;
 
-				// Set the other params
-				if(isset($params) && is_array($params)){
-					foreach($params as $key => $val){
-						$object->params[$key] = $val;
-					}
+			// Set the other params that we have.
+			if(isset($params) && is_array($params)){
+				foreach($params as $key => $val){
+					$object->__params[$key] = $val;
 				}
-
-				return $object->{$uri[1]}();
-			}else{
-				return false;
 			}
+
+			return $object->{$uri[1]}();
 
 		}
 

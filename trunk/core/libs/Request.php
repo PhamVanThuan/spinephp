@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Request.php
 	 *
@@ -49,7 +50,7 @@
 		protected static $ip = '';
 
 		/**
-		 * @var object $instance request instance object
+		 * @var array $instance array of request instance objects
 		 */
 		public static $instance;
 
@@ -73,11 +74,13 @@
 		 * instance
 		 *
 		 * Create an instance for the current URI or a passed in URI.
+		 * The instance is created under the set name.
 		 *
+		 * @param string $name
 		 * @param mixed $uri
 		 * @return object
 		 */
-		public static function instance($uri = false){
+		public static function instance($name, $uri = false){
 			// Set the servers request method.
 			if(isset($_SERVER['REQUEST_METHOD'])){
 				Request::$method = $_SERVER['REQUEST_METHOD'];
@@ -112,7 +115,7 @@
 				Request::$ip = $_SERVER['REMOTE_ADDR'];
 			}
 
-			if(!$uri){
+			if($uri === false || !is_string($uri)){
 				if(!empty($_SERVER['PATH_INFO'])){
 					// If the server has set PATH_INFO, use that.
 					$uri = $_SERVER['PATH_INFO'];
@@ -149,9 +152,9 @@
 			$uri = trim($uri, '/');
 
 			// Create the new request.
-			Request::$instance = new Request($uri);
-			if(is_object(Request::$instance)){
-				return Request::$instance;
+			Request::$instance[$name] = new Request($uri);
+			if(is_object(Request::$instance[$name])){
+				return Request::$instance[$name];
 			}else{
 				return false;
 			}
@@ -458,33 +461,43 @@
 		 * dispatch
 		 *
 		 * This method dispatches the current request, loading up the controller
-		 * and firing the action, passing in any params to the action.
+		 * and firing the action, passing in any params to the action. The object,
+		 * once found, can be requested to be returned.
 		 *
+		 * @param boolean $object
 		 * @return boolean
 		 */
-		public function dispatch(){
+		public function dispatch($object = false){
 			if(file_exists(APP_PATH . 'controllers/' . $this->__folder . Inflector::filename($this->__controller) . '.php')){
 				// Found the controller in either the parent controllers directory or a specified directory from $params['directory']
 				$this->__file = Inflector::filename($this->__controller);
-				$this->__controller = Inflector::classname(str_replace('/', '', $this->__folder) . '_' . $this->__controller);
+				$this->__controller = Inflector::classname($this->__controller);
 				$this->__action = Inflector::methodname($this->__action);
 			}else{
-				// Controller not found, perhaps they meant for it in a subdirectory.
-				if(file_exists(APP_PATH . 'controllers/' . Inflector::filename($this->__controller) . '/' . Inflector::filename($this->__action) . '.php')){
-					// Found the controller in the subdirectory, rename some properties.
-					$this->__folder = Inflector::filename($this->__controller) . '/';
-					$this->__file = Inflector::filename($this->__action);
-					$this->__controller = Inflector::classname(str_replace('/', '', $this->__folder) . '_' . $this->__action);
-
-					if(isset($this->__params['string']) && !empty($this->__params['string'])){
-						$this->__action = Inflector::methodname($this->__params['string']);
-						unset($this->__params['string']);
-					}else{
-						$this->__action = 'index';
+				$directory = Inflector::filename($this->__controller) . '/';
+				$file = Inflector::filename($this->__action);
+				while(!file_exists(APP_PATH . 'controllers/' . $directory . $file . '.php')){
+					if(empty($this->__params)){
+						trigger_error('Could not locate requested controller file /' . APP_PATH . 'controllers/' . Inflector::filename($this->__controller) . '.php', E_USER_ERROR);
+						return;
 					}
+
+					// Set the directory to include the file as well.
+					$directory .= $file . '/';
+					
+					// The new file is the next element in the array.
+					$file = array_shift($this->__params);
+				}
+
+				// Found it in a subdirectory if we made it this far.
+				$this->__folder = Inflector::filename($directory);
+				$this->__file = Inflector::filename($file);
+				$this->__controller = Inflector::classname($file);
+
+				if(!empty($this->__params)){
+					$this->__action = Inflector::methodname(array_shift($this->__params));
 				}else{
-					trigger_error('Could not locate requested controller file /' . APP_PATH . 'controllers/' . Inflector::filename($this->__controller) . '.php', E_USER_ERROR);
-					return;
+					$this->__action = 'index';
 				}
 			}
 
@@ -498,7 +511,6 @@
 				trigger_error('Could not instantiate class ' . $cn_controller . ' in /' . APP_PATH . 'controllers/' . $this->__folder . $this->__file . '.php', E_USER_ERROR);
 			}else{
 				// Use Reflection so we can pass args.
-				Request::$current = new $cn_controller;
 				$reflection = new ReflectionClass($cn_controller);
 
 				if($reflection->isAbstract()){
@@ -506,12 +518,20 @@
 					return;
 				}
 
+				// Class is valid and all, now are we returning the object.
+				if($object){
+					return new $cn_controller;
+				}
+
+				// If not returning, set the current controller to this one.
+				Request::$current = new $cn_controller;
+
 				// Ensure that requested method exists in class.
 				if(!$reflection->hasMethod($this->__action)){
 					// Could not locate method.
 					trigger_error('Could not locate ' . $this->__action . '() in ' . $cn_controller . '.', E_USER_ERROR);
 				}else{
-					// Method exists. Send params.
+					// Method exists. Fire method with params.
 					$reflection->getMethod($this->__action)->invokeArgs(Request::$current, $this->__params);
 				}
 			}

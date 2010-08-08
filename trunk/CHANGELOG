@@ -3,6 +3,12 @@ Spine PHP Change Log (http://www.spinephp.org/)
 
 THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE AT THIS TIME
 
+(7th August 2010)
+-----------------------------------------------
+[changed]: Controllers can now be placed at any depth within /application/controllers
+[changed]: Controllers no longer require the directories to be prepended to the class
+name of the controller.
+
 (5th August 2010)
 -----------------------------------------------
 [changed]: Router class changed to support user-defined routes to prevent bad URLs.

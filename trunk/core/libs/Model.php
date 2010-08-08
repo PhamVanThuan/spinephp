@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
     /**
      * Model.php
      *
@@ -18,20 +19,24 @@
 
     abstract class Model {
 
-		// A property to allow quicker access to DB.
-		protected $DB;
+		/**
+		 * @var object $db database object
+		 */
+		protected $db;
 
-		// Parameters
+		/**
+		 * @var array $params array of parameters set with requests
+		 */
 		public $params = array();
 
 		/**
-		 * run
+		 * instance
 		 *
-		 * Runs a model, setting the database and any other properties.
+		 * Creates an instance of the model, loading the database.
 		 */
-		public function run(){
+		public function instance(){
 			if(Spine::loaded('Database')){
-				$this->DB = Database::get_instance();
+				$this->db = Database::get_instance();
 			}
 		}
 

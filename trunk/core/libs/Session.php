@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Session.php
 	 *
@@ -18,9 +19,16 @@
 
 	class Session extends Object {
 
-		// The current session id.
+		/**
+		 * @var string $id id of current session
+		 */
 		protected static $id;
 
+		/**
+		 * instance
+		 *
+		 * Create a session instance, starting the session if not already started.
+		 */
 		public static function instance(){
 			if(!Session::session_started()){
 				Session::session_start();
@@ -30,7 +38,7 @@
 		/**
 		 * session_start
 		 *
-		 * Start the session
+		 * Start a new session.
 		 *
 		 * @return boolean
 		 */
@@ -65,7 +73,7 @@
 		/**
 		 * session_started
 		 *
-		 * Check to see if the session has been started
+		 * Check to see if the session has been started.
 		 *
 		 * @return boolean
 		 */
