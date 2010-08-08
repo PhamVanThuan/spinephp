@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
     /**
      * Errors.php
      *
@@ -21,6 +22,9 @@
 
     class Errors {
 
+		/**
+		 * @var array $levels array of php error levels
+		 */
 		public static $levels = array(
 			  E_ERROR			=>	'Error',
 			  E_WARNING			=>	'Warning',
@@ -36,9 +40,27 @@
 			  E_STRICT			=>	'Runtime Notice'
 		);
 
+		/**
+		 * @var array $run_errors array of errors found during run time
+		 */
 		public static $run_errors = array();
+
+		/**
+		 * @var int $recursive number of times attempted to check on errors
+		 */
 		public static $recursive = 0;
 
+		/**
+		 * trigger
+		 *
+		 * User trigger error method, writes error to log and stores error
+		 * in errors array.
+		 *
+		 * @param string $message
+		 * @param const $code
+		 * @param string $file
+		 * @param int $line
+		 */
 		public static function trigger($message, $code = E_USER_ERROR, $file = null, $line = null){
 			// Write to the log file.
 			write_log(self::$levels[$code], $message);
@@ -65,6 +87,8 @@
 		 * checkup
 		 *
 		 * Perform the errors checkup, called when the system is ready to display everything.
+		 * Will check for any errors, but only run through 3 times incase it gets set on a
+		 * continuous loop.
 		 */
 		public static function checkup(){
 			if(!empty(self::$run_errors)){

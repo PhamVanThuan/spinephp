@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Helpers.php
 	 *
@@ -18,6 +19,9 @@
 
 	 class Helpers extends Object {
 
+		 /**
+		 * @var array $loaded array of loaded helpers
+		 */
 		 public static $loaded = array();
 
 		/**

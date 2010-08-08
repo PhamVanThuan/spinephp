@@ -28,5 +28,5 @@
 	 * For more information on routes see the Wiki.
 	 * <http://www.spinephp.org/wiki/SpinePHP:Guide/Routes>
 	 */
-	
+
 ?>

@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Breadcrumbs.php
 	 *
@@ -19,7 +20,9 @@
 
 	class Breadcrumbs extends Object {
 
-		// Array containing all the crumbs left behind.
+		/**
+		 * @var array $crumbs array of set crumbs
+		 */
 		public static $crumbs = array();
 
 		/**

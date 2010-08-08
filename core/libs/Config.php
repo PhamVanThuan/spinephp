@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Config.php
 	 *
@@ -19,10 +20,14 @@
 
 	class Config {
 
-		// Array holding all the config variables.
-		public static $config;
+		/**
+		 * @var array $config array of set config parameters
+		 */
+		public static $config = array();
 
-		// Any stored changes will be placed in this array.
+		/**
+		 * @var array $changes array holding config parameters that are changed and can be saved
+		 */
 		public static $changes = array();
 		
 		/**

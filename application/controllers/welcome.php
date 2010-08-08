@@ -35,10 +35,7 @@
 			$this->write_view('content', 'index');
 			$this->prepare();
 		}
-
-		public function read($id){
-			echo $id;
-		}
+		
 	}
 
 ?>

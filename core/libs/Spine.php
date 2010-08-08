@@ -19,9 +19,17 @@
 
     class Spine {
 
-		// Array consisting of libraries that have been loaded.
+		/**
+		 * @var array $libs array of loaded libs
+		 */
 		public static $libs = array();
 
+		/**
+		 * instance
+		 *
+		 * Create an instance of Spine. The method that handles it
+		 * all and boots up the system.
+		 */
 		public static function instance(){
 			// Load important libraries.
 			Spine::load('Controller');
@@ -79,11 +87,11 @@
 			}
 
 			// Use Request to get a new request instance from the current URI.
-			if(Request::instance()){
+			if(($request = Request::instance('default')) !== false){
 				// Check if we have a cached copy before dispatching.
-				if(Template::render_cache(Request::$instance->get_uri()) === false){
+				if(Template::render_cache($request->get_uri()) === false){
 					// Dispatch to the request instance.
-					Request::$instance->dispatch();
+					$request->dispatch();
 
 					// Run any hooks on Controller.after
 					Hooks::run('Controller.after');
@@ -95,10 +103,19 @@
 
 		}
 
+		/**
+		 * database
+		 *
+		 * Similar to loaded below, loads a database library based
+		 * on the set driver in config.
+		 *
+		 * @param string $class
+		 * @param boolean $autoload
+		 * @return boolean
+		 */
 		public static function database($class, $autoload = false){
 			$driver = Config::read('Database.driver');
 			if(file_exists(DB_PATH . $driver . '/Database.php')){
-
 				if(in_array('Database', array_map('basename', get_included_files()))){
 					return true;
 				}elseif($autoload === true){

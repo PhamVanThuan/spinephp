@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Inflector.php
 	 *
@@ -21,7 +22,10 @@
 	 */
 
 	class Inflector {
-		
+
+		/**
+		 * @var array $plural array of pluralized strings
+		 */
 		public static $plural = array(
 			'/(quiz)$/i'               => "$1zes",
 			'/^(ox)$/i'                => "$1en",
@@ -44,6 +48,9 @@
 			'/$/'                      => "s"
 		);
 
+		/**
+		 * @var array $singular array of singularized strings
+		 */
 		public static $singular = array(
 			'/(quiz)zes$/i'             => "$1",
 			'/(matr)ices$/i'            => "$1ix",
@@ -75,6 +82,9 @@
 			'/s$/i'                     => ""
 		);
 
+		/**
+		 * @var array $irregular array of irregular strings
+		 */
 		public static $irregular = array(
 			'move'   => 'moves',
 			'foot'   => 'feet',
@@ -86,6 +96,9 @@
 			'person' => 'people'
 		);
 
+		/**
+		 * @var array $uncountable array of uncountable strings
+		 */
 		public static $uncountable = array(
 			'sheep',
 			'fish',
@@ -98,6 +111,9 @@
 			'equipment'
 		);
 
+		/**
+		 * @var array $cached array of cached words and their inflected counterparts
+		 */
 		public static $cached = array();
 
 		/**

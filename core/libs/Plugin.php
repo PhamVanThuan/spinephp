@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Plugin.php
 	 *
@@ -9,7 +10,8 @@
 	 *
 	 * Plugins differ from Extenders because plugins do not extend the core but
 	 * simply plugin new methods and properties that can be used throughout
-	 * applications.
+	 * applications. Plugins may also provide their own controllers, views and
+	 * models.
 	 *
 	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
 	 *
@@ -23,7 +25,9 @@
 
 	class Plugin {
 
-		// Array consisting of loaded plugins.
+		/**
+		 * @var array $loaded array of loaded plugins
+		 */
 		public static $loaded = array();
 
 		/**

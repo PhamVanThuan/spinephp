@@ -1,4 +1,5 @@
 <?php
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
 
     /**
      * View.php
@@ -18,16 +19,24 @@
 
 	class View extends Object {
 
-		// Array of view files that have been loaded.
+		/**
+		 * @var array $views array of loaded view files
+		 */
 		protected static $views;
 
-		// Array of helpesr that have been loaded.
+		/**
+		 * @var array $loaded_helpers array of loaded helpers
+		 */
 		protected static $loaded_helpers = array();
 
-		// Array of variables to make available in a view.
+		/**
+		 * @var array $variables array of variables set for a view
+		 */
 		protected static $variables;
 
-		// Array of helpers to load.
+		/**
+		 * @var array $helpers array of helpers required for view
+		 */
 		public static $helpers;
 
 		/**
@@ -37,15 +46,18 @@
 		 *
 		 * @param string $view name of view file
 		 */
-		public static function load($view, $render = false){
+		public function load($view, $render = false){
 			if(file_exists(APP_PATH . 'views/' . $view . '.php')){
-				
+
+				Spine::load('View');
 				// If variables is passed, they want to set a few variables in the same line.
 				if(!empty(View::$variables)){
 					foreach(View::$variables as $var => $val){
 						$$var = $val;
 					}
 				}
+				// Now unset the variables, so they aren't passed into the next view.
+				View::$variables = array();
 
 				// Load any helpers.
 				$helpers = Helpers::load(View::$helpers);
@@ -94,7 +106,7 @@
 		 * @param string $variable
 		 * @param string $value
 		 */
-		public static function set($variable, $value){
+		public function set($variable, $value){
 			View::$variables[$variable] = $value;
 		}
 
@@ -108,7 +120,7 @@
 		 * @param array $params
 		 * @return string
 		 */
-		public static function section($name, $params = array()){
+		public function section($name, $params = array()){
 			$name = str_replace('-', '_', $name);
 			if(file_exists(APP_PATH . 'views/sections/' . $name . '.php')){
 				// Found the section file, extract the paramaters.
@@ -130,7 +142,7 @@
 		 *
 		 * Sets the cache timeout.
 		 */
-		public static function cache($timeout){
+		public function cache($timeout){
 			if($timeout > 0){
 				Template::$cache['enabled'] = true;
 				Template::$cache['timeout'] = $timeout;
@@ -142,7 +154,7 @@
 		 *
 		 * Alias of Template::set_template
 		 */
-		public static function set_template($template){
+		public function set_template($template){
 			Template::set_template($template);
 		}
 

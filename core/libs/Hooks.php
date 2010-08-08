@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Hooks.php
 	 *
@@ -26,10 +27,14 @@
 
 	class Hooks {
 
-		// Array of set hooks
+		/**
+		 * @var array $set array of set hooks
+		 */
 		public static $set = array();
 
-		// Array of registered hooks names.
+		/**
+		 * @var array $registered array of registered hook names
+		 */
 		public static $registered = array();
 
 		/**

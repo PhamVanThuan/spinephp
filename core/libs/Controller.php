@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
     /**
      * Controller.php
      *
@@ -19,31 +20,45 @@
 
     abstract class Controller {
 
-		// Array of helpers that are referenced by the View
-		protected $helpers;
+		/**
+		 * @var array $__helpers array of helpers to be loaded in view
+		 */
+		protected $__helpers;
 
-		// Default params used by models.
-		public $params = array(
+		/**
+		 * @var object $View a view object created for the controller
+		 */
+		protected $View;
+
+		/**
+		 * @var array $__params default params set for models
+		 */
+		public $__params = array(
 			'request' => false,
 			'limit' => 10,
 			'order' => 'desc',
 			'sort' => 'id'
 		);
 
-		// Is set to an object if a template parser is being used instead of the default.
-		public $parser;
-		
+		/**
+		 * __construct
+		 *
+		 * When a new controller is requested via the Request library, a new instance
+		 * of this is created since all controllers must extend this. Sets a few properties
+		 * and peforms any autoloading that is required.
+		 */
 		public function __construct(){
 			// Make sure that the view library is loaded and that we reference the helpers.
 			Spine::load('View');
-			View::$helpers =& $this->helpers;
+			$this->View = new View;
+			$this->View->helpers =& $this->__helpers;
 
 			// Is model autoloading enabled for the controller.
 			if(isset($this->enable_model_autoload) && $this->enable_model_autoload === true){
 				// Load the model class if available.
 				Spine::load('Model');
+				
 				if(isset($this->name)){
-					// Load the model.
 					$this->model($this->name);
 				}
 			}
@@ -60,6 +75,21 @@
 		 * abstract index
 		 */
 		abstract public function index();
+
+		/**
+		 * get_param
+		 *
+		 * Get a param from the parameters array.
+		 *
+		 * @param string $param
+		 * @return mixed
+		 */
+		public function get_param($param){
+			if(isset($this->__params[$param])){
+				return $this->__params[$param];
+			}
+			return false;
+		}
 
 		/**
 		 * write
@@ -91,7 +121,7 @@
 					$this->View->set($key, $val);
 				}
 			}
-			Template::write($variable, View::load($view), $overwrite);
+			Template::write($variable, $this->View->load($view), $overwrite);
 		}
 
 		/**
@@ -109,7 +139,7 @@
 		 * Alias of View::set
 		 */
 		public function set($variable, $value){
-			View::set($variable, $value);
+			$this->View->set($variable, $value);
 		}
 
 		/**
@@ -118,7 +148,7 @@
 		 * Alias of View::load
 		 */
 		public function view($view, $render = false){
-			return View::load($view, $render);
+			return $this->View->load($view, $render);
 		}
 
 		/**
@@ -131,7 +161,7 @@
 		 * @param string $controller name of controller to dispatch too
 		 */
 		public function dispatch($uri){
-			$request = Request::instance($uri);
+			$request = Request::instance('dispatcher', $uri);
 			if($request){
 				$request->dispatch();
 			}
@@ -226,10 +256,10 @@
 				// Excellent, pass in a few properties and set params to reference our params.
 				$this->{$model} = new $class;
 				$this->{$model}->name = $model;
-				$this->{$model}->params =& $this->params;
+				$this->{$model}->params =& $this->__params;
 
 				// Run the model.
-				$this->{$model}->run();
+				$this->{$model}->instance();
 			}else{
 				return false;
 			}

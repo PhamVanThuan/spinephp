@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Template.php
 	 *
@@ -24,19 +25,27 @@
 
     class Template extends Object {
 
-		// Cache settings.
+		/**
+		 * @var array $cache settings for caching
+		 */
 		public static $cache = array(
 			'enabled' => false,
 			'timeout' => 0
 		);
 
-		// Array of tpl variables.
+		/**
+		 * @var array $tpl array of template variables
+		 */
 		public static $tpl = array();
 
-		// Property is populated as an array when template is changed.
+		/**
+		 * @var array $user_set_template populated with a user set template
+		 */
 		public static $user_set_template = array();
 
-		// Property holding all the output.
+		/**
+		 * @var string $output final output to be rendered
+		 */
 		public static $output;
 
 		/**

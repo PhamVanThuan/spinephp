@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Extender.php
 	 *
@@ -23,7 +24,9 @@
 
 	class Extender {
 
-		// Array consisting of extenders that have been loaded.
+		/**
+		 * @var array $loaded array of loaded extenders
+		 */
 		public static $loaded = array();
 
 		/**

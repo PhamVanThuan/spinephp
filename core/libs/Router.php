@@ -1,9 +1,12 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
 	/**
 	 * Router.php
 	 *
-	 * File description here.
+	 * Manages registered routes, including registering routes, retrieving routes
+	 * and creating URIs based off a route. Router determines the controller and
+	 * action.
 	 *
 	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
 	 *
