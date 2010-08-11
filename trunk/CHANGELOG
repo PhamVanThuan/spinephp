@@ -3,6 +3,22 @@ Spine PHP Change Log (http://www.spinephp.org/)
 
 THERE IS NO OFFICIAL/STABLE RELEASE OF SPINE AT THIS TIME
 
+(12th August 2010)
+-----------------------------------------------
+[fixed]: MySQL Class now acts more like MySQLi. Created new classes for MySQL to allow
+creation of query objects and prepared statement objects.
+[fixed]: MySQLi is now not loaded by PDO, fixing the invalid driver issue.
+[new]: Added Model::get_param to allow cleaner loading of a parameter inside models.
+[deleted]: Removed the MySQLi driver as the MySQL driver now mimics MySQLi as closely
+as it can.
+[changed]: Database config items now in their own database.php config file.
+
+(11th August 2010)
+-----------------------------------------------
+[changed]: Update the MySQL class, changed name to DBDriver to allow multiple drivers.
+[new]: Added PDO support, to allow a better database layer for portability of applications.
+If PDO is unavailable it will revert to the generic classes that were created.
+
 (7th August 2010)
 -----------------------------------------------
 [changed]: Controllers can now be placed at any depth within /application/controllers

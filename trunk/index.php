@@ -1,5 +1,4 @@
 <?php
-	
 	/**
 	 * Spine PHP: An Open Source MVC Framework written in PHP5.
 	 *
@@ -29,6 +28,13 @@
 	$application_directory = 'application';
 
 	/**
+	 * Core Path
+	 *
+	 * Name of the core directory, can just leave this as core.
+	 */
+	$core_path = 'core';
+
+	/**
 	 * Library Directory
 	 *
 	 * The name of the library directory. Shouldn't need
@@ -48,11 +54,12 @@
 	 * Nothing below here should be changed unless your a wacko!
 	 * Hah! Nah, go nuts. If you bugger it, your fault not mine.
 	 */
-	define('APP_PATH', $application_directory . '/');
-	define('LIB_PATH', 'core/' . $library_directory . '/');
-	define('DB_PATH', 'core/' . 'database/');
-	define('CORE_PATH', 'core/');
-	define('TMP_PATH', $tmp_directory . '/');
+	define('DS', DIRECTORY_SEPARATOR);
+	define('APP_PATH', $application_directory . DS);
+	define('CORE_PATH', $core_path . DS);
+	define('LIB_PATH', CORE_PATH . $library_directory . DS);
+	define('DB_PATH', CORE_PATH . 'database' . DS);
+	define('TMP_PATH', $tmp_directory . DS);
 	define('BASE_PATH', str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']));
 
 	// The base path may need to be set to something else.
@@ -83,9 +90,9 @@
 		set_magic_quotes_runtime(false);
 	}
 
-	if(file_exists('./install.php')){
+	if(file_exists('install.php')){
 		// The install file exists, let's require it then die.
-		include_once('./install.php');
+		include_once('install.php');
 		exit;
 
 		// This performs the environment tests.

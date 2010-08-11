@@ -20,23 +20,23 @@
     abstract class Model {
 
 		/**
-		 * @var object $db database object
+		 * @var object $dbh database handle object
 		 */
-		protected $db;
+		protected $dbh;
 
 		/**
 		 * @var array $params array of parameters set with requests
 		 */
-		public $params = array();
+		private $params = array();
 
 		/**
-		 * instance
+		 * __construct
 		 *
 		 * Creates an instance of the model, loading the database.
 		 */
-		public function instance(){
+		public function __construct(){
 			if(Spine::loaded('Database')){
-				$this->db = Database::get_instance();
+				$this->dbh = Database::get('default')->dbh;
 			}
 		}
 
@@ -50,6 +50,21 @@
 		 */
 		public function set_param($param, $value){
 			$this->params[$param] = $value;
+		}
+
+		/**
+		 * get_param
+		 *
+		 * Get a parameter.
+		 *
+		 * @param string $param
+		 * @return mixed
+		 */
+		public function get_param($param){
+			if(isset($this->params[$param])){
+				return $this->params[$param];
+			}
+			return false;
 		}
 
     }
