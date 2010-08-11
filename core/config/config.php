@@ -1,5 +1,6 @@
 <?php
-
+	if(!defined('APP_PATH')){ die('Unauthorized direct access to file.'); }
+	
     /**
      * config.php
      *
@@ -8,9 +9,6 @@
      *
      * For futher information on the settings, see the docs.
      */
-    if(!defined('APP_PATH')){
-		die('Unauthorized direct access to file.');
-    }
 
     /**
      * System URL
@@ -225,27 +223,4 @@
 	 */
 	Config::write('Template.order.js', array());
 
-    /**
-     * Database Configuration
-     *
-     * For MySQL related settings.
-     * Auto Connecting will automatically include the Database library,
-     * and attempt to connect with the settings specified below. If you
-     * have specified the Database library to be auto loaded above, it
-     * will not auto connect unless this is set to true.
-     */
-    Config::write('Database.enable_auto_connect', false);
-
-    /**
-     * MySQL Connection Settings
-     *
-     * Should be fairly straight forward.
-	 * Take note of which driver you have supplied.
-     */
-	Config::write('Database.host', 'localhost');
-	Config::write('Database.username', 'root');
-	Config::write('Database.password', '');
-	Config::write('Database.dbname', 'mvc');
-	Config::write('Database.prefix', '');
-	Config::write('Database.driver', 'mysql');
 ?>

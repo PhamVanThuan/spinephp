@@ -84,6 +84,26 @@
 		}
 
 		/**
+		 * user_exception_trigger
+		 *
+		 * Used by set_exception_handler, to allow exceptions to be thrown and caught by this
+		 * handler. Because exceptions halt the code, we must manually call the checkup and
+		 * the template render method to display the error.
+		 *
+		 * @param object $exception
+		 */
+		public static function user_exception_trigger($exception){
+			if(!isset(Errors::$levels[$exception->getCode()])){
+				$code = E_WARNING;
+			}else{
+				$code = $exception->getCode();
+			}
+			Errors::trigger($exception->getMessage(), $code, $exception->getFile(), $exception->getLine());
+			Errors::checkup();
+			Template::render(Template::$output);
+		}
+
+		/**
 		 * checkup
 		 *
 		 * Perform the errors checkup, called when the system is ready to display everything.

@@ -234,10 +234,10 @@
 			Spine::loaded('Model', true);
 			
 			// Replace any hyphons with underscores
-			$model = strtolower(str_replace('-', '_', $model));
+			$model = strtolower(Inflector::filename($model));
 			
 			// Attempt to locate the appropriate model, first look in the application/models
-			if(!in_array($model . '.php', array_map('basename', get_included_files()))){
+			if(!in_array(APP_PATH . 'models/' . $model . '.php', get_included_files())){
 				if(file_exists(APP_PATH . 'models/' . $model . '.php')){
 					require(APP_PATH . 'models/' . $model . '.php');
 				}else{
@@ -249,7 +249,7 @@
 			}
 
 			// Check if we loaded the model and that the class exists, if it doesn't don't worry. Their fault.
-			$class = ucfirst($model) . 'Model';
+			$class = Inflector::classname($model . 'Model');
 			$model = ucfirst($model);
 
 			if(class_exists($class, false)){
@@ -257,9 +257,6 @@
 				$this->{$model} = new $class;
 				$this->{$model}->name = $model;
 				$this->{$model}->params =& $this->__params;
-
-				// Run the model.
-				$this->{$model}->instance();
 			}else{
 				return false;
 			}

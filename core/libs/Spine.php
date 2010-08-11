@@ -39,12 +39,13 @@
 			Spine::load('Template');
 			Spine::load('Helpers');
 			Spine::load('Extender');
-			Spine::load('Plugin');
 			Spine::load('Inflector');
 
 			// Set the error handler, before running any classes.
-			// Looking at changing to exceptions in the future.
 			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
+
+			// Also set the exception handler, used by PDO and eventually all of the system.
+			set_exception_handler('Errors::user_exception_trigger');
 
 			// Load the router config file to set user-defined routes.
 			Router::load();
@@ -55,6 +56,12 @@
 				'(:controller(/:action(/:id(/:any))))(:special)',
 				array('controller' => Config::read('General.default_controller'), 'action' => 'index')
 			);
+
+			// Start sessions automatically.
+			if(Spine::loaded('Session')){
+				// Start the session.
+				Session::instance();
+			}
 
 			//Autoload any extenders.
 			$extenders = Config::read('Extenders.load');
@@ -72,18 +79,11 @@
 				}
 			}
 
-			// Automatically connect to MySQL?
+			// Database connection. If auto-connecting is enabled, load the Database library.
 			if(Config::read('Database.enable_auto_connect')){
-				if(Spine::database('Database', true)){
-					// Connect if it's not MySQLi, MySQLi connects by default.
-					Database::connect();
+				if(Spine::load('Database')){
+					Database::instance();
 				}
-			}
-
-			// Start sessions?
-			if(Spine::loaded('Session')){
-				// Start the session.
-				Session::instance();
 			}
 
 			// Use Request to get a new request instance from the current URI.
@@ -100,33 +100,6 @@
 			
 			// Everything has run.
 			Spine::destruct();
-
-		}
-
-		/**
-		 * database
-		 *
-		 * Similar to loaded below, loads a database library based
-		 * on the set driver in config.
-		 *
-		 * @param string $class
-		 * @param boolean $autoload
-		 * @return boolean
-		 */
-		public static function database($class, $autoload = false){
-			$driver = Config::read('Database.driver');
-			if(file_exists(DB_PATH . $driver . '/Database.php')){
-				if(in_array('Database', array_map('basename', get_included_files()))){
-					return true;
-				}elseif($autoload === true){
-					require_once(DB_PATH . $driver . '/Database.php');
-					return true;
-				}else{
-					return false;
-				}
-			}else{
-				return false;
-			}
 		}
 
 		/**
