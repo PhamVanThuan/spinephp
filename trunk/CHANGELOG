@@ -21,7 +21,10 @@ LATEST AVAILABLE VERSION: 1.0.0 Beta
 			were not working correctly.
 [fixed]:	Smarty extender now hooks correctly into the core.
 [fixed]:	Default configuration settings now more appropriate.
-
+[fixed]:	View library bug, some properties were still static and methods were calling static
+			properties.
+[fixed]:	Controller library now has $helpers not $__helpers, was causing a bug with the actual
+			controller.
 
 <11th August 2010>
 -----------------------------------------------
