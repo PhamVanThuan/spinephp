@@ -244,7 +244,7 @@
 				?>
 			</tr>
 			<tr>
-				<th>Database Extensions</th>
+				<th>Database Drivers</th>
 				<?php
 					$supported = array('mysql','mysqli');
 					$available = array();
@@ -260,6 +260,41 @@
 					}else{
 				?>
 				<td class="fail">No supported database extension found. (<?php echo implode(', ', $supported); ?>)</td>
+				<?php
+					}
+				?>
+			</tr>
+			<tr>
+				<th>PDO Enabled</td>
+				<?php
+					if(extension_loaded('pdo')){
+				?>
+				<td class="pass">Pass</td>
+				<?php
+					}else{
+				?>
+				<td class="fail">Fail (it is recommended that you use PDO with Databases)</td>
+				<?php
+					}
+				?>
+			</tr>
+			<tr>
+				<th>PDO Available Drivers</td>
+				<?php
+					if(extension_loaded('pdo')){
+						$drivers = PDO::getAvailableDrivers();
+						if(!empty($drivers)){
+				?>
+				<td class="pass"><?php echo implode(', ', $drivers); ?></td>
+				<?php
+						}else{
+				?>
+				<td class="fail">PDO is enabled but there are no drivers available.</td>
+				<?php
+						}
+					}else{
+				?>
+				<td class="fail">Fail</td>
 				<?php
 					}
 				?>

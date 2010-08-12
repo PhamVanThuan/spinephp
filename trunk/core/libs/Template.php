@@ -61,50 +61,35 @@
 				trigger_error('Could not find <strong>template.php</strong> in ' . BASE_PATH . APP_PATH . 'templates/' . $folder . '/', E_USER_ERROR);
 			}else{
 
-				// If we are running Smarty, parse the template output.
-				if(in_array('smarty', Hooks::get_registered()) && Config::read('Smarty.parse_template') === true){
-					// Smarty is being used to parse the template.
-					$smarty = Router::$controller->Smarty;
+				// Run any hooks for Display.before
+				Hooks::run('Display.before');
 
-					// Assign some smarty variables
-					$smarty->assign('tpl', Template::$tpl);
-					$smarty->assign('css', Template::css());
-					$smarty->assign('js', Template::js());
-
-					/**
-					 * TODO: Helpers for Smarty
-					 */
-
-					Template::$output = $smarty->fetch(BASE_PATH . APP_PATH . 'templates/' . $folder . '/' . $template . '.php');
-				}else{
-					// Load any helpers that were specified in the config
-					$helpers = Helpers::load(Config::read('Template.helpers'));
-					if(!empty($helpers)){
-						foreach($helpers as $key => $val){
-							$key = strtolower($key);
-							$$key = $val;
-						}
+				// Load any helpers that were specified in the config
+				$helpers = Helpers::load(Config::read('Template.helpers'));
+				if(!empty($helpers)){
+					foreach($helpers as $key => $val){
+						$key = strtolower($key);
+						$$key = $val;
 					}
+				}
 
-					// Template variables need to be set.
-					$tpl = Template::$tpl;
+				// Template variables need to be set.
+				$tpl = Template::$tpl;
 
-					// Get the CSS and JS
-					$css = Template::css();
-					$js = Template::js();
+				// Get the CSS and JS
+				$css = Template::css();
+				$js = Template::js();
 
+				if(empty(Template::$output)){
 					// Firstly, let's start output buffering, so we can capture the output and perform
 					// any parsing on it.
 					ob_start();
-				
+
 					include(APP_PATH . 'templates/' . $folder . '/' . $template . '.php');
-				
+
 					// Using output buffering, we can get the contents of the buffer and clean it.
 					Template::$output = ob_get_clean();
 				}
-
-				// Run any hooks for Display.before
-				Hooks::run('Display.before');
 			}
 		}
 

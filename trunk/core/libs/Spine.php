@@ -39,7 +39,7 @@
 			Spine::load('Template');
 			Spine::load('Helpers');
 			Spine::load('Extender');
-			Spine::load('Inflector');
+			Spine::load('Plugin');
 
 			// Set the error handler, before running any classes.
 			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
@@ -53,7 +53,7 @@
 			// Set the default route.
 			Router::register(
 				'default',
-				'(:controller(/:action(/:id(/:any))))(:special)',
+				'(:controller(/:action(/:any)))(:special)',
 				array('controller' => Config::read('General.default_controller'), 'action' => 'index')
 			);
 
@@ -63,7 +63,15 @@
 				Session::instance();
 			}
 
-			//Autoload any extenders.
+			// Autoload any libraries.
+			$libraries = Config::read('Library.load');
+			if(!empty($libraries)){
+				foreach($libraries as $library){
+					Spine::load($library);
+				}
+			}
+
+			// Autoload any extenders.
 			$extenders = Config::read('Extenders.load');
 			if(!empty($extenders)){
 				foreach($extenders as $extender){
@@ -71,11 +79,11 @@
 				}
 			}
 
-			// Autoload any libraries.
-			$libraries = Config::read('Library.load');
-			if(!empty($libraries)){
-				foreach($libraries as $library){
-					Spine::load($library);
+			// Autoload any plugins.
+			$plugins = Config::read('Plugins.load');
+			if(!empty($plugins)){
+				foreach($plugins as $plugin){
+					Plugin::load($plugin);
 				}
 			}
 

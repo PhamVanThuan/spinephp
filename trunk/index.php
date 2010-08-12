@@ -54,7 +54,7 @@
 	 * Nothing below here should be changed unless your a wacko!
 	 * Hah! Nah, go nuts. If you bugger it, your fault not mine.
 	 */
-	define('DS', DIRECTORY_SEPARATOR);
+	define('DS', '/');
 	define('APP_PATH', $application_directory . DS);
 	define('CORE_PATH', $core_path . DS);
 	define('LIB_PATH', CORE_PATH . $library_directory . DS);

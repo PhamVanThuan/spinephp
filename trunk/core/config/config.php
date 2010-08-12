@@ -26,7 +26,7 @@
 	 * index.php/
 	 * See the wiki for more.
      */
-    Config::write('General.enable_friendly_urls', true);
+    Config::write('General.enable_friendly_urls', false);
 
     /**
      * Logging
@@ -98,54 +98,34 @@
 	/**
 	 * Extenders Load
 	 *
-	 * An array of extenders you wish to load. Do not include the
-	 * .plugin.php in the filename.
-	 * Format:
-	 * array(
-	 *    array('extender_file', 'ExtenderClass'),
-	 *    array('folder_name/extender_file', 'ExtenderClass')
-	 * );
+	 * An array of extenders to load.
+	 * See <http://www.spinephp.org/wiki/SpinePHP:Guide/Extenders>
 	 */
-	Config::write('Extenders.load', array(
-			array(
-				'geshi/geshi',
-				'Geshi'
-			)
-		)
-	);
+	Config::write('Extenders.load', array());
 
 	/**
 	 * Hooks Load
 	 *
-	 * A list of hooks to load.
-	 * Format:
-	 * array(
-	 *		array(
-	 *			'hook' => 'Hook.type',
-	 *			'name' => 'HookName',
-	 *			'file' => 'file_name'
-	 *		),
-	 *		array(
-	 *			'hook' => 'Hook.type',
-	 *			'name' => 'HookName',
-	 *			'file' => 'folder_name/file_name'
-	 *		)
-	 * )
+	 * An array of hooks to load.
+	 * See <http://www.spinephp.org/wiki/SpinePHP:Guide/Hooks>
 	 */
 	Config::write('Hooks.load', array());
+
+	/**
+	 * Plugin Load
+	 *
+	 * An array of plugins to load.
+	 * See <http://www.spinephp.org/wiki/SpinePHP:Guide/Plugins>
+	 */
+	Config::write('Plugin.load', array());
 
     /**
      * Library Load
      *
-     * If you want a library to auto load, for example, the Database library,
-     * then specify it in this array. Any libraries in this array will be
-     * loaded on execution and made available to any controllers.
-     * If the element is an array, the first element is the class name, and the
-     * second element can be used to set the identifier. For example, if you
-     * want to autoload a class named MyClass, but access it by MC it would be:
-     * array('MyClass', 'MC')
+     * An array of libraries to load.
+	 * See <http://www.spinephp.org/wiki/SpinePHP:Guide/Library>
      */
-    Config::write('Library.load', array('Session','Cookie','Breadcrumbs'));
+    Config::write('Library.load', array('Session','Cookie'));
 
     /**
      * Templating Configuration
