@@ -108,6 +108,9 @@
 				}
 			}
 
+			// Run any hooks for Display.beforeRender
+			Hooks::run('Display.beforeRender');
+
 			// Get the compression type, like gzip.
 			$compression = Template::get_compression_type();
 

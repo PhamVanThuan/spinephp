@@ -12,7 +12,8 @@
 	 * Controller.before - Before a controller is instantiated.
 	 * Controller.afterConstruct - After your controller has been instantiated but before any methods are called.
 	 * Controller.after - After controller has been instantiated and methods called.
-	 * Display.before - Before the final output is processed.
+	 * Display.before - Before any of the final output processing begins.
+	 * Display.beforeRender - Before the processed output is rendered.
 	 * System.after - After everything has been run.
 	 *
 	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
