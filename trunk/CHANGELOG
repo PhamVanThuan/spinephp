@@ -25,6 +25,7 @@ LATEST AVAILABLE VERSION: 1.0.0 Beta
 			properties.
 [fixed]:	Controller library now has $helpers not $__helpers, was causing a bug with the actual
 			controller.
+[fixed]:	Request used General.enable_query_string instead of General.enable_friendly_urls
 
 <11th August 2010>
 -----------------------------------------------
