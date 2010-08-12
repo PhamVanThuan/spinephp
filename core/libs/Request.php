@@ -331,7 +331,7 @@
 				}
 
 				$uri = implode('/', $uri);
-				if(Config::read('General.enable_query_string')){
+				if(Config::read('General.enable_friendly_urls')){
 					$uri = 'index.php/' . $uri;
 				}
 
@@ -345,7 +345,7 @@
 					return $uri;
 				}else{
 					// Return in either query string format or pretty url.
-					if(Config::read('General.enable_query_string')){
+					if(Config::read('General.enable_friendly_urls')){
 						if($uri === '/'){
 							return SYS_URL . 'index.php';
 						}else{
