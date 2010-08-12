@@ -23,9 +23,9 @@
     abstract class Controller {
 
 		/**
-		 * @var array $__helpers array of helpers to be loaded in view
+		 * @var array $_helpers array of helpers to be loaded in view
 		 */
-		protected $__helpers;
+		protected $helpers;
 
 		/**
 		 * @var object $View a view object created for the controller
@@ -53,7 +53,7 @@
 			// Make sure that the view library is loaded and that we reference the helpers.
 			Spine::load('View');
 			$this->View = new View;
-			$this->View->helpers =& $this->__helpers;
+			$this->View->helpers =& $this->helpers;
 
 			// Is model autoloading enabled for the controller.
 			if(isset($this->enable_model_autoload) && $this->enable_model_autoload === true){

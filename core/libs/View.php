@@ -24,22 +24,22 @@
 		/**
 		 * @var array $views array of loaded view files
 		 */
-		protected static $views;
+		protected $views;
 
 		/**
 		 * @var array $loaded_helpers array of loaded helpers
 		 */
-		protected static $loaded_helpers = array();
+		protected $loaded_helpers = array();
 
 		/**
 		 * @var array $variables array of variables set for a view
 		 */
-		protected static $variables;
+		protected $variables;
 
 		/**
 		 * @var array $helpers array of helpers required for view
 		 */
-		public static $helpers;
+		public $helpers;
 
 		/**
 		 * load
@@ -51,18 +51,17 @@
 		public function load($view, $render = false){
 			if(file_exists(APP_PATH . 'views/' . $view . '.php')){
 
-				Spine::load('View');
 				// If variables is passed, they want to set a few variables in the same line.
-				if(!empty(View::$variables)){
-					foreach(View::$variables as $var => $val){
+				if(!empty($this->variables)){
+					foreach($this->variables as $var => $val){
 						$$var = $val;
 					}
 				}
 				// Now unset the variables, so they aren't passed into the next view.
-				View::$variables = array();
+				$this->variables = array();
 
 				// Load any helpers.
-				$helpers = Helpers::load(View::$helpers);
+				$helpers = Helpers::load($this->helpers);
 				if(!empty($helpers)){
 					foreach($helpers as $key => $val){
 						$key = strtolower($key);
@@ -70,7 +69,7 @@
 					}
 				}
 
-				if(!isset(View::$views[$view])){
+				if(!isset($this->views[$view])){
 					// Start output buffering.
 					ob_start();
 
@@ -78,20 +77,20 @@
 					include(APP_PATH . 'views/' . $view . '.php');
 
 					// Sets the contents in the loaded property.
-					View::$views[$view] = ob_get_clean();
+					$this->views[$view] = ob_get_clean();
 					
 					if($render){
 						// Render the view, send to Template render.
-						Template::render(View::$views[$view]);
+						Template::render($this->views[$view]);
 					}else{
-						return View::$views[$view];
+						return $this->views[$view];
 					}
 				}else{
 					if($render){
 						// Render the view, send to Template render.
-						Template::render(Views::$views[$view]);
+						Template::render($this->views[$view]);
 					}else{
-						return Views::$views[$view];
+						return $this->views[$view];
 					}
 				}
 
@@ -109,7 +108,7 @@
 		 * @param string $value
 		 */
 		public function set($variable, $value){
-			View::$variables[$variable] = $value;
+			$this->variables[$variable] = $value;
 		}
 
 		/**
@@ -149,15 +148,6 @@
 				Template::$cache['enabled'] = true;
 				Template::$cache['timeout'] = $timeout;
 			}
-		}
-
-		/**
-		 * set_template
-		 *
-		 * Alias of Template::set_template
-		 */
-		public function set_template($template){
-			Template::set_template($template);
 		}
 
 		/**
