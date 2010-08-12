@@ -93,6 +93,9 @@
 				$tmp[] = $attribute . '="' . $value . '"';
 			}
 			$string = implode(' ', $tmp);
+			if(!empty($string)){
+				$string = ' ' . $string;
+			}
 			return $string;
 		}
 
