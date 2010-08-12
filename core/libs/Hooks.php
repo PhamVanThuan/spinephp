@@ -91,7 +91,12 @@
 		 */
 		public static function unregister($hook = null, $name = null){
 			if(empty($hook) && empty($name)){
-				return false;
+				// Unset all hooks
+				Hooks::$registered = array();
+				Hooks::$set = array();
+
+				// All unset, return true.
+				return true;
 			}
 			
 			// Remove from registered.
@@ -189,7 +194,7 @@
 						// The hook is a file hook.
 						require(APP_PATH . 'views/hooks/' . $hook['file'] . '.php');
 					}else{
-						// The hook is a plugin.
+						// The hook is an extender.
 						// Should be right to fire it away.
 						$hook['object']->$hook['method']();
 					}

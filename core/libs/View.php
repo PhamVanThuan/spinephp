@@ -17,6 +17,8 @@
 	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 
+	Spine::load('Inflector');
+
 	class View extends Object {
 
 		/**
@@ -121,7 +123,7 @@
 		 * @return string
 		 */
 		public function section($name, $params = array()){
-			$name = str_replace('-', '_', $name);
+			$name = Inflector::filename($name);
 			if(file_exists(APP_PATH . 'views/sections/' . $name . '.php')){
 				// Found the section file, extract the paramaters.
 				extract($params);

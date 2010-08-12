@@ -6,7 +6,7 @@
 	 *
 	 * The breadcrumbs library makes easy to configure breadcrumbs, with easy to use
 	 * methods.
-	 * Allows breadcrumbs to be created, linked or not.
+	 * Allows breadcrumbs to be created, linked or not. Could be improved upon.
 	 * 
 	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
 	 *

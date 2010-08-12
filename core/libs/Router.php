@@ -188,10 +188,11 @@
 			if(!isset($params['params'])){
 				$params['params'] = array();
 			}
-
+			
 			foreach($match as $key => $value){
 				// Only add it to the params if it isn't already a parameter and if it isn't a controller or action.
 				if(!in_array($value, $params['params']) && !in_array($value, $params)){
+					// Explode it by the slash, so we can have unlimited amounts.
 					$params['params'] += explode('/', $value);
 				}
 			}

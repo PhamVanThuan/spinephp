@@ -17,7 +17,9 @@
 	 * @link		<http://www.spinephp.org>
 	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
-
+	
+	Spine::load('Inflector');
+	
     abstract class Controller {
 
 		/**
@@ -134,6 +136,15 @@
 		}
 
 		/**
+		 * set_template
+		 *
+		 * Alias of Template::set_template
+		 */
+		public function set_template($template, $revert = false){
+			Template::set_template($template, $revert);
+		}
+
+		/**
 		 * set
 		 *
 		 * Alias of View::set
@@ -186,7 +197,7 @@
 		 * Alias of Plugin::load
 		 */
 		public function plugin($plugin){
-			Plugin::load($plugin);
+			return Plugin::load($plugin, true);
 		}
 
 		/**

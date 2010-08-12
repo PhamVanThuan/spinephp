@@ -17,6 +17,8 @@
 	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 
+	Spine::load('Inflector');
+	
 	class Request {
 
 		/**
@@ -478,7 +480,7 @@
 				$file = Inflector::filename($this->__action);
 				while(!file_exists(APP_PATH . 'controllers/' . $directory . $file . '.php')){
 					if(empty($this->__params)){
-						trigger_error('Could not locate requested controller file /' . APP_PATH . 'controllers/' . Inflector::filename($this->__controller) . '.php', E_USER_ERROR);
+						trigger_error('Could not locate requested controller file /' . APP_PATH . 'controllers/' . $this->__folder . Inflector::filename($this->__controller) . '.php', E_USER_ERROR);
 						return;
 					}
 
@@ -518,13 +520,24 @@
 					return;
 				}
 
-				// Class is valid and all, now are we returning the object.
-				if($object){
-					return new $cn_controller;
+				// Run any hooks for Controller.before
+				Hooks::run('Controller.before');
+
+				// Create the new controller.
+				$obj = new $cn_controller;
+
+				if(!$object){
+					// If not returning, set the current controller to this one.
+					Request::$current = $obj;
 				}
 
-				// If not returning, set the current controller to this one.
-				Request::$current = new $cn_controller;
+				// Run any hooks for Controller.afterConstruct
+				Hooks::run('Controller.afterConstruct');
+
+				// Class is valid and all, now are we returning the object.
+				if($object){
+					return $obj;
+				}
 
 				// Ensure that requested method exists in class.
 				if(!$reflection->hasMethod($this->__action)){
@@ -533,6 +546,9 @@
 				}else{
 					// Method exists. Fire method with params.
 					$reflection->getMethod($this->__action)->invokeArgs(Request::$current, $this->__params);
+
+					// Run any hooks on Controller.after
+					Hooks::run('Controller.after');
 				}
 			}
 			
