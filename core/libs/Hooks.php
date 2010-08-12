@@ -187,7 +187,7 @@
 		 *
 		 * @param string $hook
 		 */
-		public static function run($hook){
+		public static function run($hook, $params = array()){
 			$hooks = array_extract(self::$set, $hook);
 			if(!empty($hooks)){
 				foreach($hooks as $hook){
@@ -197,7 +197,7 @@
 					}else{
 						// The hook is an extender.
 						// Should be right to fire it away.
-						$hook['object']->$hook['method']();
+						$hook['object']->$hook['method']($params);
 					}
 				}
 			}

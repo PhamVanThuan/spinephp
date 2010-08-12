@@ -108,8 +108,8 @@
 				}
 			}
 
-			// Run any hooks for Display.beforeRender
-			Hooks::run('Display.beforeRender');
+			// Run any hooks for Display.beforeRender, reference output as a parameter
+			Hooks::run('Display.beforeRender', array('output' => &$output));
 
 			// Get the compression type, like gzip.
 			$compression = Template::get_compression_type();
