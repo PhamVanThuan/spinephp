@@ -3,6 +3,10 @@ Spine PHP Change Log <http://www.spinephp.org/>
 
 LATEST AVAILABLE VERSION: 1.0.0 Beta
 
+<13th August 2010>
+-----------------------------------------------
+[new]:		Some hooks can now accept parameters, so methods can alter certain properties.
+
 <12th August 2010>
 -----------------------------------------------
 [fixed]:	MySQL Class now acts more like MySQLi. Created new classes for MySQL to allow
