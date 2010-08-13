@@ -6,6 +6,14 @@ LATEST AVAILABLE VERSION: 1.0.0 Beta
 <13th August 2010>
 -----------------------------------------------
 [new]:		Some hooks can now accept parameters, so methods can alter certain properties.
+[fixed]:	PHP 5.1.x evaluated inflector strings as variables, changed to \\1 instead of $1.
+[fixed]:	PHP 5.1.1 did not accept $components parameter for parse_url(), fixed to use standard
+			array method in Request.
+[fixed]:	Incorrect check for PDO library caused system to load PDO when it wasn't available.
+[fixed]:	Models were being included multiple times when using the Object::request method.
+[fixed]:	Object::request for the current controller would return a new instance of the controller
+			but now returns the current instance.
+[new]:		Basic testing for new environments, confirmed working in PHP 5.1.x, 5.2.x and 5.3.x.
 
 <12th August 2010>
 -----------------------------------------------
