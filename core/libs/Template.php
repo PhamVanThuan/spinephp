@@ -61,6 +61,12 @@
 				trigger_error('Could not find <strong>template.php</strong> in ' . BASE_PATH . APP_PATH . 'templates/' . $folder . '/', E_USER_ERROR);
 			}else{
 
+				// Set some default template variables.
+				Template::$tpl['g_base_path'] = BASE_PATH;
+				Template::$tpl['g_base_url'] = SYS_URL;
+				Template::$tpl['g_tpl_path'] = BASE_PATH . APP_PATH . 'templates' . DS . $folder . DS;
+				Template::$tpl['g_tpl_url'] = SYS_URL . APP_PATH . 'templates' . DS . $folder . DS;
+
 				// Run any hooks for Display.before
 				Hooks::run('Display.before');
 
@@ -207,7 +213,7 @@
 			}else{
 				$tmp = array();
 				foreach(Config::read('Template.order.js') as $order){
-					$order = strpos($order, '.js') !== false ? $order : $order . '.css';
+					$order = strpos($order, '.js') !== false ? $order : $order . '.js';
 					if(array_key_exists($order, $js)){
 						$tmp[] = $js[$order];
 					}

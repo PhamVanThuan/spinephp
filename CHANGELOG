@@ -14,6 +14,8 @@ LATEST AVAILABLE VERSION: 1.0.0 Beta
 [fixed]:	Object::request for the current controller would return a new instance of the controller
 			but now returns the current instance.
 [new]:		Basic testing for new environments, confirmed working in PHP 5.1.x, 5.2.x and 5.3.x.
+[fixed]:	JS files could not be ordered due to incorrect string being used in Template library.
+[new]:		Added default template variables, g_base_path, g_base_url, g_tpl_path and g_tpl_url.
 
 <12th August 2010>
 -----------------------------------------------
