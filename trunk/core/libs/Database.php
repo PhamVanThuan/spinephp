@@ -122,7 +122,7 @@
 			}
 
 			// Is PDO enabled, we'll use it if it is.
-			if(!extension_loaded('pdo') && $this->driver !== 'mysqli'){
+			if(extension_loaded('pdo') && $this->driver !== 'mysqli' && Config::read('Database.disable_pdo') === false){
 				// PDO is enabled.
 				if($this->driver === 'sqlite'){
 					// Using SQLite, different connection method.

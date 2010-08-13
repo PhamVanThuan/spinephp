@@ -124,7 +124,8 @@
 				}else{
 					if(isset($_SERVER['REQUEST_URI'])){
 						// First choice is REQUEST_URI, this also contains query string.
-						$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+						$__parsed = parse_url($_SERVER['REQUEST_URI']);
+						$uri = $__parsed['path'];
 					}elseif(isset($_SERVER['PHP_SELF'])){
 						// Second choice is PHP_SELF
 						$uri = $_SERVER['PHP_SELF'];
@@ -518,6 +519,15 @@
 				if($reflection->isAbstract()){
 					trigger_error('Controller class you are instantiating is abstract, controllers cannot be abstract.', E_USER_ERROR);
 					return;
+				}
+
+				// Are we running a controller already.
+				if(is_object(Request::$current)){
+					// If so, is the requested controller the already loaded controller
+					// and are we just returning an object.
+					if($object === true && get_class(Request::$current) === $cn_controller){
+						return Request::$current;
+					}
 				}
 
 				// Run any hooks for Controller.before

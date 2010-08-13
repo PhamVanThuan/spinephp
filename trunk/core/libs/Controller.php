@@ -247,8 +247,14 @@
 			// Replace any hyphons with underscores
 			$model = strtolower(Inflector::filename($model));
 			
+			// Grab the included files, replacing backslash with forwardslash
+			$included = array();
+			foreach(get_included_files() as $file){
+				$included[] = str_replace(DIRECTORY_SEPARATOR, '/', $file);
+			}
+			
 			// Attempt to locate the appropriate model, first look in the application/models
-			if(!in_array(APP_PATH . 'models/' . $model . '.php', get_included_files())){
+			if(!in_array(BASE_PATH . APP_PATH . 'models/' . $model . '.php', $included)){
 				if(file_exists(APP_PATH . 'models/' . $model . '.php')){
 					require(APP_PATH . 'models/' . $model . '.php');
 				}else{

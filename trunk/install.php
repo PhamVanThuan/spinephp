@@ -86,14 +86,14 @@
 			<tr>
 				<th>PHP Version</th>
 				<?php
-					if(version_compare(PHP_VERSION, '5.3.0') >= 0){
+					if(version_compare(PHP_VERSION, '5.1.0') >= 0){
 				?>
 				<td class="pass"><?php echo PHP_VERSION; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Spine requires PHP 5.3.0 or greater, you are running <?php echo PHP_VERSION; ?>.</td>
+				<td class="fail">Spine requires PHP 5.1.0 or greater, you are running <?php echo PHP_VERSION; ?>.</td>
 				<?php
 					}
 				?>

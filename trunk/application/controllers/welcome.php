@@ -6,7 +6,7 @@
 	* This is the default controller, when nothing is specified.
 	* Shows a pretty welcome message, and that's about it.
 	*/
-
+	
 	class WelcomeController extends Controller {
 
 		/**

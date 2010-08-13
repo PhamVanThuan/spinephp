@@ -17,7 +17,7 @@
 	 * If you have specified the Database library to be auto loaded
 	 * above, it will not auto connect unless this is set to true.
      */
-    Config::write('Database.enable_auto_connect', true);
+    Config::write('Database.enable_auto_connect', false);
 
 	/**
      * MySQL Host
@@ -53,4 +53,14 @@
      * MySQL Driver
      */
 	Config::write('Database.driver', 'mysql');
+
+	/**
+	 * MySQL Disable PDO
+	 * 
+	 * If you have written a website without using PDO and have
+	 * uploaded to a new environment that has PDO enabled and the
+	 * system attempts to use PDO, you can disable PDO to allow
+	 * your normal driver to be used.
+	 */
+	Config::write('Database.disable_pdo', false);
 ?>
