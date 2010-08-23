@@ -61,7 +61,7 @@
 	 * @return array
 	 */
     function load_config(){
-		if(!file_exists(BASE_PATH . DS . CORE_PATH . DS . 'config ' . DS . 'config.php')){
+		if(!file_exists(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . 'config.php')){
 			die("Failed to locate " . BASE_PATH . DS . CORE_PATH . DS . "config" . DS . "config.php");
 		}
 		
