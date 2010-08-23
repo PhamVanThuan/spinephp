@@ -48,8 +48,8 @@
 			$file = $plugin;
 
 			// Does the plugin exist, and has it been loaded already.
-			if(file_exists(BASE_PATH . 'plugins/' . $file . '.php') && !array_key_exists($class, Plugin::$loaded)){
-				require_once(BASE_PATH . 'plugins/' . $file . '.php');
+			if(file_exists(BASE_PATH . 'plugins' . DS . $file . '.php') && !array_key_exists($class, Plugin::$loaded)){
+				require_once(BASE_PATH . 'plugins' . DS . $file . '.php');
 
 				$cn_plugin = $class . 'Plugin';
 				if(class_exists($cn_plugin, false)){

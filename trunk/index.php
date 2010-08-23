@@ -55,34 +55,37 @@
 	 * Hah! Nah, go nuts. If you bugger it, your fault not mine.
 	 */
 	define('DS', '/');
-	define('APP_PATH', $application_directory . DS);
-	define('CORE_PATH', $core_path . DS);
-	define('LIB_PATH', CORE_PATH . $library_directory . DS);
-	define('DB_PATH', CORE_PATH . 'database' . DS);
-	define('TMP_PATH', $tmp_directory . DS);
-	define('BASE_PATH', str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']));
+	define('USER_BASE_PATH', '');
 
-	// The base path may need to be set to something else.
-	// If this one fails, then who knows...
-	if(!is_dir(BASE_PATH)){
-		die("Dang, couldn't set a base path. Please consult the manual for futher instructions.");
+	// Attempt to set a base path.
+	$base_path = str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']);
+	if(!is_dir($base_path)){
+		$base_path = $_SERVER['DOCUMENT_ROOT'] . str_replace('index.php', '', trim($_SERVER['SCRIPT_NAME'], DS));
+		if(!is_dir($base_path)){
+			die('Could not set a BASE_PATH based on the server variables. Please consult the manual for further instruction.');
+		}
 	}
+	define('BASE_PATH', trim($base_path, DS));
+	define('APP_PATH', $application_directory);
+	define('TMP_PATH', $tmp_directory);
+	define('CORE_PATH', $core_path);
+	define('LIB_PATH', CORE_PATH . DS . $library_directory);
+	define('DB_PATH', CORE_PATH . DS . 'database');
 
-	// Do a quick check on them.
 	if(!is_dir(APP_PATH)){
-		die("What the hell happened? Can't find the application directory, is your head on straight!?");
+		die("Could not locate APP_PATH at " . APP_PATH);
 	}
 
 	if(!is_dir(LIB_PATH)){
-		die("We found the application directory, but now we can't find the library directory! Damn!");
+		die("Could not locate LIB_PATH at " . LIB_PATH);
 	}
 
 	if(!is_dir(TMP_PATH)){
-		die("Couldn't locate the temporary files path. Bugger.");
+		die("Could not locate TMP_PATH at " . TMP_PATH);
 	}
 
 	if(!is_dir(DB_PATH)){
-		die("Can't find the Database directory, very unfortunate.");
+		die("Could not locate DB_PATH at " . DB_PATH);
 	}
 
 	// Disable Magic Quotes, if running less then PHP 5.3.0
@@ -90,23 +93,23 @@
 		set_magic_quotes_runtime(false);
 	}
 
-	if(file_exists('install.php')){
+	if(file_exists(BASE_PATH . DS . 'install.php')){
 		// The install file exists, let's require it then die.
-		include_once('install.php');
+		include_once(BASE_PATH . DS . 'install.php');
 		exit;
 
 		// This performs the environment tests.
 	}
 
-	require_once(LIB_PATH . 'Common.php');
-	require_once(LIB_PATH . 'Config.php');
+	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Common.php');
+	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Config.php');
 	Config::get_instance();
 	
 	// Define SYS_URL now that the config is available.
 	define('SYS_URL', Config::read('General.system_url'));
 
-	require_once(LIB_PATH . 'Errors.php');
-	require_once(LIB_PATH . 'Hooks.php');
+	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Errors.php');
+	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Hooks.php');
 
 	// Autoload any hooks that are in the config.
 	Hooks::autoload();
@@ -114,6 +117,6 @@
 	// Run any hooks for System.before
 	Hooks::run('System.before');
 
-	require_once(LIB_PATH . 'Spine.php');
+	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Spine.php');
 	Spine::instance();
 ?>

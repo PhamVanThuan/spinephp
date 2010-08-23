@@ -45,12 +45,12 @@
 						$fn_helper = strtolower($helper);
 					}
 
-					if(file_exists(APP_PATH . 'views/helpers/' . $fn_helper . '.php')){
+					if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . 'helpers' . DS . $fn_helper . '.php')){
 						$cn_helper = ucfirst($helper) . 'Helper';
 
 							if(!in_array($cn_helper, Helpers::$loaded)){
 								// Load in the helper file.
-								require(APP_PATH . 'views/helpers/' . $fn_helper . '.php');
+								require(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . 'helpers' . DS . $fn_helper . '.php');
 								Helpers::$loaded[] = $cn_helper;
 							}
 
@@ -67,7 +67,7 @@
 						
 					}else{
 						trigger_error('Could not locate helper file <strong>' . $fn_helper . '.php</strong> in ' .
-							BASE_PATH . APP_PATH . 'views/helpers/', E_USER_ERROR);
+							BASE_PATH . DS . APP_PATH . DS . 'views' . DS . 'helpers' . DS, E_USER_ERROR);
 					}
 				}
 			}

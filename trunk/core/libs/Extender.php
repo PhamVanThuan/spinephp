@@ -49,8 +49,8 @@
 			
 			list($file, $class) = $extend;
 
-			if(file_exists(BASE_PATH . 'extenders/' . $file . '.extend.php') && !array_key_exists($class, Extender::$loaded)){
-				require_once(BASE_PATH . 'extenders/' . $file . '.extend.php');
+			if(file_exists(BASE_PATH . DS . 'extenders' . DS . $file . '.php') && !array_key_exists($class, Extender::$loaded)){
+				require_once(BASE_PATH . DS . 'extenders' . DS . $file . '.php');
 
 				// Extender class name
 				$cn_extender = Inflector::camelize($class . 'Extender');
