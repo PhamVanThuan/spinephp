@@ -143,19 +143,20 @@
 			}else{
 				// No PDO, is the requested driver available.
 				if(extension_loaded($this->driver) && in_array($this->driver, Database::$supported)){
-					if(!file_exists(DB_PATH . $this->driver . DS . 'driver.php')){
+					if($this->driver === 'mysqli'){
+						$this->dbh = new mysqli($this->host, $this->username, $this->password, $this->dbname);
+						return;
+					}
+					
+					if(!file_exists(BASE_PATH . DS . DB_PATH . DS . $this->driver . DS . 'driver.php')){
 						trigger_error('Could not load the requested database driver file: ' . $this->driver, E_USER_ERROR);
 						return;
 					}
 
 					// We have our standard driver, not the best, but load it in.
-					require_once(DB_PATH . $this->driver . DS . 'driver.php');
-					if($this->driver === 'mysqli'){
-						$this->dbh = new mysqli($this->host, $this->username, $this->password, $this->dbname);
-					}else{
-						$this->dbh = new DBDriver;
-						$this->dbh->connect($this->host, $this->username, $this->password, $this->dbname);
-					}
+					require_once(BASE_PATH . DS . DB_PATH . DS . $this->driver . DS . 'driver.php');
+					$this->dbh = new DBDriver;
+					$this->dbh->connect($this->host, $this->username, $this->password, $this->dbname);
 				}else{
 					trigger_error('Configuration has been set to automatically connect to a database, however the attempt at finding a valid database driver failed. Attempted to load driver: ' . $this->driver, E_USER_ERROR);
 				}

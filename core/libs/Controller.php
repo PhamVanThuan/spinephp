@@ -18,19 +18,21 @@
 	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 	
-	Spine::load('Inflector');
+	Spine::load('Inflector', 'Loader');
 	
     abstract class Controller {
 
 		/**
-		 * @var array $_helpers array of helpers to be loaded in view
+		 * @var array $helpers array of helpers to be loaded in view
 		 */
-		protected $helpers;
+		public $helpers;
 
 		/**
-		 * @var object $View a view object created for the controller
+		 * @var object $load the loader object
 		 */
-		protected $View;
+		public $load;
+
+		public $__variables;
 
 		/**
 		 * @var array $__params default params set for models
@@ -50,19 +52,20 @@
 		 * and peforms any autoloading that is required.
 		 */
 		public function __construct(){
-			// Make sure that the view library is loaded and that we reference the helpers.
-			Spine::load('View');
-			$this->View = new View;
-			$this->View->helpers =& $this->helpers;
+			// Create a new loader object.
+			$this->load = new Loader;
+			$this->load->__controller =& $this;
 
 			// Is model autoloading enabled for the controller.
 			if(isset($this->enable_model_autoload) && $this->enable_model_autoload === true){
-				// Load the model class if available.
 				Spine::load('Model');
-				
-				if(isset($this->name)){
-					$this->model($this->name);
+				if(isset($this->name) && !empty($this->name)){
+					$name = $this->name;
+				}else{
+					// Attempt to create the name based on get_class() and removing last 10 characters.
+					$name = substr(get_class($this), 0, -10);
 				}
+				$this->load->model($name);
 			}
 
 			// Autoload any libs.
@@ -86,11 +89,23 @@
 		 * @param string $param
 		 * @return mixed
 		 */
-		public function get_param($param){
+		protected function get_param($param){
 			if(isset($this->__params[$param])){
 				return $this->__params[$param];
 			}
 			return false;
+		}
+
+		/**
+		 * set
+		 *
+		 * Set variables for the view file.
+		 *
+		 * @param string $variable
+		 * @param string $value
+		 */
+		protected function set($variable, $value){
+			$this->__variables[$variable] = $value;
 		}
 
 		/**
@@ -102,7 +117,7 @@
 		 * @param string $content the content to write to the section
 		 * @param boolean $overwrite if section value is overwitten
 		 */
-		public function write($variable, $content, $overwrite = false){
+		protected function write($variable, $content, $overwrite = false){
 			Template::write($variable, $content, $overwrite);
 		}
 
@@ -114,16 +129,10 @@
 		 *
 		 * @param string $variable name of variable
 		 * @param string $view name of view file to load
-		 * @param array $params array of params to set in view file
 		 * @param boolean $overwrite if section value is overwritten
 		 */
-		public function write_view($variable, $view, $params = array(), $overwrite = false){
-			if(!empty($params)){
-				foreach($params as $key => $val){
-					$this->View->set($key, $val);
-				}
-			}
-			Template::write($variable, $this->View->load($view), $overwrite);
+		protected function write_view($variable, $view, $overwrite = false){
+			$this->write($variable, $this->load->view($view), $overwrite);
 		}
 
 		/**
@@ -131,7 +140,7 @@
 		 *
 		 * Alias of Template::set_header
 		 */
-		public function set_header($action, $string = null, $replace = false){
+		protected function set_header($action, $string = null, $replace = false){
 			Template::set_header($action, $string, $replace);
 		}
 
@@ -140,26 +149,8 @@
 		 *
 		 * Alias of Template::set_template
 		 */
-		public function set_template($template, $revert = false){
+		protected function set_template($template, $revert = false){
 			Template::set_template($template, $revert);
-		}
-
-		/**
-		 * set
-		 *
-		 * Alias of View::set
-		 */
-		public function set($variable, $value){
-			$this->View->set($variable, $value);
-		}
-
-		/**
-		 * view
-		 *
-		 * Alias of View::load
-		 */
-		public function view($view, $render = false){
-			return $this->View->load($view, $render);
 		}
 
 		/**
@@ -171,7 +162,7 @@
 		 *
 		 * @param string $controller name of controller to dispatch too
 		 */
-		public function dispatch($uri){
+		protected function dispatch($uri){
 			$request = Request::instance('dispatcher', $uri);
 			if($request){
 				$request->dispatch();
@@ -183,7 +174,7 @@
 		 *
 		 * Alias of Breadcrumbs::crumb
 		 */
-		public function crumb($name, $url = null){
+		protected function crumb($name, $url = null){
 			if(Spine::loaded('Breadcrumbs')){
 				Breadcrumbs::crumb($name, $url);
 			}else{
@@ -192,12 +183,17 @@
 		}
 
 		/**
-		 * plugin
+		 * cache
 		 *
-		 * Alias of Plugin::load
+		 * Sets the cache timeout.
+		 *
+		 * @param int $timeout length of timeout
 		 */
-		public function plugin($plugin){
-			return Plugin::load($plugin, true);
+		protected function cache($timeout){
+			if($timeout > 0){
+				Template::$cache['enabled'] = true;
+				Template::$cache['timeout'] = $timeout;
+			}
 		}
 
 		/**
@@ -212,11 +208,7 @@
 		/**
 		 * redirect
 		 *
-		 * Allow easy re-direction. Can pass in an array, absolute or relative URL.
-		 * Array version is useful if creating an application that may be placed on a server
-		 * without mod_rewrite, so Query String is required. Format is as follows:
-		 * array('controller' => 'example', 'action' => 'index')
-		 * Action will automatically be set to index if not supplied and more arguements are passed.
+		 * Allows easier redirection.
 		 *
 		 * @param mixed $url the url to redirect too
 		 * @param boolean $exit if script exists, defaults to true
@@ -231,53 +223,6 @@
 				}
 			}
 		}
-
-		/**
-		* load
-		*
-		* Allows you to load a model into a controller, if it wasn't done
-		* automatically.
-		*
-		* @param string $model name of model to load
-		*/
-		public function model($model){
-			// Load in the Model class if needed
-			Spine::loaded('Model', true);
-			
-			// Replace any hyphons with underscores
-			$model = strtolower(Inflector::filename($model));
-			
-			// Grab the included files, replacing backslash with forwardslash
-			$included = array();
-			foreach(get_included_files() as $file){
-				$included[] = str_replace(DIRECTORY_SEPARATOR, '/', $file);
-			}
-			
-			// Attempt to locate the appropriate model, first look in the application/models
-			if(!in_array(BASE_PATH . APP_PATH . 'models/' . $model . '.php', $included)){
-				if(file_exists(APP_PATH . 'models/' . $model . '.php')){
-					require(APP_PATH . 'models/' . $model . '.php');
-				}else{
-				// Couldn't find it there, perhaps they have nested it inside a folder but forgot to specify.
-					if(file_exists(APP_PATH . 'models/' . $model . '/' . $model . '.php')){
-						require(APP_PATH . 'models/' . $model . '/' . $model . '.php');
-					}
-				}
-			}
-
-			// Check if we loaded the model and that the class exists, if it doesn't don't worry. Their fault.
-			$class = Inflector::classname($model . 'Model');
-			$model = ucfirst($model);
-
-			if(class_exists($class, false)){
-				// Excellent, pass in a few properties and set params to reference our params.
-				$this->{$model} = new $class;
-				$this->{$model}->name = $model;
-				$this->{$model}->params =& $this->__params;
-			}else{
-				return false;
-			}
-		}
-
+		
     }
 ?>

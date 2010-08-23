@@ -1,7 +1,16 @@
 Spine PHP Change Log <http://www.spinephp.org/>
 ---------------------------------------------------------------------------------------
 
-LATEST AVAILABLE VERSION: 1.0.0 Beta
+<Beta 1.0.1>
+-----------------------------------------------
+[changed]:	All include/requires now use a full path to the file/folder.
+[fixed]:	Config::save updated to the CORE_PATH
+[fixed]:	Request::build_uri only recognized a few protocols, now accepts any protocol.
+[fixed]:	Template::js double closing script tags.
+[new]:		Loader.php, moved loading of views/models to a single file.
+[changed]:	View.php removed.
+[changed]:	Access to properties and methods updated.
+[fixed]:	If controller name is not specified one is attempted to be generated.
 
 <13th August 2010>
 -----------------------------------------------

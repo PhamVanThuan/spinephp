@@ -35,14 +35,14 @@
 			}
 
 			// Does todays log file exist?
-			if(!file_exists(TMP_PATH . 'log/' . $log_file)){
+			if(!file_exists(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS . $log_file)){
 				$tmp .= "<?php\n\tif(!defined('APP_PATH')){\n\t\tdie('Unauthorized direct access to file.');\n\t}\n?>\n\n";
 			}
 
 			$tmp .= strtoupper($level) . " [" . date('jS F Y, \a\\t H:i') . "] > " . $message . "\n";
 
 			// Attempt to open the file, or create it if it doesn't exist.
-			if(!$handle = @fopen(TMP_PATH . 'log/' . $log_file, 'a+')){
+			if(!$handle = @fopen(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS . $log_file, 'a+')){
 				return;
 			}
 
@@ -61,18 +61,17 @@
 	 * @return array
 	 */
     function load_config(){
-		if(!file_exists(BASE_PATH . CORE_PATH . 'config/config.php')){
-			die("Failed to locate " . BASE_PATH . CORE_PATH . "config/config.php");
+		if(!file_exists(BASE_PATH . DS . CORE_PATH . DS . 'config ' . DS . 'config.php')){
+			die("Failed to locate " . BASE_PATH . DS . CORE_PATH . DS . "config" . DS . "config.php");
 		}
 		
-		// Load up the config file.
-		require(CORE_PATH . 'config/config.php');
+		$skip = array('router.php');
 
-		// Also load in any other configuration files inside the /core/config/ directory
-		foreach(glob(CORE_PATH . 'config/*.php') as $file){
+		// Load up the configuration files.
+		foreach(glob(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . '*.php') as $file){
 			$file = basename($file);
-			if($file !== 'config.php' && $file !== 'router.php'){
-				require(CORE_PATH . 'config/' . $file);
+			if(!in_array($file, $skip)){
+				require(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . $file);
 			}
 		}
     }
@@ -242,20 +241,6 @@
 		}
 
 		return $method;
-    }
-
-    /**
-	 * autoload
-	 *
-	 * Rarely should be used, but if it's needed it will load up a class file.
-	 */
-    function __autoload($class){
-		if(!file_exists(LIB_PATH . ucfirst(strtolower($class)) . '.php')){
-			write_log('', 'Failed to find library \'' . LIB_PATH . ucfirst(strtolower($class)) . '.php\'.');
-		}else{
-			require_once(LIB_PATH . ucfirst(strtolower($class)) . '.php');
-			return new $class;
-		}
     }
 
 ?>

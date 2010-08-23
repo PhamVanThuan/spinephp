@@ -193,7 +193,7 @@
 				foreach($hooks as $hook){
 					if(isset($hook['file'])){
 						// The hook is a file hook.
-						require(APP_PATH . 'views/hooks/' . $hook['file'] . '.php');
+						require(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . 'hooks' . DS . $hook['file'] . '.php');
 					}else{
 						// The hook is an extender.
 						// Should be right to fire it away.

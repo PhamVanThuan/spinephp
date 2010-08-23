@@ -32,14 +32,7 @@
 		 */
 		public static function instance(){
 			// Load important libraries.
-			Spine::load('Controller');
-			Spine::load('Object');
-			Spine::load('Request');
-			Spine::load('Router');
-			Spine::load('Template');
-			Spine::load('Helpers');
-			Spine::load('Extender');
-			Spine::load('Plugin');
+			Spine::load('Object', 'Controller', 'Request', 'Router', 'Template', 'Helpers', 'Extender', 'Plugin');
 
 			// Set the error handler, before running any classes.
 			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
@@ -141,26 +134,35 @@
 		 * @param string $lib
 		 * @return boolean
 		 */
-		public static function load($lib){
-			// Does the library file exist?
-			if(!file_exists(LIB_PATH . $lib . '.php')){
-				trigger_error('Could not find the requested library file ' . BASE_PATH . LIB_PATH . $lib . '.php', E_USER_ERROR);
-			}else{
-				if(!in_array($lib, Spine::$libs)){
-					require_once(LIB_PATH . $lib . '.php');
-
-					// Also add it to the libs array, then return true.
-					Spine::$libs[] = $lib;
-					
-					return true;
-				}else{
-					// Library has already been loaded.
-					return true;
-				}
-
-				// Something failed, return false.
+		public static function load(){
+			if(func_num_args() < 1){
+				trigger_error('Invalid arguments supplied for Spine::load.', E_USER_ERROR);
 				return false;
 			}
+
+			foreach(func_get_args() as $lib){
+				// Does the library file exist?
+				if(!file_exists(BASE_PATH . DS . LIB_PATH . DS . $lib . '.php')){
+					trigger_error('Could not find the requested library file ' . BASE_PATH . DS . LIB_PATH . DS . $lib . '.php', E_USER_ERROR);
+				}else{
+					if(!in_array($lib, Spine::$libs)){
+						require_once(BASE_PATH . DS . LIB_PATH . DS . $lib . '.php');
+
+						// Also add it to the libs array, then return true.
+						Spine::$libs[] = $lib;
+						continue;
+					}else{
+						// Library has already been loaded.
+						continue;
+					}
+
+					// Something failed, return false.
+					return false;
+				}
+			}
+
+			// All good.
+			return true;
 		}
 
 		/**

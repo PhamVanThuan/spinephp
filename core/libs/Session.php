@@ -54,7 +54,7 @@
 
 			// Attempt to save sessions in /tmp/sessions
 			if(is_dir(TMP_PATH . 'sessions')){
-				ini_set('session.save_path', TMP_PATH . 'sessions');
+				ini_set('session.save_path', BASE_PATH . DS . TMP_PATH . DS . 'sessions');
 			}
 			
 			ini_set('session.use_cookies', 1);
