@@ -65,7 +65,7 @@
 			die('Could not set a BASE_PATH based on the server variables. Please consult the manual for further instruction.');
 		}
 	}
-	define('BASE_PATH', trim($base_path, DS));
+	define('BASE_PATH', DS . trim($base_path, DS));
 	define('APP_PATH', $application_directory);
 	define('TMP_PATH', $tmp_directory);
 	define('CORE_PATH', $core_path);
