@@ -174,10 +174,10 @@
 								}
 							}
 							
-							@setcookie($tmp . $del, '', time() - (60 * 60 * 24 * 365), $path, $domain, $secure, $httponly);
+							@setcookie($tmp . $del, '', time() - (60 * 60 * 24 * 365 * 365), $c_path, $domain, $secure, $httponly);
 						}
 					}else{
-						@setcookie($tmp, '', time() - (60 * 60 * 24 * 365), $path, $domain, $secure, $httponly);
+						@setcookie($tmp, '', time() - (60 * 60 * 24 * 365 * 365), $c_path, $domain, $secure, $httponly);
 					}
 
 					return true;

@@ -32,12 +32,15 @@
 		 */
 		public $load;
 
+		/**
+		 * @var array $__variables array of view variables
+		 */
 		public $__variables;
 
 		/**
 		 * @var array $__params default params set for models
 		 */
-		public $__params = array(
+		protected $__params = array(
 			'request' => false,
 			'limit' => 10,
 			'order' => 'desc',
@@ -89,11 +92,39 @@
 		 * @param string $param
 		 * @return mixed
 		 */
-		protected function get_param($param){
+		public function get_param($param = null){
+			if(empty($param)){
+				return $this->__params;
+			}
+			
 			if(isset($this->__params[$param])){
 				return $this->__params[$param];
 			}
 			return false;
+		}
+
+		/**
+		 * get_params
+		 *
+		 * Set a referenced variable to all of the params
+		 * in the paramater array.
+		 *
+		 * @param referenced variable $ref
+		 */
+		public function get_params(&$ref){
+			$ref = $this->__params;
+		}
+
+		/**
+		 * set_param
+		 *
+		 * Set a parameter in the parameters array.
+		 *
+		 * @param string $param
+		 * @param mixed $value
+		 */
+		public function set_param($param, $value){
+			$this->__params[$param] = $value;
 		}
 
 		/**

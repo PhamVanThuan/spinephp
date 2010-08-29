@@ -101,14 +101,14 @@
 			<tr>
 				<th>Application Directory</th>
 				<?php
-					if(is_dir(APP_PATH) && is_writable(APP_PATH)){
+					if(is_dir(BASE_PATH . DS . APP_PATH) && is_writable(BASE_PATH . DS . APP_PATH)){
 				?>
-				<td class="pass"><?php echo BASE_PATH . APP_PATH; ?></td>
+				<td class="pass"><?php echo BASE_PATH . DS . APP_PATH . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . APP_PATH; ?></td>
+				<td class="fail">Could not locate <?php echo BASE_PATH . DS . APP_PATH . DS; ?></td>
 				<?php
 					}
 				?>
@@ -116,14 +116,14 @@
 			<tr>
 				<th>Library Directory</th>
 				<?php
-					if(is_dir(LIB_PATH) && is_writable(LIB_PATH)){
+					if(is_dir(BASE_PATH . DS . LIB_PATH) && is_writable(BASE_PATH . DS . LIB_PATH)){
 				?>
-				<td class="pass"><?php echo BASE_PATH . LIB_PATH; ?></td>
+				<td class="pass"><?php echo BASE_PATH . DS . LIB_PATH . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . LIB_PATH; ?></td>
+				<td class="fail">Could not locate <?php echo BASE_PATH . LIB_PATH . DS; ?></td>
 				<?php
 					}
 				?>
@@ -131,14 +131,14 @@
 			<tr>
 				<th>Config Directory</th>
 				<?php
-					if(is_dir(CORE_PATH . 'config/') && is_writable(CORE_PATH . 'config/')){
+					if(is_dir(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS) && is_writable(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS)){
 				?>
-				<td class="pass"><?php echo BASE_PATH . CORE_PATH . 'config/'; ?></td>
+				<td class="pass"><?php echo BASE_PATH . DS . CORE_PATH . DS . 'config' . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . CORE_PATH . 'config/'; ?></td>
+				<td class="fail">Could not locate <?php echo BASE_PATH . DS .  CORE_PATH . DS . 'config' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -146,14 +146,14 @@
 			<tr>
 				<th>Cache Directory</th>
 				<?php
-					if(is_dir(TMP_PATH . 'cache/') && is_writable(TMP_PATH . 'cache/')){
+					if(is_dir(BASE_PATH . DS . TMP_PATH . DS . 'cache' . DS) && is_writable(BASE_PATH . DS . TMP_PATH . DS . 'cache' . DS)){
 				?>
-				<td class="pass"><?php echo BASE_PATH . TMP_PATH . 'cache/'; ?></td>
+				<td class="pass"><?php echo BASE_PATH . DS . TMP_PATH . DS . 'cache' . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . TMP_PATH . 'cache/'; ?></td>
+				<td class="fail">Could not locate <?php echo BASE_PATH . DS .  TMP_PATH . DS . 'cache' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -161,14 +161,14 @@
 			<tr>
 				<th>Logs Directory</th>
 				<?php
-					if(is_dir(TMP_PATH . 'log/') && is_writable(TMP_PATH . 'log/')){
+					if(is_dir(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS) && is_writable(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS)){
 				?>
-				<td class="pass"><?php echo BASE_PATH . TMP_PATH . 'log/'; ?></td>
+				<td class="pass"><?php echo BASE_PATH . DS . TMP_PATH . DS . 'log' . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . TMP_PATH . 'log/'; ?></td>
+				<td class="fail">Could not locate <?php echo BASE_PATH . DS . TMP_PATH . DS . 'log' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -227,18 +227,19 @@
 
 		<p>
 			The tests below are optional and only enhance the experience of Spine.
+		</p>
 
 		<table border="0" width="100%" cellpadding="4" cellspacing="2">
 			<tr>
 				<th>Session Directory</th>
 				<?php
-					if(is_dir(TMP_PATH . 'cache/') && is_writable(TMP_PATH . 'sessions/')){
+					if(is_dir(BASE_PATH . DS . TMP_PATH . DS .  'cache/') && is_writable(BASE_PATH . DS . TMP_PATH . DS .  'sessions/')){
 				?>
-				<td class="pass"><?php echo BASE_PATH . TMP_PATH . 'sessions/'; ?></td>
+				<td class="pass"><?php echo BASE_PATH . DS .  TMP_PATH . DS .  'sessions' . DS; ?></td>
 				<?php
 					}else{
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . TMP_PATH . 'sessions/'; ?></td>
+				<td class="fail">Could not locate <?php echo BASE_PATH . TMP_PATH . DS .  'sessions' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -265,7 +266,7 @@
 				?>
 			</tr>
 			<tr>
-				<th>PDO Enabled</td>
+				<th>PDO Enabled</th>
 				<?php
 					if(extension_loaded('pdo')){
 				?>
@@ -279,7 +280,7 @@
 				?>
 			</tr>
 			<tr>
-				<th>PDO Available Drivers</td>
+				<th>PDO Available Drivers</th>
 				<?php
 					if(extension_loaded('pdo')){
 						$drivers = PDO::getAvailableDrivers();

@@ -187,7 +187,7 @@
 		 * Load up the JS files, check the configuration to exclude any
 		 * files or order the loading.
 		 */
-		public function js(){
+		public static function js(){
 			if(Config::read('Template.ignore.js') === null){
 				Config::write('Template.ignore.js', array());
 			}else{

@@ -49,7 +49,18 @@
 				if(!empty($this->__controller->__variables)){
 					foreach($this->__controller->__variables as $variable => $value){
 						$__tmp_vars[] = $variable;
-						${$variable} = $value;
+
+						if(strpos($variable, '.') !== false){
+							$tmp = array(); array_inject($tmp, $variable, $value);
+							$keys = array_keys($tmp);
+							if(isset(${$keys[0]})){
+								${$keys[0]} += $tmp[$keys[0]];
+							}else{
+								${$keys[0]} = $tmp[$keys[0]];
+							}
+						}else{
+							${$variable} = $value;
+						}
 					}
 				}
 
@@ -152,13 +163,16 @@
 
 			// Check if we loaded the model and that the class exists, if it doesn't don't worry. Their fault.
 			$class = Inflector::classname($model . 'Model');
-			$model = ucfirst($model);
+			$model = Inflector::classname($model);
 
 			if(class_exists($class, false)){
 				// Excellent, pass in a few properties and set params to reference our params.
 				$this->__controller->{$model} = new $class;
 				$this->__controller->{$model}->name = $model;
-				$this->__controller->{$model}->params =& $this->__controller->__params;
+
+				$params = null;
+				$this->__controller->get_params($params);
+				$this->__controller->{$model}->params = $params;
 			}else{
 				return false;
 			}

@@ -15,9 +15,10 @@
 	/**
 	 * Set Error Reporting.
 	 *
-	 * For a live website, it is recommended that this is not set to E_ALL.
+	 * During production set this to E_ALL | E_STRICT
+	 * On a live website, use E_ALL ^ E_STRICT
 	 */
-	error_reporting(E_ALL);
+	error_reporting(E_ALL | E_STRICT);
 
 	/**
 	 * Application Directory
@@ -103,6 +104,9 @@
 
 		// This performs the environment tests.
 	}
+
+	// Set the default timezone to GMT, can be changed in a hook.
+	date_default_timezone_set('GMT');
 
 	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Common.php');
 	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Config.php');

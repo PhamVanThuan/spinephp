@@ -94,7 +94,7 @@
 			}
 
 			// Was the request from AJAX.
-			if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'XMLHttpRequest'){
+			if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
 				Request::$ajax = true;
 			}
 
@@ -133,7 +133,8 @@
 						trigger_error('Unable to detect URI based on PATH_INFO, REQUEST_URI or PHP_SELF.', E_USER_WARNING);
 					}
 
-					$script_name = array_pop(explode('/', $_SERVER['SCRIPT_NAME']));
+					$script_name = explode('/', $_SERVER['SCRIPT_NAME']);
+					$script_name = array_pop($script_name);
 					$folder_name = substr($_SERVER['SCRIPT_NAME'], 0, (strlen($script_name) * -1));
 
 					// Remove directory from string.
@@ -186,9 +187,10 @@
 
 				if($request != 'config'){
 					// Because config options are different, we won't create any options yet.
-					$options = array_clean(explode(',', stripslashes($match[2])));
+					$options = explode(',', stripslashes($match[2]));
+					$options = array_clean($options);
 				}
-				$url = preg_replace('#' . preg_quote($match[0]) . '#', '', $url);
+				$uri = preg_replace('#' . preg_quote($match[0]) . '#', '', $uri);
 
 				switch($request){
 					// clear-cache
@@ -202,7 +204,7 @@
 							// Delete all cached files.
 							Template::delete_cache();
 						}else{
-							Template::delete_cache($url);
+							Template::delete_cache($uri);
 						}
 					break;
 					// config
@@ -286,9 +288,9 @@
 					break;
 				}
 
-				return $url;
+				return $uri;
 			}else{
-				return $url;
+				return $uri;
 			}
 		}
 
@@ -361,6 +363,72 @@
 
 			// Failed to build a URI from input.
 			return false;
+		}
+
+		/**
+		 * get_method
+		 *
+		 * Return method.
+		 *
+		 * @return string
+		 */
+		public static function get_method(){
+			return Request::$method;
+		}
+
+		/**
+		 * get_protocol
+		 *
+		 * Return protocol.
+		 *
+		 * @return string
+		 */
+		public static function get_protocol(){
+			return Request::$protocol;
+		}
+
+		/**
+		 * get_agent
+		 *
+		 * Return user agent.
+		 *
+		 * @return string
+		 */
+		public static function get_agent(){
+			return Request::$agent;
+		}
+
+		/**
+		 * get_ajax
+		 *
+		 * Return if from ajax request.
+		 *
+		 * @return boolean
+		 */
+		public static function get_ajax(){
+			return Request::$ajax;
+		}
+
+		/**
+		 * get_referer
+		 *
+		 * Return referer.
+		 *
+		 * @return string
+		 */
+		public static function get_referer(){
+			return Request::$referer;
+		}
+
+		/**
+		 * get_ip
+		 *
+		 * Return client IP.
+		 *
+		 * @return string
+		 */
+		public static function get_ip(){
+			return Request::$ip;
 		}
 
 		/**

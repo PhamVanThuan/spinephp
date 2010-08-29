@@ -97,24 +97,7 @@
 			if(empty($name)){
 				trigger_error('Failed to set a session because no session name was provided.', E_USER_ERROR);
 			}
-
-			$var = & $_SESSION;
-			$path = explode('.', $name);
-			foreach($path as $i => $key){
-				if($i === count($path) - 1){
-					$var[$key] = $value;
-				}else{
-					if(!isset($var[$key])){
-						$var[$key] = array();
-					}else{
-						// Check if the value is different.
-						if($var[$key] != $value){
-							$var[$key] = array();
-						}
-					}
-					$var = & $var[$key];
-				}
-			}
+			array_inject($_SESSION, $name, $value);
 		}
 
 		/**

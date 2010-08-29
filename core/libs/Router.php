@@ -220,7 +220,7 @@
 			$regex = str_replace(array(':any',':num',':alpha'), array('(.+)?','(\d+)?','([a-zA-Z]+)?'), $regex);
 
 			// The most important subpattern is the :special subpattern, which allows special requests.
-			$regex = preg_replace('#:special#', '\:(?P<special>[.]+)', $regex);
+			$regex = preg_replace('#:special#', '\:(?P<special>[\w\d\-\[\],\.\:/\S]+)', $regex);
 
 			// Replace any params with subpattern strings.
 			$regex = preg_replace('#:(\w+)#', '(?P<\\1>[0-9a-zA-Z_\-]+)', $regex);
