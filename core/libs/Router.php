@@ -225,6 +225,9 @@
 			// Replace any params with subpattern strings.
 			$regex = preg_replace('#:(\w+)#', '(?P<\\1>[0-9a-zA-Z_\-]+)', $regex);
 
+			// An action cannot start with an underscore.
+			$regex = str_replace('<action>[0-9a-zA-Z_\-]+', '<action>[^\-_]{1}[0-9a-zA-Z_\-]+', $regex);
+
 			// Any user provided regex?
 			if(!empty($user)){
 				foreach($user as $key => $value){
