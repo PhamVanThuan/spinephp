@@ -256,7 +256,8 @@
 		 */
 		public static function underscore($string){
 			if(!$transformed = Inflector::is_cached(__FUNCTION__, $string)){
-				$transformed = strtolower(preg_replace('#(?<=\w)([A-Z])#', '_\\1', $string));
+				$transformed = preg_replace('#(?<=\w)([A-Z])#', '_\\1', $string);
+				$transformed = strtolower($transformed);
 				Inflector::cache(__FUNCTION__, $string, $transformed);
 			}
 
@@ -273,7 +274,9 @@
 		 */
 		public static function classname($string){
 			if(!$transformed = Inflector::is_cached(__FUNCTION__, $string)){
-				$transformed = Inflector::camelize(str_replace('-', '_', array_pop(explode('/', $string))));
+				$transformed = explode('/', $string);
+				$transformed = array_pop($transformed);
+				$transformed = Inflector::camelize(str_replace('-', '_', $transformed));
 				Inflector::cache(__FUNCTION__, $string, $transformed);
 			}
 
@@ -290,7 +293,8 @@
 		 */
 		public static function methodname($string){
 			if(!$transformed = Inflector::is_cached(__FUNCTION__, $string)){
-				$transformed = str_replace('-', '_', array_pop(explode('/', $string)));
+				$transformed = explode('/', Inflector::underscore($string));
+				$transformed = str_replace('-', '_', array_pop($transformed));
 				Inflector::cache(__FUNCTION__, $string, $transformed);
 			}
 
@@ -307,7 +311,7 @@
 		 */
 		public static function filename($string){
 			if(!$transformed = Inflector::is_cached(__FUNCTION__, $string)){
-				$transformed = str_replace('-', '_', $string);
+				$transformed = str_replace('-', '_', Inflector::underscore($string));
 				Inflector::cache(__FUNCTION__, $string, $transformed);
 			}
 

@@ -1,6 +1,29 @@
 Spine PHP Change Log <http://www.spinephp.org/>
 ---------------------------------------------------------------------------------------
 
+<Beta 1.0.2>
+-----------------------------------------------
+[fixed]		[Hooks.php]			Hooks are correctly loaded from /application/hooks/
+[fixed]		[Inflector.php]		Inflector::methodname and Inflector::filename did not convert
+								camel case to underscores.
+[fixed]		[Loader.php]		Loader::model did not convert model to class name correctly.
+[fixed]		[Spine.php]			Sessions would not start automatically because the library file
+								had not been included prior to checking if it had.
+[new]		[Controller.php]	Added Controller::set_param
+[fixed]		[Controller.php]	Controller::$__params now a protected property.
+[fixed]		[Request.php]		Request was not matching special requests.
+[new]		[Loader.php]		View variables can now be arrays by using dot paths.
+[new]		[Request.php]		Methods to return static protected Request properties.
+[fixed]		[Request.php]		Request::$ajax did not set to true when using an Ajax request
+								because of a poor comparison.
+[fixed]		[Cookie.php]		Cookie::delete was using the wrong $path in setcookie,
+								resulted in a setcookie	error.
+[fixed]		[index.php]			Error reporting was hiding a lot of errors.
+[fixed]		[Template.php]		Template::js was not declared statically.
+[fixed]		[Spine.php]			Spine::destruct was not declared statically.
+[fixed]		[All core libs]		Bugs relating to assigning by reference.
+[fixed]		[Session.php]		Bug with Session::write not writing values correctly.
+
 <Beta 1.0.1>
 -----------------------------------------------
 [changed]:	All include/requires now use a full path to the file/folder.

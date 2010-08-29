@@ -35,7 +35,7 @@
 			Spine::load('Object', 'Controller', 'Request', 'Router', 'Template', 'Helpers', 'Extender', 'Plugin');
 
 			// Set the error handler, before running any classes.
-			set_error_handler(array('Errors', 'user_trigger'), E_ALL);
+			set_error_handler(array('Errors', 'user_trigger'));
 
 			// Also set the exception handler, used by PDO and eventually all of the system.
 			set_exception_handler('Errors::user_exception_trigger');
@@ -50,18 +50,18 @@
 				array('controller' => Config::read('General.default_controller'), 'action' => 'index')
 			);
 
-			// Start sessions automatically.
-			if(Spine::loaded('Session')){
-				// Start the session.
-				Session::instance();
-			}
-
 			// Autoload any libraries.
 			$libraries = Config::read('Library.load');
 			if(!empty($libraries)){
 				foreach($libraries as $library){
 					Spine::load($library);
 				}
+			}
+
+			// Start sessions automatically.
+			if(Spine::loaded('Session')){
+				// Start the session.
+				Session::instance();
 			}
 
 			// Autoload any extenders.
@@ -171,7 +171,7 @@
 		* Pretty much, when all is done. This will fire. Closes any
 		* database connections.
 		*/
-		public function destruct(){
+		public static function destruct(){
 			// Find any errors
 			Errors::checkup();
 
