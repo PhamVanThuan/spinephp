@@ -79,7 +79,8 @@
 				// Start output buffering so we can capture the output.
 				ob_start();
 				include(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . $view . '.php');
-				$contents = ob_get_clean();
+				$contents = ob_get_contents();
+				ob_end_clean();
 
 				// Unset all variables.
 				foreach($__tmp_vars as $variable){

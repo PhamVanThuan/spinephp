@@ -7,7 +7,7 @@
 	* Shows a pretty welcome message, and that's about it.
 	*/
 	
-	class WelcomeController extends Controller {
+	class WelcomeController extends CoreController {
 
 		/**
 		 * Name of the controller, this is to allow autoloading of models as well as databases.

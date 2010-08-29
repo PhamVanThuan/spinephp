@@ -23,6 +23,11 @@ Spine PHP Change Log <http://www.spinephp.org/>
 [fixed]		[Spine.php]			Spine::destruct was not declared statically.
 [fixed]		[All core libs]		Bugs relating to assigning by reference.
 [fixed]		[Session.php]		Bug with Session::write not writing values correctly.
+[fixed]		[All core libs]		Bug with output buffering not capturing and ending buffers
+								correctly which caused errors with error capturing.
+[fixed]		[Router.php]		Private methods (beginning with underscore) can now not be
+								accessed via the URI.
+[new]		[Spine.php]			Added core_controller.php to allow application wide methods.
 
 <Beta 1.0.1>
 -----------------------------------------------

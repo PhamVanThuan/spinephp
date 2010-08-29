@@ -34,6 +34,11 @@
 			// Load important libraries.
 			Spine::load('Object', 'Controller', 'Request', 'Router', 'Template', 'Helpers', 'Extender', 'Plugin');
 
+			// Load the core controller if available.
+			if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'core_controller.php')){
+				require(BASE_PATH . DS . APP_PATH . DS . 'core_controller.php');
+			}
+
 			// Set the error handler, before running any classes.
 			set_error_handler(array('Errors', 'user_trigger'));
 
@@ -175,11 +180,18 @@
 			// Find any errors
 			Errors::checkup();
 
-			// Send to the render method, where the actually rendering occurs
-			Template::render(Template::$output);
+			if(Template::$prepared){
+				// Send to the render method.
+				// Can only occur if there was some prepared output.
+				Template::render(Template::$output);
+			}else{
+				ob_end_flush();
+			}
 
 			// Run any hooks on Display.after
 			Hooks::run('Display.after');
+
+			die("HERE?");
 
 			// Run any hooks on System.after
 			Hooks::run('System.after');

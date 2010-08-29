@@ -4,7 +4,7 @@
     /**
      * Controller.php
      *
-     * This is the abstract controller class, the blueprints for every controller
+     * This is the controller class, the blueprints for every controller
      * in the system. It sets the required variables so that every controller has
      * it when loaded.
      *
@@ -20,7 +20,7 @@
 	
 	Spine::load('Inflector', 'Loader');
 	
-    abstract class Controller {
+    class Controller {
 
 		/**
 		 * @var array $helpers array of helpers to be loaded in view
@@ -77,12 +77,10 @@
 					Spine::load($lib);
 				}
 			}
-		}
 
-		/**
-		 * abstract index
-		 */
-		abstract public function index();
+			// Start output buffering to capture basic output.
+			ob_start();
+		}
 
 		/**
 		 * get_param
@@ -254,6 +252,5 @@
 				}
 			}
 		}
-		
     }
 ?>

@@ -44,6 +44,16 @@
 		public static $user_set_template = array();
 
 		/**
+		 * @var boolean $prepared if content has been prepared
+		 */
+		public static $prepared = false;
+
+		/**
+		 * @var boolean $enable_compression template compression enabled
+		 */
+		public static $enable_compression = true;
+
+		/**
 		 * @var string $output final output to be rendered
 		 */
 		public static $output;
@@ -60,6 +70,8 @@
 			if(!file_exists(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php')){
 				trigger_error('Could not find <strong>template.php</strong> in ' . BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS, E_USER_ERROR);
 			}else{
+				// We have prepared some content.
+				Template::$prepared = true;
 
 				// Set some default template variables.
 				Template::$tpl['g_base_path'] = BASE_PATH . DS;
@@ -94,9 +106,12 @@
 					include(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php');
 
 					// Using output buffering, we can get the contents of the buffer and clean it.
-					Template::$output = ob_get_clean();
+					Template::$output = ob_get_contents();
+					ob_end_clean();
 				}
 			}
+
+			
 		}
 
 		/**
@@ -116,9 +131,14 @@
 
 			// Run any hooks for Display.beforeRender, reference output as a parameter
 			Hooks::run('Display.beforeRender', array('output' => &$output));
-
+			
 			// Get the compression type, like gzip.
 			$compression = Template::get_compression_type();
+
+			// Any output running. End them all.
+			while(ob_get_length() !== false){
+				ob_end_clean();
+			}
 
 			// Start output buffering with any compression if available.
 			ob_start($compression);
@@ -352,7 +372,7 @@
 		 */
 		public static function get_compression_type(){
 			$compression = '';
-			if(Config::read('Template.enable_gzip_compression')){
+			if(Config::read('Template.enable_gzip_compression') && Template::$enable_compression){
 				if(extension_loaded('zlib')){
 					if(isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false){
 						$compression = 'ob_gzhandler';
