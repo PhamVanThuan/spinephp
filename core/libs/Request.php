@@ -312,7 +312,7 @@
 				if(!empty($route)){
 					if(($__route = Router::get($route)) !== false){
 						// We found our route, attempt to build from the route.
-						if(($__uri = $__route->build_uri($uri)) !== false){
+						if(($__uri = $__route->uri($uri)) !== false){
 							// This config settings determines if we should use index.php/ or not.
 							if(Config::read('General.enable_friendly_urls')){
 								return SYS_URL . $__uri;
@@ -350,7 +350,7 @@
 				}else{
 					// Return in either query string format or pretty url.
 					if(!Config::read('General.enable_friendly_urls')){
-						if($uri === '/'){
+						if($uri === '/' || empty($uri)){
 							return SYS_URL . 'index.php';
 						}else{
 							return SYS_URL . 'index.php/' . implode('/', array_clean(explode('/', $uri)));

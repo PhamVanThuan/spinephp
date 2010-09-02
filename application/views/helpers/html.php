@@ -1,9 +1,20 @@
 <?php
 
 	/**
-	 * html.helper.php
+	 * html.php
 	 *
 	 * HTML Helper Class
+	 * This class provides methods to enable easier creation of HTML elements that are
+	 * portable when system configuration variables change.
+	 *
+	 * Copyright (c) 2010, Jason Lewis, Spine PHP Team (http://www.spinephp.org)
+	 *
+	 * Licensed under the BSD License.
+	 * Redistribution of files must retain the above copyright notice.
+	 *
+	 * @copyright	Copyright 2010, Jason Lewis, Spine PHP Team
+	 * @link		<http://www.spinephp.org>
+	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 
 	class HtmlHelper {
@@ -36,7 +47,7 @@
 				$text = $url;
 			}
 
-			return sprintf($this->html['link'], $url, $attr, $text);
+			return sprintf($this->html['link'], $url, empty($attr) ? '' : ' ' . $attr, $text);
 		}
 
 		/**
@@ -57,7 +68,7 @@
 			// Parse any attributes.
 			$attr = Helpers::parse_attributes($attr);
 
-			return sprintf($this->html['mailto'], $email, $text, $attr);
+			return sprintf($this->html['mailto'], $email, $text, empty($attr) ? '' : ' ' . $attr);
 		}
 
 		/**

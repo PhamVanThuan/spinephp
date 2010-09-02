@@ -243,7 +243,7 @@
 		}
 
 		/**
-		 * build_uri
+		 * uri
 		 *
 		 * Build a URI for the given route, where params can be an array
 		 * of parameters relating to that route.
@@ -251,7 +251,7 @@
 		 * @param array $params
 		 * @return string
 		 */
-		public function build_uri($params = array()){
+		public function uri($params = array()){
 			if(empty($params)){
 				$params = $this->__defaults;
 			}else{

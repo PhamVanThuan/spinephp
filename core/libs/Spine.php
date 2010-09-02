@@ -191,8 +191,6 @@
 			// Run any hooks on Display.after
 			Hooks::run('Display.after');
 
-			die("HERE?");
-
 			// Run any hooks on System.after
 			Hooks::run('System.after');
 		}

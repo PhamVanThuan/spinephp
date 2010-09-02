@@ -92,11 +92,7 @@
 			foreach($attr as $attribute => $value){
 				$tmp[] = $attribute . '="' . $value . '"';
 			}
-			$string = implode(' ', $tmp);
-			if(!empty($string)){
-				$string = ' ' . $string;
-			}
-			return $string;
+			return ' ' . implode(' ', $tmp);
 		}
 
 	}

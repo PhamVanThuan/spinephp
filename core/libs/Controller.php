@@ -18,7 +18,7 @@
 	 * @license		BSD License <http://www.opensource.org/licenses/bsd-license.php>
 	 */
 	
-	Spine::load('Inflector', 'Loader');
+	Spine::load('Inflector', 'Loader', 'Input', 'Validate');
 	
     class Controller {
 
@@ -31,6 +31,11 @@
 		 * @var object $load the loader object
 		 */
 		public $load;
+
+		/**
+		 * @var object $input the input object
+		 */
+		public $input;
 
 		/**
 		 * @var array $__variables array of view variables
@@ -58,6 +63,10 @@
 			// Create a new loader object.
 			$this->load = new Loader;
 			$this->load->__controller =& $this;
+
+			// Create a new input object.
+			Input::sanitize_globals();
+			$this->input = new Input;
 
 			// Is model autoloading enabled for the controller.
 			if(isset($this->enable_model_autoload) && $this->enable_model_autoload === true){
@@ -123,6 +132,7 @@
 		 */
 		public function set_param($param, $value){
 			$this->__params[$param] = $value;
+			return $this;
 		}
 
 		/**
@@ -135,6 +145,7 @@
 		 */
 		protected function set($variable, $value){
 			$this->__variables[$variable] = $value;
+			return $this;
 		}
 
 		/**
@@ -148,6 +159,7 @@
 		 */
 		protected function write($variable, $content, $overwrite = false){
 			Template::write($variable, $content, $overwrite);
+			return $this;
 		}
 
 		/**
@@ -162,6 +174,7 @@
 		 */
 		protected function write_view($variable, $view, $overwrite = false){
 			$this->write($variable, $this->load->view($view), $overwrite);
+			return $this;
 		}
 
 		/**
@@ -171,6 +184,7 @@
 		 */
 		protected function set_header($action, $string = null, $replace = false){
 			Template::set_header($action, $string, $replace);
+			return $this;
 		}
 
 		/**
@@ -180,6 +194,7 @@
 		 */
 		protected function set_template($template, $revert = false){
 			Template::set_template($template, $revert);
+			return $this;
 		}
 
 		/**
@@ -195,19 +210,6 @@
 			$request = Request::instance('dispatcher', $uri);
 			if($request){
 				$request->dispatch();
-			}
-		}
-
-		/**
-		 * crumb
-		 *
-		 * Alias of Breadcrumbs::crumb
-		 */
-		protected function crumb($name, $url = null){
-			if(Spine::loaded('Breadcrumbs')){
-				Breadcrumbs::crumb($name, $url);
-			}else{
-				return null;
 			}
 		}
 
