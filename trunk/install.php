@@ -101,7 +101,7 @@
 			<tr>
 				<th>Application Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . APP_PATH) && is_writable(BASE_PATH . DS . APP_PATH)){
+					if(is_dir(BASE_PATH . DS . APP_PATH)){
 				?>
 				<td class="pass"><?php echo BASE_PATH . DS . APP_PATH . DS; ?></td>
 				<?php
@@ -116,7 +116,7 @@
 			<tr>
 				<th>Library Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . LIB_PATH) && is_writable(BASE_PATH . DS . LIB_PATH)){
+					if(is_dir(BASE_PATH . DS . LIB_PATH)){
 				?>
 				<td class="pass"><?php echo BASE_PATH . DS . LIB_PATH . DS; ?></td>
 				<?php
@@ -138,7 +138,7 @@
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . DS .  CORE_PATH . DS . 'config' . DS; ?></td>
+				<td class="fail">Could not write to <?php echo BASE_PATH . DS .  CORE_PATH . DS . 'config' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -153,7 +153,7 @@
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . DS .  TMP_PATH . DS . 'cache' . DS; ?></td>
+				<td class="fail">Could not write to <?php echo BASE_PATH . DS .  TMP_PATH . DS . 'cache' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -168,7 +168,7 @@
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . DS . TMP_PATH . DS . 'log' . DS; ?></td>
+				<td class="fail">Could not write to <?php echo BASE_PATH . DS . TMP_PATH . DS . 'log' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -248,13 +248,13 @@
 			<tr>
 				<th>Session Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . TMP_PATH . DS .  'cache/') && is_writable(BASE_PATH . DS . TMP_PATH . DS .  'sessions/')){
+					if(is_dir(BASE_PATH . DS . TMP_PATH . DS .  'sessions/') && is_writable(BASE_PATH . DS . TMP_PATH . DS .  'sessions/')){
 				?>
 				<td class="pass"><?php echo BASE_PATH . DS .  TMP_PATH . DS .  'sessions' . DS; ?></td>
 				<?php
 					}else{
 				?>
-				<td class="fail">Could not locate <?php echo BASE_PATH . TMP_PATH . DS .  'sessions' . DS; ?></td>
+				<td class="fail">Could not write to <?php echo BASE_PATH . TMP_PATH . DS .  'sessions' . DS; ?></td>
 				<?php
 					}
 				?>
