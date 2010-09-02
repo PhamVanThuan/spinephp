@@ -17,7 +17,7 @@
 	 * If you have specified the Database library to be auto loaded
 	 * above, it will not auto connect unless this is set to true.
      */
-    Config::write('Database.enable_auto_connect', true);
+    Config::write('Database.enable_auto_connect', false);
 
 	/**
      * MySQL Host
