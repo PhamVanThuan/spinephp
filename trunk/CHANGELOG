@@ -1,7 +1,7 @@
 Spine PHP Change Log <http://www.spinephp.org/>
 ---------------------------------------------------------------------------------------
 
-<Beta 1.0.3>
+<03/09/2010>
 -----------------------------------------------
 [new]		[Input.php]			Input can now be safely processed and managed with this class.
 [new]		[Validate.php]		Form validation can now be achieved easily with the Validate
