@@ -1,6 +1,17 @@
 Spine PHP Change Log <http://www.spinephp.org/>
 ---------------------------------------------------------------------------------------
 
+<Beta 1.0.3>
+-----------------------------------------------
+[new]		[Input.php]			Input can now be safely processed and managed with this class.
+[new]		[Validate.php]		Form validation can now be achieved easily with the Validate
+								class.
+[fixed]		[Request.php]		Request::build_uri would place a trailing slash on a blank uri.
+[new]		[form.php]			FormHelper class, creation of forms is enhanced to integrate with
+								the Validate class.
+[changed]	[Controller.php]	Some methods now return object to append method calls.
+[changed]	[Breadcrumbs.php]	Library removed.
+
 <Beta 1.0.2>
 -----------------------------------------------
 [fixed]		[Hooks.php]			Hooks are correctly loaded from /application/hooks/

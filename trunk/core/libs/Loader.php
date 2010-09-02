@@ -35,10 +35,10 @@
 		 * and helpers for the view file to use.
 		 *
 		 * @param string $view
-		 * @param boolean $render
+		 * @param boolean $return
 		 * @return mixed
 		 */
-		public function view($view, $render = false){
+		public function view($view, $return = false){
 			$view = Inflector::filename($view);
 			
 			if(!file_exists(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . $view . '.php')){
@@ -87,7 +87,7 @@
 					unset($variable);
 				}
 
-				if($render === false){
+				if($return === true){
 					// Return the output to the user
 					return $contents;
 				}else{
