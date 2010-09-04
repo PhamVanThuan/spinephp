@@ -35,10 +35,10 @@
 		 * and helpers for the view file to use.
 		 *
 		 * @param string $view
-		 * @param boolean $return
+		 * @param boolean $render
 		 * @return mixed
 		 */
-		public function view($view, $return = false){
+		public function view($view, $render = false){
 			$view = Inflector::filename($view);
 			
 			if(!file_exists(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . $view . '.php')){
@@ -76,23 +76,27 @@
 					}
 				}
 
-				// Start output buffering so we can capture the output.
-				ob_start();
 				include(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . $view . '.php');
+				
+				// Get the contents.
 				$contents = ob_get_contents();
-				ob_end_clean();
+
+				// Clean the master buffer.
+				ob_clean();
 
 				// Unset all variables.
 				foreach($__tmp_vars as $variable){
 					unset($variable);
 				}
 
-				if($return === true){
+				if($render === false){
 					// Return the output to the user
 					return $contents;
 				}else{
-					// Send the output to Template::render to process
-					Template::render($contents);
+					// Send the output to Template::render to process, check errors first.
+					if(Errors::checkup() === false){
+						Template::render($contents);
+					}
 				}
 			}
 		}
@@ -119,7 +123,9 @@
 					}
 				}
 
-				ob_start();
+				// Clean our buffer.
+				ob_clean();
+				
 				include(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . 'sections' . DS . $section . '.php');
 				$output = ob_get_clean();
 

@@ -92,6 +92,14 @@
 				}
 			}
 
+			// Clean any buffers if they are running.
+			while(ob_get_level() > 0){
+				ob_end_clean();
+			}
+
+			// Start our master output buffer.
+			ob_start();
+
 			// Use Request to get a new request instance from the current URI.
 			if(($request = Request::instance('default')) !== false){
 				// Check if we have a cached copy before dispatching.
@@ -103,7 +111,7 @@
 					Hooks::run('Controller.after');
 				}
 			}
-			
+
 			// Everything has run.
 			Spine::destruct();
 		}
@@ -177,15 +185,9 @@
 		* database connections.
 		*/
 		public static function destruct(){
-			// Find any errors
-			Errors::checkup();
-
-			if(Template::$prepared){
-				// Send to the render method.
-				// Can only occur if there was some prepared output.
+			if(Errors::checkup() === false){
+				// Errors will display themselves if any, lets render the template output.
 				Template::render(Template::$output);
-			}else{
-				ob_end_flush();
 			}
 
 			// Run any hooks on Display.after

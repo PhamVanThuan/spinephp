@@ -53,7 +53,7 @@
 		/**
 		 * @var bool $ignore if errors are ignored
 		 */
-		private static $ignore;
+		private static $ignore = false;
 
 		/**
 		 * trigger
@@ -142,7 +142,7 @@
 				list($folder, $template) = Template::get_template();
 				
 				// Is there an errors template?
-				if(file_exists(BASE_PATH . DS . APP_PATH . DS .  'templates' . DS . 'errors ' . DS . 'html.php')){
+				if(file_exists(BASE_PATH . DS . APP_PATH . DS .  'templates' . DS . 'errors' . DS . 'html.php')){
 					// Set the new template.
 					Template::set_template('errors/html');
 
@@ -170,12 +170,21 @@
 
 					// Reset the render.
 					Template::prepare();
+
+					// Display the output.
+					Template::render(Template::$output);
+
+					// Return true, we have errors.
+					return true;
 				}else{
 					// No template file, just die with the error message.
 					// Not the prettiest, but...
 					die(Errors::$run_errors[0]['message'] . '<br />' . 'Found in ' . Errors::$run_errors[0]['file'] . ' on line ' . Errors::$run_errors[0]['line']);
 				}
 			}
+
+			// No errors.
+			return false;
 		}
 
 		public static function ignore(){

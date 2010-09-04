@@ -26,8 +26,8 @@
 		 * work correctly. Any authentication can be placed in
 		 * here as well.
 		 */
-		public function __construct(){
-			parent::__construct();
+		public function __construct($request){
+			parent::__construct($request);
 		}
 		
 	}
