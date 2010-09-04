@@ -1,160 +1,65 @@
 Spine PHP Change Log <http://www.spinephp.org/>
 ---------------------------------------------------------------------------------------
+This file contains changes to the SpinePHP system, only the 3 latest versions/revisions are shown. Revisions
+are part of the same latest version, however they contain the most recent code that has been applied to that version.
+Spine is still unstable, however it is getting closer to a stable release.
 
-<03/09/2010>
+Revision: 88
+Release Data: 4th September 2010
+Status: Unstable
 -----------------------------------------------
-[new]		[Input.php]			Input can now be safely processed and managed with this class.
-[new]		[Validate.php]		Form validation can now be achieved easily with the Validate
-								class.
-[fixed]		[Request.php]		Request::build_uri would place a trailing slash on a blank uri.
-[new]		[form.php]			FormHelper class, creation of forms is enhanced to integrate with
-								the Validate class.
-[changed]	[Controller.php]	Some methods now return object to append method calls.
-[changed]	[Breadcrumbs.php]	Library removed.
+Libraries
+	[added]		Validate Class.
+	[added]		Input Class.
+	[fixed]		Controller methods return the controller object to allow appending methods.
+	[removed]	Breadcrumbs Class.
+	[fixed]		Router now checks for private methods.
+	[modified]	Controllers now have access the the request object that instantiated the controller.
 
-<Beta 1.0.2>
------------------------------------------------
-[fixed]		[Hooks.php]			Hooks are correctly loaded from /application/hooks/
-[fixed]		[Inflector.php]		Inflector::methodname and Inflector::filename did not convert
-								camel case to underscores.
-[fixed]		[Loader.php]		Loader::model did not convert model to class name correctly.
-[fixed]		[Spine.php]			Sessions would not start automatically because the library file
-								had not been included prior to checking if it had.
-[new]		[Controller.php]	Added Controller::set_param
-[fixed]		[Controller.php]	Controller::$__params now a protected property.
-[fixed]		[Request.php]		Request was not matching special requests.
-[new]		[Loader.php]		View variables can now be arrays by using dot paths.
-[new]		[Request.php]		Methods to return static protected Request properties.
-[fixed]		[Request.php]		Request::$ajax did not set to true when using an Ajax request
-								because of a poor comparison.
-[fixed]		[Cookie.php]		Cookie::delete was using the wrong $path in setcookie,
-								resulted in a setcookie	error.
-[fixed]		[index.php]			Error reporting was hiding a lot of errors.
-[fixed]		[Template.php]		Template::js was not declared statically.
-[fixed]		[Spine.php]			Spine::destruct was not declared statically.
-[fixed]		[All core libs]		Bugs relating to assigning by reference.
-[fixed]		[Session.php]		Bug with Session::write not writing values correctly.
-[fixed]		[All core libs]		Bug with output buffering not capturing and ending buffers
-								correctly which caused errors with error capturing.
-[fixed]		[Router.php]		Private methods (beginning with underscore) can now not be
-								accessed via the URI.
-[new]		[Spine.php]			Added core_controller.php to allow application wide methods.
+Helpers
+	[added]		Form Helper.
+	[modified]	HTML Helper now correctly adds parameters.
 
-<Beta 1.0.1>
------------------------------------------------
-[changed]:	All include/requires now use a full path to the file/folder.
-[fixed]:	Config::save updated to the CORE_PATH
-[fixed]:	Request::build_uri only recognized a few protocols, now accepts any protocol.
-[fixed]:	Template::js double closing script tags.
-[new]:		Loader.php, moved loading of views/models to a single file.
-[changed]:	View.php removed.
-[changed]:	Access to properties and methods updated.
-[fixed]:	If controller name is not specified one is attempted to be generated.
+General
+	[added]		CoreController for application wide methods and loading.
 
-<13th August 2010>
------------------------------------------------
-[new]:		Some hooks can now accept parameters, so methods can alter certain properties.
-[fixed]:	PHP 5.1.x evaluated inflector strings as variables, changed to \\1 instead of $1.
-[fixed]:	PHP 5.1.1 did not accept $components parameter for parse_url(), fixed to use standard
-			array method in Request.
-[fixed]:	Incorrect check for PDO library caused system to load PDO when it wasn't available.
-[fixed]:	Models were being included multiple times when using the Object::request method.
-[fixed]:	Object::request for the current controller would return a new instance of the controller
-			but now returns the current instance.
-[new]:		Basic testing for new environments, confirmed working in PHP 5.1.x, 5.2.x and 5.3.x.
-[fixed]:	JS files could not be ordered due to incorrect string being used in Template library.
-[new]:		Added default template variables, g_base_path, g_base_url, g_tpl_path and g_tpl_url.
+Bugs
+	[fixed]		Fixed a bug where Session::write did not write to the session array correctly.
+	[fixed]		Fixed a bug with Request::build_uri when supply a blank URI it would append a slash.
+	[fixed]		Fixed an error capturing bug, errors were not being display in the correct template.
+	[fixed]		Fixed a bug with output buffering, now stacked better to increase performance.
 
-<12th August 2010>
+Version: 1.0.2 Beta
+Release Date: 29th August 2010
+Status: Unstable
 -----------------------------------------------
-[fixed]:	MySQL Class now acts more like MySQLi. Created new classes for MySQL to allow
-			creation of query objects and prepared statement objects.
-[fixed]:	MySQLi is now not loaded by PDO, fixing the invalid driver issue.
-[new]:		Added Model::get_param to allow cleaner loading of a parameter inside models.
-[deleted]:	Removed the MySQLi driver as the MySQL driver now mimics MySQLi as closely
-			as it can.
-[changed]:	Database config items now in their own database.php config file.
-[new]:		Added PDO and PDO Drivers Available to Installation Tests.
-[changed]:	Inflector is only loaded where required.
-[fixed]:	Smarty would encounter supressed errors but error reporting would still display
-			them.
-[new]:		Errors::ignore and Errors::unignore, to turn error reporting on and off.
-[fixed]:	Hooks Controller.beforeConstruct, Controller.afterConstruct and Controller.after
-			were not working correctly.
-[fixed]:	Smarty extender now hooks correctly into the core.
-[fixed]:	Default configuration settings now more appropriate.
-[fixed]:	View library bug, some properties were still static and methods were calling static
-			properties.
-[fixed]:	Controller library now has $helpers not $__helpers, was causing a bug with the actual
-			controller.
-[fixed]:	Request used General.enable_query_string instead of General.enable_friendly_urls
+Libraries
+	[modified]	Added Controller::set_param method to allow parameters to be set.
+	[modified]	Controller::$__params is now protected, to retrieve params use Controller::get_param
 
-<11th August 2010>
------------------------------------------------
-[changed]:	Update the MySQL class, changed name to DBDriver to allow multiple drivers.
-[new]:		Added PDO support, to allow a better database layer for portability of applications.
-			If PDO is unavailable it will revert to the generic classes that were created.
+General
+	[added]		Added support for dot paths with view variable names, to allow arrays inside views.
 
-<7th August 2010>
------------------------------------------------
-[changed]:	Controllers can now be placed at any depth within /application/controllers
-[changed]:	Controllers no longer require the directories to be prepended to the class
-			name of the controller.
+Bugs
+	[fixed]		Bug where hooks were being loaded from the incorrect and old directory structure.
+	[fixed]		Bug where Inflector::methodname and Inflector::filename did not convert CamelCase to underscores.
+	[fixed]		Bug in Loader::model, not converting the model name to a class name correctly.
+	[fixed]		Bug with sessions not starting automatically because the file was being included after the attempt
+				to start sessions.
+	[fixed]		Bug where Requests weren't matching Special Requests.
+	[fixed]		Bug where Request::$ajax was not being set to true when an Ajax request was sent.
+	[fixed]		Bug where Cookie::delete was using the wrong $path variable and cookies weren't being deleted.
+	[fixed]		Template::js was not being declared statically.
+	[fixed]		Spine::destruct was not being declared statically.
 
-<5th August 2010>
+Version: 1.0.1 Beta
+Release Date: 20th August 2010
+Status: Unstable
 -----------------------------------------------
-[changed]:	Router class changed to support user-defined routes to prevent bad URLs.
-[new]:		Request class handles input request, special requests and URL building.
-[changed]:	Error template is now it's own template, not part of a template.
-[fixed]:	User defined routes can now specify controllers in subdirectories.
-[new]:		URI can be constructed from a route.
-[fixed]:	General.default_controller was not being used in the default route.
-[fixed]:	All bugs inside HTML Helper.
+Libraries
+	[added]		Loader Class.
+	[removed]	View Class.
 
-<4th August 2010>
------------------------------------------------
-[new]:		Inflector class added.
-[changed]:	What were plugins are now called extenders. Plugins have been redone.
-[new]:		Extender class added.
-[new]:		Thumbnail plugin created, this is more of an example plugin.
-
-<3rd August 2010>
------------------------------------------------
-[changed]:	Folder structure has been updated to allow better understanding of where
-			things should belong.
-[changed]:	A template parser is no longer supported, however support for Smarty will
-			be added.
-[new]:		Libraries can be autoloaded by a controller via the $libs property.
-[new]:		Basic Smarty implementation. Smarty cannot use Helpers, both in views and in
-			templates. Smarty can be unhooked, which will call a method supplied in params unhook.
-
-<1st August 2010>
------------------------------------------------
-[changed]:	The entire system has been re-done as a static system to allow easier
-			access to the different libraries.
-[changed]:	File names no longer have .view, .model, .section and .controller
-			file extensions, it's just .php.
-[new]:		install.php checks environment for correct configuration.
-
-<29th July 2010>
------------------------------------------------
-[new]:		Changelog started.
-[new]:		Spine::Hooks. Hooks can now be added, either via plugins or as files located
-			in /application/hooks.
-[new]:		Spine::Plugin. Plugins can be implemented into the system, using hooks, being
-			called in a controller or by using helpers.
-[new]:		Template Engine support added for engines such as Smarty. Currently only been
-			tested to work with the Smarty engine.
-[changed]:	Registery has been changed to Spine.
-[fixed]:	Spine::load_library, useless parameters removed, replaced by functions that
-			can do the same thing.
-[changed]:	Hook Controller.afterConstruct is now located in Spine::Router, after the
-			controller has been instantiated.
-[changed]:	View::load_plugin renamed to View::plugin.
-[changed]:	View::$loaded renamed to View::$views.
-[changed]:	Helpers::load_helpers renamed to Helpers::load.
-[changed]:	Controller::load_model renamed to Controller::load.
-[new]:		Added Controller::prepare.
-[changed]:	Render is no longer done automatically, user must call Controller::prepare
-			to initiate the rendering process.
-[fixed]:	Bug when requesting a controller twice would attempt to reload the file.
+Bugs
+	[fixed]		Bug with Config::save not using the correct path.
+	[fixed]		Bug with Request::build_uri not recognising some protocols.

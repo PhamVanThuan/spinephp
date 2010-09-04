@@ -20,7 +20,7 @@
 	
 	Spine::load('Inflector', 'Loader', 'Input', 'Validate');
 	
-    class Controller {
+    abstract class Controller {
 
 		/**
 		 * @var array $helpers array of helpers to be loaded in view
@@ -43,6 +43,11 @@
 		public $__variables;
 
 		/**
+		 * @var object $request request object
+		 */
+		public $request;
+
+		/**
 		 * @var array $__params default params set for models
 		 */
 		protected $__params = array(
@@ -59,12 +64,14 @@
 		 * of this is created since all controllers must extend this. Sets a few properties
 		 * and peforms any autoloading that is required.
 		 */
-		public function __construct(){
+		public function __construct($request){
+			$this->request = $request;
+			
 			// Create a new loader object.
 			$this->load = new Loader;
 			$this->load->__controller =& $this;
 
-			// Create a new input object.
+			// Create a new input object and sanitize the global variables.
 			Input::sanitize_globals();
 			$this->input = new Input;
 
@@ -86,9 +93,6 @@
 					Spine::load($lib);
 				}
 			}
-
-			// Start output buffering to capture basic output.
-			ob_start();
 		}
 
 		/**

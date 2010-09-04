@@ -439,37 +439,37 @@
 		/**
 		 * @var string $__constroller name of controlle
 		 */
-		public $__controller;
+		private $__controller;
 
 		/**
 		 * @var string $__action name of action
 		 */
-		public $__action;
+		private $__action;
 
 		/**
 		 * @var string $__folder name of folder
 		 */
-		public $__folder;
+		private $__folder;
 
 		/**
 		 * @var string $__file name of controller file
 		 */
-		public $__file;
+		private $__file;
 
 		/**
 		 * @var array $__route array of route information, will be unset
 		 */
-		public $__route;
+		private $__route;
 
 		/**
 		 * @var array $__params array of params to be passed into method
 		 */
-		public $__params;
+		private $__params;
 
 		/**
 		 * @var string $__uri uri used for request
 		 */
-		public $__uri;
+		private $__uri;
 
 		/**
 		 * __construct
@@ -517,6 +517,12 @@
 					Request::check_special_requests($this->__params['special']);
 				}
 
+				// Make sure its not a private method.
+				if(substr($this->__action, 0, 1) === '_'){
+					trigger_error('Could not load private method ' . Inflector::classname($this->__controller . 'Controller') . '()', E_USER_ERROR);
+					return false;
+				}
+
 				// Return true, we found our route matching the URI.
 				return true;
 				
@@ -542,7 +548,7 @@
 		public function dispatch($object = false){
 			if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . Inflector::filename($this->__controller) . '.php')){
 				// Found the controller in either the parent controllers directory or a specified directory from $params['directory']
-				$this->__file = Inflector::filename($this->__controller);
+				$this->__file = Inflector::filename($this->__controller) . '.php';
 				$this->__controller = Inflector::classname($this->__controller);
 				$this->__action = Inflector::methodname($this->__action);
 			}else{
@@ -563,7 +569,7 @@
 
 				// Found it in a subdirectory if we made it this far.
 				$this->__folder = Inflector::filename($directory);
-				$this->__file = Inflector::filename($file);
+				$this->__file = Inflector::filename($file) . '.php';
 				$this->__controller = Inflector::classname($file);
 
 				if(!empty($this->__params)){
@@ -574,16 +580,16 @@
 			}
 
 			// Require the controller file and set the controller class name.
-			require_once(BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . $this->__file . '.php');
-			$cn_controller = $this->__controller . 'Controller';
+			require_once(BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . $this->__file);
+			$this->__controller = $this->__controller . 'Controller';
 
 			// Ensure that the class exists.
-			if(!class_exists($cn_controller, false)){
+			if(!class_exists($this->__controller, false)){
 				// Invalid class name.
-				trigger_error('Could not instantiate class ' . $cn_controller . ' in ' . BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . $this->__file . '.php', E_USER_ERROR);
+				trigger_error('Could not instantiate class ' . $this->__controller . ' in ' . BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . $this->__file, E_USER_ERROR);
 			}else{
 				// Use Reflection so we can pass args.
-				$reflection = new ReflectionClass($cn_controller);
+				$reflection = new ReflectionClass($this->__controller);
 
 				if($reflection->isAbstract()){
 					trigger_error('Controller class you are instantiating is abstract, controllers cannot be abstract.', E_USER_ERROR);
@@ -594,7 +600,7 @@
 				if(is_object(Request::$current)){
 					// If so, is the requested controller the already loaded controller
 					// and are we just returning an object.
-					if($object === true && get_class(Request::$current) === $cn_controller){
+					if($object === true && get_class(Request::$current) === $this->__controller){
 						return Request::$current;
 					}
 				}
@@ -603,7 +609,7 @@
 				Hooks::run('Controller.before');
 
 				// Create the new controller.
-				$obj = new $cn_controller;
+				$obj = new $this->__controller($this);
 
 				if(!$object){
 					// If not returning, set the current controller to this one.
@@ -667,6 +673,15 @@
 		 */
 		public function get_folder(){
 			return $this->__folder;
+		}
+
+		/**
+		 * get_file
+		 *
+		 * @return string
+		 */
+		public function get_file(){
+			return $this->__file;
 		}
 
 		/**

@@ -44,11 +44,6 @@
 		public static $user_set_template = array();
 
 		/**
-		 * @var boolean $prepared if content has been prepared
-		 */
-		public static $prepared = false;
-
-		/**
 		 * @var boolean $enable_compression template compression enabled
 		 */
 		public static $enable_compression = true;
@@ -70,9 +65,6 @@
 			if(!file_exists(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php')){
 				trigger_error('Could not find <strong>template.php</strong> in ' . BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS, E_USER_ERROR);
 			}else{
-				// We have prepared some content.
-				Template::$prepared = true;
-
 				// Set some default template variables.
 				Template::$tpl['g_base_path'] = BASE_PATH . DS;
 				Template::$tpl['g_base_url'] = SYS_URL;
@@ -99,15 +91,13 @@
 				$js = Template::js();
 
 				if(empty(Template::$output)){
-					// Firstly, let's start output buffering, so we can capture the output and perform
-					// any parsing on it.
-					ob_start();
-
 					include(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php');
 
-					// Using output buffering, we can get the contents of the buffer and clean it.
+					// Get the template output.
 					Template::$output = ob_get_contents();
-					ob_end_clean();
+
+					// Clean the master buffer.
+					ob_clean();
 				}
 			}
 
@@ -131,27 +121,23 @@
 
 			// Run any hooks for Display.beforeRender, reference output as a parameter
 			Hooks::run('Display.beforeRender', array('output' => &$output));
-			
-			// Get the compression type, like gzip.
-			$compression = Template::get_compression_type();
-
-			// Any output running. End them all.
-			while(ob_get_length() !== false){
-				ob_end_clean();
-			}
-
-			// Start output buffering with any compression if available.
-			ob_start($compression);
 
 			// Display the output
 			if(Config::read('Template.strip_new_lines')){
 				$output = trim(str_replace(array("\r\n","\n","\r","\t"), "", $output));
 			}
 
-			// Display the final output.
+			// Remove the master buffer.
+			ob_end_clean();
+
+			// Start our compression buffer.
+			$compression = Template::get_compression_type();
+			ob_start($compression);
+			
+			// Echo the output into the buffer.
 			echo $output;
 			
-			// Flush the buffer.
+			// Flush our compression buffer, display the final output.
 			ob_end_flush();
 		}
 

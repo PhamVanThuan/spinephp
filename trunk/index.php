@@ -98,8 +98,11 @@
 	}
 
 	if(file_exists(BASE_PATH . DS . 'install.php')){
+		if(!is_readable(BASE_PATH . DS. 'install.php')){
+			die("Could not read the install.php file but it was found. Check the permissions.");
+		}
 		// The install file exists, let's require it then die.
-		include_once(BASE_PATH . DS . 'install.php');
+		include(BASE_PATH . DS . 'install.php');
 		exit;
 
 		// This performs the environment tests.
