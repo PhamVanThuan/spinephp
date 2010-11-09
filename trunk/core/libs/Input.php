@@ -28,7 +28,7 @@
 			$_GET = array(); // unset any GET data
 
 			$_POST = Input::clean($_POST);
-			$_COOKIe = Input::clean($_COOKIE);
+			$_COOKIE = Input::clean($_COOKIE);
 		}
 
 		/**

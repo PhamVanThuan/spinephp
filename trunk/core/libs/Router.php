@@ -85,8 +85,8 @@
 		 * Loads the routes from the router configuration file.
 		 */
 		public static function load(){
-			if(file_exists(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . 'router.php')){
-				require_once(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . 'router.php');
+			if(file_exists(CORE_PATH . DS . 'config' . DS . 'router.php')){
+				require_once(CORE_PATH . DS . 'config' . DS . 'router.php');
 			}
 		}
 

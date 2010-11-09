@@ -4,6 +4,18 @@ This file contains changes to the SpinePHP system, only the 3 latest versions/re
 are part of the same latest version, however they contain the most recent code that has been applied to that version.
 Spine is still unstable, however it is getting closer to a stable release.
 
+Revision: 90
+Release Date: -
+Status: Unstable
+-----------------------------------------------
+Libraries
+	[modified]	All paths modified according to the new BASE_PATH constant set in index.php
+
+General
+	[modified]	Extenders and Plugins now located within the core.
+	[modified]	Spine core can be placed outside document root and the ability to run multiple applications of the one
+				codebase is now possible.
+
 Revision: 88
 Release Data: 4th September 2010
 Status: Unstable

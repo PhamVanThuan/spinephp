@@ -35,8 +35,8 @@
 			Spine::load('Object', 'Controller', 'Request', 'Router', 'Template', 'Helpers', 'Extender', 'Plugin');
 
 			// Load the core controller if available.
-			if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'core_controller.php')){
-				require(BASE_PATH . DS . APP_PATH . DS . 'core_controller.php');
+			if(file_exists(APP_PATH . DS . 'core_controller.php')){
+				require(APP_PATH . DS . 'core_controller.php');
 			}
 
 			// Set the error handler, before running any classes.
@@ -155,11 +155,11 @@
 
 			foreach(func_get_args() as $lib){
 				// Does the library file exist?
-				if(!file_exists(BASE_PATH . DS . LIB_PATH . DS . $lib . '.php')){
-					trigger_error('Could not find the requested library file ' . BASE_PATH . DS . LIB_PATH . DS . $lib . '.php', E_USER_ERROR);
+				if(!file_exists(LIB_PATH . DS . $lib . '.php')){
+					trigger_error('Could not find the requested library file ' . LIB_PATH . DS . $lib . '.php', E_USER_ERROR);
 				}else{
 					if(!in_array($lib, Spine::$libs)){
-						require_once(BASE_PATH . DS . LIB_PATH . DS . $lib . '.php');
+						require_once(LIB_PATH . DS . $lib . '.php');
 
 						// Also add it to the libs array, then return true.
 						Spine::$libs[] = $lib;

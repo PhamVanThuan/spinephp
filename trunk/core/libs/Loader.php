@@ -41,8 +41,8 @@
 		public function view($view, $render = false){
 			$view = Inflector::filename($view);
 			
-			if(!file_exists(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . $view . '.php')){
-				trigger_error('Could not load requested view file ' . BASE_PATH . DS . APP_PATH . DS . 'views' . DS . $view . '.php', E_USER_ERROR);
+			if(!file_exists(APP_PATH . DS . 'views' . DS . $view . '.php')){
+				trigger_error('Could not load requested view file ' . APP_PATH . DS . 'views' . DS . $view . '.php', E_USER_ERROR);
 			}else{
 				// Set any variables for the view file, storing in a tmp array so we can unset them.
 				$__tmp_vars = array();
@@ -76,7 +76,7 @@
 					}
 				}
 
-				include(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . $view . '.php');
+				include(APP_PATH . DS . 'views' . DS . $view . '.php');
 				
 				// Get the contents.
 				$contents = ob_get_contents();
@@ -113,7 +113,7 @@
 		 */
 		public function section($section, $params = array()){
 			$section = Inflector::filename($section);
-			if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . 'sections' . DS . $section . '.php')){
+			if(file_exists(APP_PATH . DS . 'views' . DS . 'sections' . DS . $section . '.php')){
 				// Set any params as variables and store in a tmp array for unsetting.
 				$__tmp_vars = array();
 				if(!empty($params)){
@@ -122,12 +122,12 @@
 						${$variable} = $value;
 					}
 				}
+				
+				include(APP_PATH . DS . 'views' . DS . 'sections' . DS . $section . '.php');
+				$output = ob_get_contents();
 
 				// Clean our buffer.
 				ob_clean();
-				
-				include(BASE_PATH . DS . APP_PATH . DS . 'views' . DS . 'sections' . DS . $section . '.php');
-				$output = ob_get_clean();
 
 				// Unset any variables.
 				foreach($__tmp_vars as $variable){
@@ -157,13 +157,13 @@
 			$included = get_included_files();
 
 			// Attempt to locate the appropriate model, first look in the application/models
-			if(!in_array(BASE_PATH . DS . APP_PATH . DS . 'models' . DS . $model . '.php', $included)){
-				if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'models' . DS . $model . '.php')){
-					require(BASE_PATH . DS . APP_PATH . DS . 'models' . DS . $model . '.php');
+			if(!in_array(APP_PATH . DS . 'models' . DS . $model . '.php', $included)){
+				if(file_exists(APP_PATH . DS . 'models' . DS . $model . '.php')){
+					require(APP_PATH . DS . 'models' . DS . $model . '.php');
 				}else{
 					// Couldn't find it there, perhaps they have nested it inside a folder but forgot to specify.
-					if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'models' . DS . $model . DS . $model . '.php')){
-						require(BASE_PATH . DS . APP_PATH . DS . 'models' . DS . $model . DS . $model . '.php');
+					if(file_exists(APP_PATH . DS . 'models' . DS . $model . DS . $model . '.php')){
+						require(APP_PATH . DS . 'models' . DS . $model . DS . $model . '.php');
 					}
 				}
 			}
