@@ -107,7 +107,7 @@
 		public static function save(){
 			if(!empty(Config::$changes)){
 				// We have some changes to save.
-				$config_file_contents = file_get_contents(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . 'config.php');
+				$config_file_contents = file_get_contents(CORE_PATH . DS . 'config' . DS . 'config.php');
 				foreach(Config::$changes as $variable){
 					if(preg_match("#Config\:\:write\(['\"]?" . $variable . "['\"]?,\s?['\"]?(.*?)['\"]?\)#msi", $config_file_contents, $match)){
 
@@ -123,7 +123,7 @@
 					}
 				}
 
-				$handle = fopen(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . 'config.php', 'w');
+				$handle = fopen(CORE_PATH . DS . 'config' . DS . 'config.php', 'w');
 				if(!fwrite($handle, $config_file_contents)){
 					return false;
 				}

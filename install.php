@@ -101,14 +101,14 @@
 			<tr>
 				<th>Application Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . APP_PATH) && is_readable(BASE_PATH . DS . APP_PATH)){
+					if(is_dir(APP_PATH) && is_readable(APP_PATH)){
 				?>
-				<td class="pass"><?php echo BASE_PATH . DS . APP_PATH . DS; ?></td>
+				<td class="pass"><?php echo APP_PATH . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate or read <?php echo BASE_PATH . DS . APP_PATH . DS; ?></td>
+				<td class="fail">Could not locate or read <?php echo APP_PATH . DS; ?></td>
 				<?php
 					}
 				?>
@@ -116,14 +116,14 @@
 			<tr>
 				<th>Library Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . LIB_PATH) && is_readable(BASE_PATH . DS . LIB_PATH . DS)){
+					if(is_dir(LIB_PATH) && is_readable(LIB_PATH)){
 				?>
-				<td class="pass"><?php echo BASE_PATH . DS . LIB_PATH . DS; ?></td>
+				<td class="pass"><?php echo LIB_PATH . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not locate or read <?php echo BASE_PATH . LIB_PATH . DS; ?></td>
+				<td class="fail">Could not locate or read <?php echo LIB_PATH . DS; ?></td>
 				<?php
 					}
 				?>
@@ -131,14 +131,14 @@
 			<tr>
 				<th>Config Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS) && is_readable(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS) && is_writable(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS)){
+					if(is_dir(CORE_PATH . DS . 'config') && is_readable(CORE_PATH . DS . 'config') && is_writable(CORE_PATH . DS . 'config')){
 				?>
-				<td class="pass"><?php echo BASE_PATH . DS . CORE_PATH . DS . 'config' . DS; ?></td>
+				<td class="pass"><?php echo CORE_PATH . DS . 'config' . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not write to or read <?php echo BASE_PATH . DS .  CORE_PATH . DS . 'config' . DS; ?></td>
+				<td class="fail">Could not write to or read <?php echo CORE_PATH . DS . 'config' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -146,14 +146,14 @@
 			<tr>
 				<th>Cache Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . TMP_PATH . DS . 'cache' . DS) && is_readable(BASE_PATH . DS . TMP_PATH . DS . 'cache' . DS) && is_writable(BASE_PATH . DS . TMP_PATH . DS . 'cache' . DS)){
+					if(is_dir(TMP_PATH . DS . 'cache') && is_readable(TMP_PATH . DS . 'cache') && is_writable(TMP_PATH . DS . 'cache')){
 				?>
-				<td class="pass"><?php echo BASE_PATH . DS . TMP_PATH . DS . 'cache' . DS; ?></td>
+				<td class="pass"><?php echo TMP_PATH . DS . 'cache' . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not write to or read <?php echo BASE_PATH . DS .  TMP_PATH . DS . 'cache' . DS; ?></td>
+				<td class="fail">Could not write to or read <?php echo TMP_PATH . DS . 'cache' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -161,14 +161,14 @@
 			<tr>
 				<th>Logs Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS) && is_readable(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS) && is_writable(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS)){
+					if(is_dir(TMP_PATH . DS . 'log') && is_readable(TMP_PATH . DS . 'log') && is_writable(TMP_PATH . DS . 'log')){
 				?>
-				<td class="pass"><?php echo BASE_PATH . DS . TMP_PATH . DS . 'log' . DS; ?></td>
+				<td class="pass"><?php echo TMP_PATH . DS . 'log' . DS; ?></td>
 				<?php
 					}else{
 						$failed = true;
 				?>
-				<td class="fail">Could not write to or read <?php echo BASE_PATH . DS . TMP_PATH . DS . 'log' . DS; ?></td>
+				<td class="fail">Could not write to or read <?php echo TMP_PATH . DS . 'log' . DS; ?></td>
 				<?php
 					}
 				?>
@@ -248,13 +248,13 @@
 			<tr>
 				<th>Session Directory</th>
 				<?php
-					if(is_dir(BASE_PATH . DS . TMP_PATH . DS .  'sessions/') && is_readable(BASE_PATH . DS . TMP_PATH . DS . 'sessions' . DS) && is_writable(BASE_PATH . DS . TMP_PATH . DS .  'sessions/')){
+					if(is_dir(TMP_PATH . DS .  'sessions') && is_readable(TMP_PATH . DS . 'sessions') && is_writable(TMP_PATH . DS .  'sessions')){
 				?>
-				<td class="pass"><?php echo BASE_PATH . DS .  TMP_PATH . DS .  'sessions' . DS; ?></td>
+				<td class="pass"><?php echo TMP_PATH . DS .  'sessions' . DS; ?></td>
 				<?php
 					}else{
 				?>
-				<td class="fail">Could not write to or read <?php echo BASE_PATH . TMP_PATH . DS .  'sessions' . DS; ?></td>
+				<td class="fail">Could not write to or read <?php echo TMP_PATH . DS .  'sessions' . DS; ?></td>
 				<?php
 					}
 				?>

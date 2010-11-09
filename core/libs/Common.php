@@ -35,14 +35,14 @@
 			}
 
 			// Does todays log file exist?
-			if(!file_exists(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS . $log_file)){
+			if(!file_exists(TMP_PATH . DS . 'log' . DS . $log_file)){
 				$tmp .= "<?php\n\tif(!defined('APP_PATH')){\n\t\tdie('Unauthorized direct access to file.');\n\t}\n?>\n\n";
 			}
 
 			$tmp .= strtoupper($level) . " [" . date('jS F Y, \a\\t H:i') . "] > " . $message . "\n";
 
 			// Attempt to open the file, or create it if it doesn't exist.
-			if(!$handle = @fopen(BASE_PATH . DS . TMP_PATH . DS . 'log' . DS . $log_file, 'a+')){
+			if(!$handle = @fopen(TMP_PATH . DS . 'log' . DS . $log_file, 'a+')){
 				return;
 			}
 
@@ -61,17 +61,17 @@
 	 * @return array
 	 */
     function load_config(){
-		if(!file_exists(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . 'config.php')){
-			die("Failed to locate " . BASE_PATH . DS . CORE_PATH . DS . "config" . DS . "config.php");
+		if(!file_exists(CORE_PATH . DS . 'config' . DS . 'config.php')){
+			die("Failed to locate " . CORE_PATH . DS . "config" . DS . "config.php");
 		}
 		
 		$skip = array('router.php');
 
 		// Load up the configuration files.
-		foreach(glob(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . '*.php') as $file){
+		foreach(glob(CORE_PATH . DS . 'config' . DS . '*.php') as $file){
 			$file = basename($file);
 			if(!in_array($file, $skip)){
-				require(BASE_PATH . DS . CORE_PATH . DS . 'config' . DS . $file);
+				require(CORE_PATH . DS . 'config' . DS . $file);
 			}
 		}
     }

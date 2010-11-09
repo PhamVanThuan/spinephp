@@ -255,12 +255,12 @@
 						if(isset($options[0]) && !empty($options[0])){
 							$folder = $options[0];
 
-							if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS)){
+							if(file_exists(APP_PATH . DS . 'templates' . DS . $folder . DS)){
 								$type = Config::read('Template.default_template');
 								$type = $type[1];
 
 								if(isset($options[1]) && !empty($options[1])){
-									if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . $options[1] . '.php')){
+									if(file_exists(APP_PATH . DS . 'templates' . DS . $folder . DS . $options[1] . '.php')){
 										$type = $options[1];
 									}
 								}
@@ -546,7 +546,7 @@
 		 * @return boolean
 		 */
 		public function dispatch($object = false){
-			if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . Inflector::filename($this->__controller) . '.php')){
+			if(file_exists(APP_PATH . DS . 'controllers' . DS . $this->__folder . Inflector::filename($this->__controller) . '.php')){
 				// Found the controller in either the parent controllers directory or a specified directory from $params['directory']
 				$this->__file = Inflector::filename($this->__controller) . '.php';
 				$this->__controller = Inflector::classname($this->__controller);
@@ -554,9 +554,9 @@
 			}else{
 				$directory = Inflector::filename($this->__controller) . DS;
 				$file = Inflector::filename($this->__action);
-				while(!file_exists(BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $directory . $file . '.php')){
+				while(!file_exists(APP_PATH . DS . 'controllers' . DS . $directory . $file . '.php')){
 					if(empty($this->__params)){
-						trigger_error('Could not locate requested controller file ' . BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . Inflector::filename($this->__controller) . '.php', E_USER_ERROR);
+						trigger_error('Could not locate requested controller file ' . APP_PATH . DS . 'controllers' . DS . $this->__folder . Inflector::filename($this->__controller) . '.php', E_USER_ERROR);
 						return;
 					}
 
@@ -580,13 +580,13 @@
 			}
 
 			// Require the controller file and set the controller class name.
-			require_once(BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . $this->__file);
+			require_once(APP_PATH . DS . 'controllers' . DS . $this->__folder . $this->__file);
 			$this->__controller = $this->__controller . 'Controller';
 
 			// Ensure that the class exists.
 			if(!class_exists($this->__controller, false)){
 				// Invalid class name.
-				trigger_error('Could not instantiate class ' . $this->__controller . ' in ' . BASE_PATH . DS . APP_PATH . DS . 'controllers' . DS . $this->__folder . $this->__file, E_USER_ERROR);
+				trigger_error('Could not instantiate class ' . $this->__controller . ' in ' . APP_PATH . DS . 'controllers' . DS . $this->__folder . $this->__file, E_USER_ERROR);
 			}else{
 				// Use Reflection so we can pass args.
 				$reflection = new ReflectionClass($this->__controller);

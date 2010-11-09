@@ -148,13 +148,13 @@
 						return;
 					}
 					
-					if(!file_exists(BASE_PATH . DS . DB_PATH . DS . $this->driver . DS . 'driver.php')){
+					if(!file_exists(DB_PATH . DS . $this->driver . DS . 'driver.php')){
 						trigger_error('Could not load the requested database driver file: ' . $this->driver, E_USER_ERROR);
 						return;
 					}
 
 					// We have our standard driver, not the best, but load it in.
-					require_once(BASE_PATH . DS . DB_PATH . DS . $this->driver . DS . 'driver.php');
+					require_once(DB_PATH . DS . $this->driver . DS . 'driver.php');
 					$this->dbh = new DBDriver;
 					$this->dbh->connect($this->host, $this->username, $this->password, $this->dbname);
 				}else{

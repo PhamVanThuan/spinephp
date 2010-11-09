@@ -62,14 +62,14 @@
 		public static function prepare(){
 			list($folder, $template) = Template::get_template();
 			
-			if(!file_exists(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php')){
-				trigger_error('Could not find <strong>template.php</strong> in ' . BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS, E_USER_ERROR);
+			if(!file_exists(APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php')){
+				trigger_error('Could not find <strong>template.php</strong> in ' . APP_PATH . DS . 'templates' . DS . $folder . DS, E_USER_ERROR);
 			}else{
 				// Set some default template variables.
 				Template::$tpl['g_base_path'] = BASE_PATH . DS;
 				Template::$tpl['g_base_url'] = SYS_URL;
-				Template::$tpl['g_tpl_path'] = BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS;
-				Template::$tpl['g_tpl_url'] = SYS_URL . APP_PATH . DS . 'templates' . DS . $folder . DS;
+				Template::$tpl['g_tpl_path'] = APP_PATH . DS . 'templates' . DS . $folder . DS;
+				Template::$tpl['g_tpl_url'] = SYS_URL . basename(APP_PATH) . DS . 'templates' . DS . $folder . DS;
 
 				// Run any hooks for Display.before
 				Hooks::run('Display.before');
@@ -91,7 +91,7 @@
 				$js = Template::js();
 
 				if(empty(Template::$output)){
-					include(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php');
+					include( APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php');
 
 					// Get the template output.
 					Template::$output = ob_get_contents();
@@ -161,9 +161,9 @@
 			list($folder, $template) = Template::get_template();
 
 			$css = array();
-			foreach(glob(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . 'public' . DS . 'css' .DS . '*.css') as $file){
+			foreach(glob(APP_PATH . DS . 'templates' . DS . $folder . DS . 'public' . DS . 'css' .DS . '*.css') as $file){
 				if(!in_array(basename($file), $ignore)){
-					$css[basename($file)] = '<link rel="stylesheet" type="text/css" href="' . SYS_URL . APP_PATH . DS . 'templates' . DS . 
+					$css[basename($file)] = '<link rel="stylesheet" type="text/css" href="' . SYS_URL . basename(APP_PATH) . DS . 'templates' . DS .
 						$folder . DS . 'public' . DS . 'css' . DS . basename($file) . '" />';
 				}
 			}
@@ -207,9 +207,9 @@
 			list($folder, $template) = Template::get_template();
 
 			$js = array();
-			foreach(glob(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . 'public' . DS . 'js' . DS . '*.js') as $file){
+			foreach(glob(APP_PATH . DS . 'templates' . DS . $folder . DS . 'public' . DS . 'js' . DS . '*.js') as $file){
 				if(!in_array(basename($file), $ignore)){
-					$js[basename($file)] = '<script type="text/javascript" src="' . SYS_URL . APP_PATH . DS . 'templates' . DS . 
+					$js[basename($file)] = '<script type="text/javascript" src="' . SYS_URL . basename(APP_PATH) . DS . 'templates' . DS .
 						$folder . DS . 'public' . DS . 'js' . DS . basename($file) . '"></script>';
 				}
 			}
@@ -258,7 +258,7 @@
 		 * @param string $contents the contents that should be cached
 		 */
 		public static function write_cache($contents){
-			$directory = BASE_PATH . DS . TMP_PATH . DS . 'cache';
+			$directory = TMP_PATH . DS . 'cache';
 
 			if(file_exists($directory) && is_writable($directory) && Config::read('Template.enable_caching') === true){
 				$timeout = time() + (Template::$cache['timeout'] * 60);
@@ -287,7 +287,7 @@
 		 */
 		public static function render_cache($uri){
 			$uri = md5($uri);
-			$directory = BASE_PATH . DS . TMP_PATH . DS . 'cache';
+			$directory = TMP_PATH . DS . 'cache';
 
 			if(file_exists($directory . DS . $uri) && Config::read('Template.enable_caching') === true){
 				// Cache file exists, make sure it hasn't timed out.
@@ -326,7 +326,7 @@
 		 * @return boolean
 		 */
 		public static function delete_cache($uri = null){
-			$directory = BASE_PATH . DS . TMP_PATH .  DS . 'cache';
+			$directory = TMP_PATH .  DS . 'cache';
 			
 			if(empty($uri)){
 				// Delete all.
@@ -441,7 +441,7 @@
 				// Set template to HTML if it's not set.
 				$template = $template == '' ? 'html' : $template;
 
-				if(!file_exists(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php') && $revert === false){
+				if(!file_exists(APP_PATH . DS . 'templates' . DS . $folder . DS . $template . '.php') && $revert === false){
 					trigger_error('Failed to load the <strong>' . $template . '</strong> template in <strong>' . $folder . '</strong>', E_USER_ERROR);
 				}else{
 					Template::$user_set_template = array($folder, $template);
@@ -449,10 +449,10 @@
 			}else{
 				list($default_folder, $default_template) = Config::read('Template.default_template');
 				
-				if(file_exists(BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $default_folder . DS . $template . '.php')){
+				if(file_exists(APP_PATH . DS . 'templates' . DS . $default_folder . DS . $template . '.php')){
 					Template::$user_set_template = array($default_folder, $template);
 				}else{
-					trigger_error('Failed to locate template file at ' . BASE_PATH . DS . APP_PATH . DS . 'templates' . DS . $default_folder . DS . $template . '.php', E_USER_ERROR);
+					trigger_error('Failed to locate template file at ' . APP_PATH . DS . 'templates' . DS . $default_folder . DS . $template . '.php', E_USER_ERROR);
 				}
 			}
 		}

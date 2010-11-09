@@ -69,27 +69,23 @@
 	
 	$base_path = substr($base_path, -1) == '/' ? substr($base_path, 0, -1) : $base_path;
 
-	define('BASE_PATH', $base_path);
-	define('APP_PATH', $application_directory);
-	define('TMP_PATH', $tmp_directory);
-	define('CORE_PATH', $core_path);
-	define('LIB_PATH', CORE_PATH . DS . $library_directory);
-	define('DB_PATH', CORE_PATH . DS . 'database');
+	define('BASE_PATH', realpath($base_path));
+	define('APP_PATH', realpath(BASE_PATH . DS . $application_directory));
+	define('TMP_PATH', realpath(BASE_PATH . DS . $tmp_directory));
+	define('CORE_PATH', realpath(BASE_PATH . DS . $core_path));
+	define('LIB_PATH', realpath(CORE_PATH . DS . $library_directory));
+	define('DB_PATH', realpath(CORE_PATH . DS . 'database'));
 
 	if(!is_dir(APP_PATH)){
-		die("Could not locate APP_PATH at " . APP_PATH);
+		die('System could not find your application directory, please check your settings.');
 	}
 
 	if(!is_dir(LIB_PATH)){
-		die("Could not locate LIB_PATH at " . LIB_PATH);
+		die('System could not find your library directory, please check your settings.');
 	}
 
 	if(!is_dir(TMP_PATH)){
-		die("Could not locate TMP_PATH at " . TMP_PATH);
-	}
-
-	if(!is_dir(DB_PATH)){
-		die("Could not locate DB_PATH at " . DB_PATH);
+		die('System could not find your temp directory, please check your settings.');
 	}
 
 	// Disable Magic Quotes, if running less then PHP 5.3.0
@@ -111,15 +107,15 @@
 	// Set the default timezone to GMT, can be changed in a hook.
 	date_default_timezone_set('GMT');
 
-	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Common.php');
-	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Config.php');
+	require_once(LIB_PATH . DS . 'Common.php');
+	require_once(LIB_PATH . DS . 'Config.php');
 	Config::get_instance();
 	
 	// Define SYS_URL now that the config is available.
 	define('SYS_URL', Config::read('General.system_url'));
 
-	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Errors.php');
-	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Hooks.php');
+	require_once(LIB_PATH . DS . 'Errors.php');
+	require_once(LIB_PATH . DS . 'Hooks.php');
 
 	// Autoload any hooks that are in the config.
 	Hooks::autoload();
@@ -127,6 +123,6 @@
 	// Run any hooks for System.before
 	Hooks::run('System.before');
 
-	require_once(BASE_PATH . DS . LIB_PATH . DS . 'Spine.php');
+	require_once(LIB_PATH . DS . 'Spine.php');
 	Spine::instance();
 ?>
